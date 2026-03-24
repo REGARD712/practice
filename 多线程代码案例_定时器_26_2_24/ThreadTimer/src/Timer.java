@@ -61,7 +61,7 @@ class MyTimer {
                     while (true) {
                         // 取出任务
                         while (queue.isEmpty()) {
-                            //continue;
+                            // continue;
                             this.wait();
                         }
                         MyTimerTask task = queue.peek();
