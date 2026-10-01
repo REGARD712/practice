@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f4f5f7">
+    <title>藏书阁 · 图书管理</title>
+    <link rel="stylesheet" th:href="@{/css/books.css}">
+    <script th:src="@{/js/books.js}" defer></script>
+</head>
+<body>
+<div class="page-shell">
+    <header class="topbar">
+        <a class="brand" th:href="@{/}" aria-label="藏书阁首页">
+            <span class="brand-mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z"/><path d="M4 5.5v16M8 7h8M8 11h8"/></svg>
+            </span>
+            <span>藏书阁</span>
+        </a>
+        <span class="topbar-note">让阅读，井然有序</span>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-copy">
+                <span class="eyebrow"><span class="eyebrow-dot"></span> PERSONAL LIBRARY</span>
+                <h1>每一本书，<br class="mobile-break">都有自己的位置。</h1>
+                <p>整理你的阅读收藏，把灵感与知识好好珍藏。</p>
+            </div>
+            <div class="collection-stat" aria-label="藏书总数">
+                <span class="stat-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z"/><path d="M4 5.5v16M8 7h8M8 11h8"/></svg>
+                </span>
+                <span class="stat-label">我的藏书</span>
+                <strong th:text="${#lists.size(books)}">0</strong>
+                <span class="stat-unit">本书</span>
+            </div>
+        </section>
+
+        <section class="library-section" aria-labelledby="library-heading">
+            <div class="section-heading">
+                <div>
+                    <span class="section-kicker">YOUR COLLECTION</span>
+                    <h2 id="library-heading">书架 <span class="heading-count" th:text="${#lists.size(books)}">0</span></h2>
+                </div>
+                <span class="section-caption">好书值得被认真收藏</span>
+            </div>
+
+            <div class="book-grid" th:if="${!#lists.isEmpty(books)}">
+                <article class="book-card" th:each="book, iter : ${books}">
+                    <div class="book-cover" th:classappend="|cover-${iter.index % 5}|">
+                        <span class="cover-number" th:text="${#numbers.formatInteger(book.id, 2)}">01</span>
+                        <span class="cover-art" aria-hidden="true">
+                            <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="34"/><path d="M16 68c18-10 34-10 52 0s28 8 32 4M24 31c12 8 25 8 38 0s25-8 35-2"/></svg>
+                        </span>
+                        <span class="cover-label">COLLECTED<br>EDITION</span>
+                    </div>
+                    <div class="book-details">
+                        <span class="book-id" th:text="|BOOK NO. ${book.id}|">BOOK NO. 01</span>
+                        <h3 th:text="${book.title}">书籍标题</h3>
+                        <p class="book-author"><span class="author-mark" aria-hidden="true"></span><span th:text="${book.author}">作者</span></p>
+                        <div class="card-divider"></div>
+                        <div class="card-actions">
+                            <a class="action-button edit-button" th:href="@{/edit/{id}(id=${book.id})}">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5 5 5M4 20l4.2-.9L19 8.3a2.1 2.1 0 0 0-3-3L5.2 16.1 4 20Z"/></svg>
+                                编辑
+                            </a>
+                            <form class="delete-form" th:action="@{/delete/{id}(id=${book.id})}" method="post">
+                                <button class="action-button delete-button" type="submit" th:attr="data-book-title=${book.title}">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M5.5 7l1 13h11l1-13M9 7V4h6v3"/></svg>
+                                    删除
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="empty-state" th:if="${#lists.isEmpty(books)}">
+                <span class="empty-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z"/><path d="M4 5.5v16M8 7h8M8 11h5"/></svg>
+                </span>
+                <h3>书架还空着</h3>
+                <p>添加你的第一本书，让收藏从这里开始。</p>
+                <a class="empty-cta" href="#book-form">添加一本书 <span aria-hidden="true">↗</span></a>
+            </div>
+        </section>
+
+        <section class="form-panel" id="book-form" aria-labelledby="form-heading">
+            <div class="form-intro">
+                <span class="section-kicker">KEEP A GOOD BOOK</span>
+                <h2 id="form-heading" th:text="${book.id == null ? '收藏一本新书' : '更新书籍信息'}">收藏一本新书</h2>
+                <p>记录书名与作者，让每份阅读记忆都有迹可循。</p>
+                <div class="form-decoration" aria-hidden="true">
+                    <svg viewBox="0 0 100 120"><path d="M16 14h62v92H16z"/><path d="M24 23h46M24 31h46M24 39h31M16 14l8 8v84"/></svg>
+                </div>
+            </div>
+            <form class="book-form" id="bookForm" th:action="@{/book}" th:method="post" th:object="${book}" novalidate>
+                <input type="hidden" th:field="*{id}">
+                <div class="floating-field">
+                    <input id="title" type="text" th:field="*{title}" placeholder=" " required minlength="1" maxlength="100" autocomplete="off">
+                    <label for="title">书籍名称</label>
+                    <span class="field-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z"/><path d="M4 5.5v16M8 7h8M8 11h8"/></svg>
+                    </span>
+                    <small class="field-error" aria-live="polite"></small>
+                </div>
+                <div class="floating-field">
+                    <input id="author" type="text" th:field="*{author}" placeholder=" " required minlength="1" maxlength="60" autocomplete="off">
+                    <label for="author">作者姓名</label>
+                    <span class="field-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>
+                    </span>
+                    <small class="field-error" aria-live="polite"></small>
+                </div>
+                <div class="form-actions">
+                    <a class="cancel-edit" th:if="${book.id != null}" th:href="@{/}">取消编辑</a>
+                    <button class="submit-button" type="submit">
+                        <span th:text="${book.id == null ? '加入我的书架' : '保存修改'}">加入我的书架</span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                    </button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <a class="footer-brand" th:href="@{/}">藏书阁<span>·</span></a>
+        <span>用心收藏，让阅读一直发生</span>
+        <span class="footer-credit">作者：李港 <span class="footer-separator">/</span> 学号：202424111130</span>
+    </footer>
+</div>
+
+<button class="floating-add" id="floatingAdd" type="button" aria-label="添加一本书">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    <span>添加新书</span>
+</button>
+
+<dialog class="confirm-dialog" id="deleteDialog" aria-labelledby="dialog-title">
+    <div class="dialog-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 3 2.8 19h18.4L12 3Z"/><path d="M12 9v4M12 16h.01"/></svg>
+    </div>
+    <h2 id="dialog-title">确定移除这本书？</h2>
+    <p>《<span id="deleteBookTitle"></span>》将从你的书架中删除，此操作无法撤销。</p>
+    <div class="dialog-actions">
+        <button class="dialog-cancel" id="cancelDelete" type="button">再想一想</button>
+        <button class="dialog-confirm" id="confirmDelete" type="button">确认删除</button>
+    </div>
+</dialog>
+</body>
+</html>
