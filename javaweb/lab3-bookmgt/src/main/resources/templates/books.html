@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>书籍管理</title>
+</head>
+<body>
+    <h2>书籍列表</h2>
+    <div>
+        <ul>
+            <li th:each="book : ${books}">
+                <span th:text="|书号: ${book.id},标题: ${book.title}, 作者: ${book.author}|">
+                </span>
+            <a th:href="|/delete/${book.id}|">删除</a>
+            |
+            <a th:href="|/edit/${book.id}|">编辑</a>
+            </li>
+        </ul>
+    </div>
+    <h2>添加/更新书籍</h2>
+    <form th:action="@{/book}" th:method="post" th:object="${book}">
+        <input type="hidden" th:field="*{id}"/>
+        标题: <input type="text" th:field="*{title}"/>
+        作者: <input type="text" th:field="*{author}"/>
+        <input type="submit" value="提交"/>
+    </form>
+    <br/>------------------------------------------------------------<br/>
+    作者：李港，学号：202424111130
+</body>
+</html>
