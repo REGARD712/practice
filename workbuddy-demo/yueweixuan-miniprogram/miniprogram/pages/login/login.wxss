@@ -1,0 +1,115 @@
+.page {
+  padding: 60rpx 32rpx;
+}
+
+.panel {
+  padding: 48rpx 36rpx;
+}
+
+.panel-title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  text-align: center;
+}
+
+.panel-desc {
+  margin-top: 16rpx;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  text-align: center;
+  line-height: 1.7;
+}
+
+/* 头像选择：去除 button 默认样式 */
+.avatar-btn {
+  margin-top: 48rpx;
+  padding: 0;
+  background: transparent;
+  border: none;
+  line-height: 1;
+  width: 160rpx;
+  height: 160rpx;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.avatar-btn::after {
+  border: none;
+}
+
+.avatar-img {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+}
+
+.avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+}
+
+/* 昵称输入 */
+.field {
+  display: flex;
+  align-items: center;
+  margin-top: 48rpx;
+  padding: 24rpx 28rpx;
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+}
+
+.field-label {
+  flex-shrink: 0;
+  margin-right: 24rpx;
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+}
+
+.field-input {
+  flex: 1;
+  font-size: var(--font-size-base);
+}
+
+.placeholder {
+  color: var(--color-text-third);
+}
+
+.submit-btn {
+  margin-top: 56rpx;
+}
+
+.submit-btn.disabled {
+  background: #dcd9d5;
+}
+
+/* 微信一键登录按钮：去除 button 默认样式 */
+.wechat-btn {
+  margin-top: 56rpx;
+  width: 100%;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: var(--font-size-base);
+  border-radius: var(--radius-md);
+  line-height: 2.4;
+}
+
+.wechat-btn::after {
+  border: none;
+}
+
+.wechat-btn.disabled {
+  background: #dcd9d5;
+}
+
+/* 登录态检测中 */
+.loading-tip {
+  margin-top: 120rpx;
+  text-align: center;
+  color: var(--color-text-third);
+  font-size: var(--font-size-sm);
+}

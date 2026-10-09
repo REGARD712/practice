@@ -1,0 +1,99 @@
+<view class="page">
+
+  <!-- 品牌头区 -->
+  <view class="header">
+    <view class="brand">
+      <view class="brand-name">{{restaurant.name}}</view>
+      <view class="brand-slogan">{{restaurant.slogan}}</view>
+      <view class="brand-hours">营业时间 {{restaurant.hours}}</view>
+    </view>
+    <view class="user-entry" bindtap="goLogin">
+      <image wx:if="{{userInfo.avatarUrl}}" class="user-avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill" />
+      <view wx:else class="user-avatar user-avatar-default">
+        <text>{{userInfo.firstChar || '客'}}</text>
+      </view>
+      <text class="user-name">{{userInfo.nickname || '登录'}}</text>
+    </view>
+  </view>
+
+  <!-- 公告栏 -->
+  <view class="notice-bar">
+    <text class="notice-tag">公告</text>
+    <text class="notice-text">{{notice}}</text>
+  </view>
+
+  <!-- 分类快捷入口 -->
+  <view class="section-title">
+    <text>选餐分类</text>
+    <text class="more" bindtap="goMenu">全部菜品</text>
+  </view>
+  <scroll-view class="category-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="category-row">
+      <view
+        wx:for="{{categories}}"
+        wx:key="_id"
+        class="category-item"
+        bindtap="onCategoryTap"
+        data-id="{{item._id}}"
+      >
+        <view class="category-badge" style="background:{{item.color || '#e8552f'}}">
+          <text>{{item.firstChar}}</text>
+        </view>
+        <text class="category-name">{{item.name}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 热门推荐：横向滚动 -->
+  <view class="section-title"><text>热门推荐</text></view>
+  <scroll-view class="hot-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="hot-row">
+      <view
+        wx:for="{{hotDishes}}"
+        wx:key="_id"
+        class="hot-card card"
+        bindtap="onDishTap"
+        data-id="{{item._id}}"
+      >
+        <image class="hot-img" src="{{item.imageSrc}}" mode="aspectFill" lazy-load />
+        <view class="hot-info">
+          <text class="hot-name">{{item.name}}</text>
+          <text class="hot-sales">月售 {{item.sales}}</text>
+          <view class="hot-bottom">
+            <text class="price"><text class="symbol">¥</text>{{item.priceYuan}}</text>
+            <view class="add-btn" catchtap="onQuickAdd" data-id="{{item._id}}">
+              <text>+</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 招牌菜品 -->
+  <view class="section-title"><text>招牌菜品</text></view>
+  <view class="dish-list">
+    <view
+      wx:for="{{signatureDishes}}"
+      wx:key="_id"
+      class="dish-row card"
+      bindtap="onDishTap"
+      data-id="{{item._id}}"
+    >
+      <image class="dish-img" src="{{item.imageSrc}}" mode="aspectFill" lazy-load />
+      <view class="dish-info">
+        <text class="dish-name">{{item.name}}</text>
+        <text class="dish-desc">{{item.desc}}</text>
+        <view class="dish-bottom">
+          <text class="price"><text class="symbol">¥</text>{{item.priceYuan}}</text>
+          <view class="add-btn" catchtap="onQuickAdd" data-id="{{item._id}}">
+            <text>+</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部占位（避免内容贴底） -->
+  <view class="footer-space"></view>
+</view>

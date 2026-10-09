@@ -1,0 +1,250 @@
+.page {
+  padding-bottom: 24rpx;
+}
+
+/* 品牌头区 */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 40rpx 32rpx 32rpx;
+  background: linear-gradient(135deg, #e8552f 0%, #f07a4a 100%);
+  color: #ffffff;
+}
+
+.brand-name {
+  font-size: 44rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+}
+
+.brand-slogan {
+  margin-top: 10rpx;
+  font-size: var(--font-size-sm);
+  opacity: 0.9;
+}
+
+.brand-hours {
+  display: inline-block;
+  margin-top: 18rpx;
+  padding: 6rpx 18rpx;
+  font-size: var(--font-size-xs);
+  border-radius: 24rpx;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.user-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 160rpx;
+}
+
+.user-avatar {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  border: 4rpx solid rgba(255, 255, 255, 0.6);
+}
+
+.user-avatar-default {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.25);
+  font-size: var(--font-size-lg);
+  color: #ffffff;
+}
+
+.user-name {
+  margin-top: 10rpx;
+  max-width: 150rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--font-size-xs);
+  opacity: 0.95;
+}
+
+/* 公告栏 */
+.notice-bar {
+  display: flex;
+  align-items: center;
+  margin: 20rpx 24rpx 0;
+  padding: 18rpx 24rpx;
+  background: var(--color-primary-light);
+  border-radius: var(--radius-md);
+}
+
+.notice-tag {
+  flex-shrink: 0;
+  margin-right: 16rpx;
+  padding: 4rpx 14rpx;
+  font-size: var(--font-size-xs);
+  color: var(--color-primary);
+  border: 2rpx solid var(--color-primary);
+  border-radius: var(--radius-sm);
+}
+
+.notice-text {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  color: #6b5850;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 分类快捷入口 */
+.category-scroll {
+  width: 100%;
+}
+
+.category-row {
+  display: flex;
+  padding: 8rpx 24rpx 0;
+}
+
+.category-item {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 44rpx;
+}
+
+.category-badge {
+  width: 104rpx;
+  height: 104rpx;
+  border-radius: 34rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+}
+
+.category-name {
+  margin-top: 12rpx;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+
+/* 热门推荐 */
+.hot-scroll {
+  width: 100%;
+}
+
+.hot-row {
+  display: flex;
+  padding: 4rpx 24rpx 8rpx;
+}
+
+.hot-card {
+  flex-shrink: 0;
+  width: 264rpx;
+  margin-right: 20rpx;
+}
+
+.hot-img {
+  width: 264rpx;
+  height: 190rpx;
+  display: block;
+}
+
+.hot-info {
+  padding: 16rpx 20rpx 20rpx;
+}
+
+.hot-name {
+  display: block;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hot-sales {
+  display: block;
+  margin-top: 6rpx;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-third);
+}
+
+.hot-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10rpx;
+}
+
+/* 加购按钮（统一圆形加号） */
+.add-btn {
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: var(--font-size-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* 招牌菜品列表 */
+.dish-list {
+  padding: 0 24rpx;
+}
+
+.dish-row {
+  display: flex;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.dish-img {
+  width: 176rpx;
+  height: 176rpx;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.dish-info {
+  flex: 1;
+  min-width: 0;
+  margin-left: 22rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.dish-name {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+
+.dish-desc {
+  margin-top: 8rpx;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dish-bottom {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dish-bottom .price {
+  font-size: var(--font-size-lg);
+}
+
+.footer-space {
+  height: 40rpx;
+}

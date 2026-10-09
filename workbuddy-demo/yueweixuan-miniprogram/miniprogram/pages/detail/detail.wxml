@@ -1,0 +1,44 @@
+<view class="page" wx:if="{{dish}}">
+
+  <!-- 菜品大图（云端存储） -->
+  <image class="hero-img" src="{{imageSrc}}" mode="aspectFill" />
+
+  <!-- 菜品信息卡 -->
+  <view class="info-card card">
+    <view class="info-head">
+      <text class="dish-name">{{dish.name}}</text>
+      <view class="tag-row" wx:if="{{dish.tags.length > 0}}">
+        <text wx:for="{{dish.tags}}" wx:key="*this" class="tag">{{item}}</text>
+      </view>
+    </view>
+    <view class="meta-row">
+      <text class="meta">月售 {{dish.sales}}</text>
+      <text class="meta-divider">|</text>
+      <text class="meta">现点现做</text>
+    </view>
+    <view class="price-row">
+      <text class="price big"><text class="symbol">¥</text>{{priceYuan}}</text>
+    </view>
+  </view>
+
+  <!-- 菜品介绍 -->
+  <view class="desc-card card">
+    <view class="desc-title">菜品介绍</view>
+    <text class="desc-text">{{dish.desc}}</text>
+  </view>
+
+  <view class="footer-space"></view>
+
+  <!-- 底部操作栏：数量 + 加购 -->
+  <view class="bottom-bar safe-bottom">
+    <view class="stepper">
+      <view class="step-btn minus {{quantity <= 1 ? 'off' : ''}}" bindtap="onMinus"><text>−</text></view>
+      <text class="step-num">{{quantity}}</text>
+      <view class="step-btn" bindtap="onAdd"><text>+</text></view>
+    </view>
+    <view class="add-cart-btn" bindtap="onAddToCart">
+      <text>¥{{subtotalYuan}}</text>
+      <text class="btn-sep">加入购物车</text>
+    </view>
+  </view>
+</view>

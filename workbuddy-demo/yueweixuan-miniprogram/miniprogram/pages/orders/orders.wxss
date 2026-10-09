@@ -1,0 +1,111 @@
+.page {
+  padding: 24rpx;
+  min-height: 100vh;
+}
+
+.order-card {
+  margin-bottom: 24rpx;
+  padding: 24rpx;
+}
+
+.order-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.order-no {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.order-status {
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.order-items {
+  margin-top: 20rpx;
+  border-top: 2rpx solid var(--color-line);
+  border-bottom: 2rpx solid var(--color-line);
+  padding: 16rpx 0;
+}
+
+.order-dish {
+  display: flex;
+  align-items: center;
+  padding: 10rpx 0;
+}
+
+.dish-thumb {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.dish-brief {
+  flex: 1;
+  min-width: 0;
+  margin-left: 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dish-name {
+  font-size: var(--font-size-base);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dish-qty {
+  flex-shrink: 0;
+  margin-left: 16rpx;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.order-foot {
+  margin-top: 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.foot-left {
+  display: flex;
+  align-items: center;
+}
+
+.meal-type {
+  padding: 4rpx 14rpx;
+  font-size: var(--font-size-xs);
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  border-radius: var(--radius-sm);
+}
+
+.order-time {
+  margin-left: 16rpx;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-third);
+}
+
+.order-total {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.order-total .price {
+  font-size: var(--font-size-lg);
+}
+
+.loading-tip {
+  padding: 40rpx 0;
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-third);
+}

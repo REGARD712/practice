@@ -1,0 +1,27 @@
+{
+  "description": "悦味轩点单小程序项目配置",
+  "miniprogramRoot": "miniprogram/",
+  "compileType": "miniprogram",
+  "appid": "wx0000000000000000",
+  "projectname": "yueweixuan-ordering",
+  "libVersion": "latest",
+  "setting": {
+    "urlCheck": true,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "nodeModules": false,
+    "coverView": true,
+    "checkInvalidKey": true,
+    "checkSiteMap": true,
+    "uploadWithSourceMap": true,
+    "compileHotReLoad": true
+  },
+  "packOptions": {
+    "ignore": [
+      { "type": "folder", "value": "node_modules" }
+    ]
+  },
+  "condition": {}
+}

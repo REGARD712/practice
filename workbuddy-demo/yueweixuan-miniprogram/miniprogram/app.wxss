@@ -1,0 +1,88 @@
+/* 全局样式与设计变量 —— 悦味轩点单 */
+page {
+  /* 主色：暖橙红，符合餐饮场景 */
+  --color-primary: #e8552f;
+  --color-primary-light: #fdeee9;
+  --color-danger: #ee0a24;
+  --color-text: #262626;
+  --color-text-secondary: #8c8c8c;
+  --color-text-third: #b8b4b0;
+  --color-bg: #f6f5f2;
+  --color-card: #ffffff;
+  --color-line: #f0eeea;
+  --font-size-xs: 22rpx;
+  --font-size-sm: 24rpx;
+  --font-size-base: 28rpx;
+  --font-size-lg: 32rpx;
+  --font-size-xl: 40rpx;
+  --radius-sm: 8rpx;
+  --radius-md: 16rpx;
+  --radius-lg: 24rpx;
+}
+
+page {
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  box-sizing: border-box;
+}
+
+view, text, image, button, input {
+  box-sizing: border-box;
+}
+
+/* 通用卡片 */
+.card {
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* 通用主按钮 */
+.btn-primary {
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: var(--font-size-lg);
+  border-radius: 44rpx;
+  text-align: center;
+  padding: 22rpx 0;
+}
+
+.btn-primary.disabled {
+  background: #dcd9d5;
+  color: #ffffff;
+}
+
+/* 区块标题 */
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx 24rpx 20rpx;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+
+.section-title .more {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-weight: 400;
+}
+
+/* 价格 */
+.price {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.price .symbol {
+  font-size: var(--font-size-sm);
+}
+
+/* 底部安全区 */
+.safe-bottom {
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}

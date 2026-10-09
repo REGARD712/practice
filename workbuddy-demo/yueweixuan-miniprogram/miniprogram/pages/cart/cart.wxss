@@ -1,0 +1,131 @@
+.page {
+  padding: 24rpx;
+  min-height: 100vh;
+}
+
+.cart-item {
+  display: flex;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.item-img {
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.item-info {
+  flex: 1;
+  min-width: 0;
+  margin-left: 20rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.item-name {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-remove {
+  flex-shrink: 0;
+  margin-left: 16rpx;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-third);
+}
+
+.item-bottom {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 数量步进器 */
+.stepper {
+  display: flex;
+  align-items: center;
+}
+
+.step-num {
+  min-width: 52rpx;
+  text-align: center;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+}
+
+.step-btn {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: var(--font-size-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.step-btn.minus {
+  background: #ffffff;
+  border: 2rpx solid var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* 底部结算栏 */
+.checkout-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-card);
+  padding: 16rpx 32rpx;
+  box-shadow: 0 -4rpx 24rpx rgba(0, 0, 0, 0.06);
+}
+
+.total {
+  display: flex;
+  align-items: baseline;
+}
+
+.total-label {
+  margin-right: 16rpx;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.price.big {
+  font-size: var(--font-size-xl);
+}
+
+.checkout-btn {
+  padding: 20rpx 64rpx;
+  border-radius: 44rpx;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+
+.checkout-btn.disabled {
+  background: #dcd9d5;
+}
+
+.footer-space {
+  height: 140rpx;
+}

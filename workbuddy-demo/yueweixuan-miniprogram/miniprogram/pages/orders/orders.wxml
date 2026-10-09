@@ -1,0 +1,56 @@
+<view class="page">
+
+  <!-- 订单列表 -->
+  <block wx:if="{{list.length > 0}}">
+    <view wx:for="{{list}}" wx:key="orderNo" class="order-card card">
+      <!-- 卡片头：单号 + 状态 -->
+      <view class="order-head">
+        <text class="order-no">单号 {{item.orderNo}}</text>
+        <text class="order-status">{{item.statusText}}</text>
+      </view>
+
+      <!-- 菜品摘要 -->
+      <view class="order-items">
+        <view wx:for="{{item.items}}" wx:for-item="dish" wx:key="dishId" class="order-dish">
+          <image class="dish-thumb" src="{{dish.imageSrc}}" mode="aspectFill" lazy-load />
+          <view class="dish-brief">
+            <text class="dish-name">{{dish.name}}</text>
+            <text class="dish-qty">× {{dish.quantity}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 卡片底：用餐方式 + 时间 + 合计 -->
+      <view class="order-foot">
+        <view class="foot-left">
+          <text class="meal-type">{{item.mealTypeText}}</text>
+          <text class="order-time">{{item.timeText}}</text>
+        </view>
+        <text class="order-total">合计 <text class="price"><text class="symbol">¥</text>{{item.totalAmountYuan}}</text></text>
+      </view>
+    </view>
+  </block>
+
+  <!-- 未登录：登录引导 -->
+  <empty-state
+    wx:if="{{!loading && needLogin}}"
+    text="登录后查看订单"
+    subText="订单仅您本人可见"
+    buttonText="去登录"
+    bind:action="goLogin"
+  />
+
+  <!-- 空状态 -->
+  <empty-state
+    wx:if="{{!loading && !needLogin && isEmpty}}"
+    text="还没有订单"
+    subText="点一份喜欢的菜品试试"
+    buttonText="去点单"
+    bind:action="goMenu"
+  />
+
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="loading-tip">
+    <text>加载中...</text>
+  </view>
+</view>
