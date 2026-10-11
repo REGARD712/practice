@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>知识问答 Agent</title>
+<script src="https://cdn.jsdelivr.net/npm/@tencent-ai/workbuddy-cloud-sdk@dev/lib/index.global.js"></script>
+<style>
+  :root {
+    --primary: #6c5ce7;
+    --primary-2: #4834d4;
+    --accent: #00b894;
+    --danger: #e17055;
+    --bg: #f4f6fb;
+    --card: #ffffff;
+    --text: #2d3436;
+    --muted: #8395a7;
+    --border: #e6e9f0;
+    --radius: 16px;
+    --shadow: 0 8px 24px rgba(76, 58, 220, 0.10);
+    --grad: linear-gradient(135deg, #6c5ce7 0%, #4834d4 55%, #00b894 130%);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  /* ---------- Header ---------- */
+  .app-header {
+    background: var(--grad);
+    color: #fff;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-logo {
+    width: 42px; height: 42px; border-radius: 12px;
+    background: rgba(255,255,255,0.18);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; backdrop-filter: blur(4px);
+  }
+  .brand h1 { font-size: 20px; font-weight: 700; letter-spacing: 0.5px; }
+  .brand p { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+  .tabs { display: flex; gap: 8px; background: rgba(255,255,255,0.14); padding: 5px; border-radius: 999px; }
+  .tab-btn {
+    border: none; cursor: pointer; background: transparent; color: rgba(255,255,255,0.85);
+    font-size: 14px; font-weight: 600; padding: 8px 18px; border-radius: 999px;
+    transition: background 0.25s, color 0.25s, transform 0.15s;
+  }
+  .tab-btn:hover { transform: translateY(-1px); }
+  .tab-btn.active { background: #fff; color: var(--primary-2); box-shadow: 0 4px 10px rgba(0,0,0,0.12); }
+
+  /* ---------- Layout ---------- */
+  .container { max-width: 960px; margin: 0 auto; padding: 20px 16px 60px; }
+  .panel { display: none; animation: fadeIn 0.3s ease; }
+  .panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .card {
+    background: var(--card); border-radius: var(--radius);
+    box-shadow: var(--shadow); border: 1px solid var(--border);
+  }
+
+  /* ---------- Chat ---------- */
+  .chat-card { display: flex; flex-direction: column; height: calc(100vh - 150px); min-height: 480px; overflow: hidden; }
+  .chat-messages { flex: 1; overflow-y: auto; padding: 22px 20px 12px; display: flex; flex-direction: column; gap: 16px; }
+  .chat-messages::-webkit-scrollbar { width: 6px; }
+  .chat-messages::-webkit-scrollbar-thumb { background: #d5d9e8; border-radius: 3px; }
+
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+  .empty-state .big { font-size: 44px; margin-bottom: 12px; }
+  .empty-state h3 { font-size: 17px; color: var(--text); margin-bottom: 6px; }
+  .suggest-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 18px; }
+  .chip {
+    border: 1px solid var(--border); background: #f8f9ff; color: var(--primary-2);
+    border-radius: 999px; padding: 7px 14px; font-size: 13px; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .chip:hover { background: var(--primary); color: #fff; border-color: var(--primary); transform: translateY(-2px); }
+
+  .msg-row { display: flex; gap: 10px; max-width: 100%; animation: msgIn 0.25s ease; }
+  @keyframes msgIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .msg-row.user { flex-direction: row-reverse; }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 17px;
+  }
+  .avatar.ai { background: var(--grad); color: #fff; }
+  .avatar.user { background: #dfe6ff; }
+  .bubble-col { max-width: 78%; display: flex; flex-direction: column; gap: 6px; }
+  .msg-row.user .bubble-col { align-items: flex-end; }
+  .bubble {
+    padding: 12px 16px; border-radius: var(--radius); font-size: 14.5px; line-height: 1.7;
+    word-break: break-word; white-space: normal;
+  }
+  .bubble.user { background: var(--grad); color: #fff; border-bottom-right-radius: 6px; }
+  .bubble.ai { background: #f6f7fc; border: 1px solid var(--border); border-bottom-left-radius: 6px; }
+  .bubble.ai.streaming::after {
+    content: ""; display: inline-block; width: 8px; height: 15px; margin-left: 3px;
+    background: var(--primary); vertical-align: -2px; animation: blink 0.8s infinite;
+  }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  .ref-box {
+    font-size: 12px; color: var(--primary-2); background: #eef0ff;
+    border: 1px dashed #c9cdf5; border-radius: 10px; padding: 8px 12px;
+  }
+  .ref-box .ref-titles { color: var(--muted); margin-top: 3px; }
+  .ref-box .ref-titles span {
+    display: inline-block; background: #fff; border: 1px solid var(--border);
+    border-radius: 999px; padding: 2px 8px; margin: 2px 3px 0 0; font-size: 11.5px;
+  }
+
+  .typing { display: inline-flex; gap: 4px; padding: 4px 2px; }
+  .typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--primary); opacity: 0.35; animation: bounce 1.1s infinite; }
+  .typing i:nth-child(2) { animation-delay: 0.15s; }
+  .typing i:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-5px); opacity: 1; } }
+
+  .chat-input-bar { border-top: 1px solid var(--border); padding: 14px 16px; display: flex; gap: 10px; align-items: flex-end; background: #fbfbff; }
+  .chat-input-bar textarea {
+    flex: 1; resize: none; border: 1px solid var(--border); border-radius: 12px;
+    padding: 11px 14px; font-size: 14.5px; font-family: inherit; line-height: 1.5;
+    max-height: 130px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; background: #fff;
+  }
+  .chat-input-bar textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(108,92,231,0.12); }
+  .btn {
+    border: none; cursor: pointer; font-size: 14px; font-weight: 600; border-radius: 12px;
+    padding: 11px 20px; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-primary { background: var(--grad); color: #fff; box-shadow: 0 4px 12px rgba(76,58,220,0.3); }
+  .btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(76,58,220,0.4); }
+  .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+  .btn-danger { background: #fff0ec; color: var(--danger); border: 1px solid #ffd9cd; }
+  .btn-danger:hover { background: #ffe2d9; }
+  .btn-ghost { background: #f2f3fa; color: var(--text); }
+  .btn-ghost:hover { background: #e8eaf5; }
+
+  /* ---------- Toast / Notice ---------- */
+  .notice {
+    display: none; margin-bottom: 14px; border-radius: 12px; padding: 12px 16px;
+    font-size: 13.5px; line-height: 1.6; animation: fadeIn 0.25s ease;
+  }
+  .notice.show { display: block; }
+  .notice.error { background: #fff1ee; border: 1px solid #ffd2c5; color: #c0392b; }
+  .notice.warn { background: #fff8e6; border: 1px solid #ffe3a3; color: #8d6e00; }
+  .notice.info { background: #eaf4ff; border: 1px solid #bfe0ff; color: #1565c0; }
+
+  /* ---------- Knowledge base ---------- */
+  .kb-toolbar { display: flex; flex-wrap: wrap; gap: 10px; padding: 18px 20px; align-items: center; }
+  .kb-toolbar input[type="text"], .kb-toolbar select {
+    border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px;
+    font-size: 14px; font-family: inherit; outline: none; background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .kb-toolbar input[type="text"]:focus, .kb-toolbar select:focus {
+    border-color: var(--primary); box-shadow: 0 0 0 3px rgba(108,92,231,0.1);
+  }
+  .kb-toolbar input[type="text"] { flex: 1; min-width: 160px; }
+  .kb-list { padding: 0 20px 8px; display: flex; flex-direction: column; gap: 12px; }
+  .kb-item { border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; transition: all 0.2s; background: #fff; }
+  .kb-item:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
+  .kb-item .kb-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+  .kb-cat {
+    font-size: 11.5px; background: var(--grad); color: #fff; border-radius: 999px; padding: 3px 10px; font-weight: 600;
+  }
+  .kb-item h4 { font-size: 15px; font-weight: 600; }
+  .kb-item .kb-content { font-size: 13.5px; color: #57606f; line-height: 1.65; }
+  .kb-item .kb-time { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  .kb-pager { display: flex; justify-content: center; align-items: center; gap: 14px; padding: 16px 20px 20px; }
+  .kb-pager .page-info { font-size: 13px; color: var(--muted); }
+
+  .kb-form { padding: 20px; border-top: 1px dashed var(--border); margin-top: 4px; }
+  .kb-form h3 { font-size: 15px; margin-bottom: 12px; }
+  .kb-form .form-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .kb-form input, .kb-form textarea {
+    border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px;
+    font-size: 14px; font-family: inherit; outline: none; width: 100%;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .kb-form input:focus, .kb-form textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(108,92,231,0.1); }
+  .kb-form textarea { min-height: 90px; resize: vertical; }
+  .kb-form .form-row input { flex: 1; min-width: 140px; }
+
+  /* ---------- History ---------- */
+  .history-list { display: flex; flex-direction: column; gap: 12px; padding: 20px; }
+  .history-item { border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; background: #fff; }
+  .history-item .q { font-size: 14.5px; font-weight: 600; color: var(--primary-2); margin-bottom: 6px; }
+  .history-item .a { font-size: 13.5px; color: #57606f; line-height: 1.6; }
+  .history-item .t { font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+  .spinner {
+    display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 640px) {
+    .app-header { padding: 14px 16px; }
+    .brand h1 { font-size: 17px; }
+    .tab-btn { padding: 7px 12px; font-size: 13px; }
+    .chat-card { height: calc(100vh - 170px); }
+    .bubble-col { max-width: 88%; }
+    .btn { padding: 10px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="brand">
+    <div class="brand-logo">📚</div>
+    <div>
+      <h1>知识问答 Agent</h1>
+      <p>基于知识库的 RAG 智能问答</p>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="chat" onclick="switchTab('chat')">💬 问答</button>
+    <button class="tab-btn" data-tab="kb" onclick="switchTab('kb')">🗂️ 知识库</button>
+    <button class="tab-btn" data-tab="history" onclick="switchTab('history')">🕘 最近问答</button>
+  </nav>
+</header>
+
+<main class="container">
+
+  <div id="notice" class="notice"></div>
+
+  <!-- ==================== 问答面板 ==================== -->
+  <section id="panel-chat" class="panel active">
+    <div class="card chat-card">
+      <div id="chatMessages" class="chat-messages"></div>
+      <div class="chat-input-bar">
+        <textarea id="questionInput" rows="1" placeholder="输入你的问题，Enter 发送，Shift+Enter 换行…"></textarea>
+        <button id="stopBtn" class="btn btn-danger" style="display:none" onclick="stopGeneration()">⏹ 停止</button>
+        <button id="askBtn" class="btn btn-primary" onclick="askQuestion()">发送 ➤</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 知识库面板 ==================== -->
+  <section id="panel-kb" class="panel">
+    <div class="card">
+      <div class="kb-toolbar">
+        <select id="kbCategoryFilter" onchange="onKbFilterChange()">
+          <option value="">全部分类</option>
+        </select>
+        <input type="text" id="kbSearchInput" placeholder="搜索标题或内容…" onkeydown="if(event.key==='Enter')onKbSearch()" />
+        <button class="btn btn-ghost" onclick="onKbSearch()">🔍 搜索</button>
+        <button class="btn btn-ghost" onclick="resetKbFilter()">↺ 重置</button>
+      </div>
+      <div id="kbList" class="kb-list"></div>
+      <div class="kb-pager">
+        <button id="kbPrevBtn" class="btn btn-ghost" onclick="kbPrevPage()">‹ 上一页</button>
+        <span id="kbPageInfo" class="page-info">第 1 页</span>
+        <button id="kbNextBtn" class="btn btn-ghost" onclick="kbNextPage()">下一页 ›</button>
+      </div>
+      <div class="kb-form">
+        <h3>➕ 新增知识条目</h3>
+        <div class="form-row">
+          <input type="text" id="kbNewCategory" placeholder="分类（如：Java 基础）" maxlength="50" />
+          <input type="text" id="kbNewTitle" placeholder="标题" maxlength="120" />
+        </div>
+        <div class="form-row">
+          <textarea id="kbNewContent" placeholder="内容…"></textarea>
+        </div>
+        <button id="kbAddBtn" class="btn btn-primary" onclick="addKbEntry()">保存条目</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 最近问答面板 ==================== -->
+  <section id="panel-history" class="panel">
+    <div class="card">
+      <div class="kb-toolbar" style="justify-content: space-between;">
+        <h3 style="font-size:15px;">🕘 最近问答记录</h3>
+        <button class="btn btn-ghost" onclick="loadHistory()">↻ 刷新</button>
+      </div>
+      <div id="historyList" class="history-list"></div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+'use strict';
+
+/* ============================================================
+ * 知识问答 Agent —— 单文件应用
+ * 后端：WorkBuddy 云服务（数据库 + 免密钥大模型）
+ * ============================================================ */
+
+/** 云服务客户端（全局唯一实例） */
+const cloud = WorkBuddyCloud.createWorkBuddyCloud({
+  endpoint: 'https://kb-qa-agent-54833.app.workbuddy.host',
+  oauthRelayBaseUrl: 'https://www.workbuddy.cn/v2/as/genie-baas/oauth',
+  publishableKey: 'wbpk_930QR98RTJXSXZ1Wpy7eGg_048vjV0HItzro6oWYrqMAXf0Z8Bi66Tx',
+});
+
+/* ---------------- 应用状态 ---------------- */
+const state = {
+  /** 当前对话 ID：同一对话内保持不变，新对话时重置 */
+  conversationId: 'conv-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+  /** 有界对话历史（仅保留最近若干轮用于上下文注入） */
+  history: [],           // [{ role: 'user'|'assistant', content: string }]
+  HISTORY_MAX_TURNS: 4,  // 最多注入 4 轮对话历史
+  /** 当前可用模型 id（运行时从云端拉取，绝不硬编码） */
+  modelId: null,
+  /** 是否正在生成回答 */
+  generating: false,
+  /** 流式生成中止控制器 */
+  abortController: null,
+  /** 知识库分页 */
+  kb: {
+    page: 1,
+    pageSize: 5,
+    total: 0,
+    category: '',
+    keyword: '',
+  },
+};
+
+/* ---------------- 通用工具 ---------------- */
+
+/**
+ * HTML 转义：模型输出与知识库内容均不可信，渲染前必须转义。
+ * @param {string} text
+ * @returns {string} 转义后的安全 HTML（换行转为 <br>）
+ */
+function escapeHtml(text) {
+  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+  return String(text == null ? '' : text).replace(/[&<>"']/g, (ch) => map[ch]);
+}
+
+/** 转义并把换行转为 <br>，用于安全地渲染到 innerHTML */
+function renderSafe(text) {
+  return escapeHtml(text).replace(/\n/g, '<br>');
+}
+
+/** 展示顶部通知条 */
+function showNotice(message, type) {
+  const el = document.getElementById('notice');
+  el.className = 'notice show ' + (type || 'info');
+  el.textContent = message;
+}
+function clearNotice() {
+  const el = document.getElementById('notice');
+  el.className = 'notice';
+  el.textContent = '';
+}
+
+/** 格式化时间 */
+function formatTime(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return String(iso);
+  const pad = (n) => String(n).padStart(2, '0');
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) +
+    ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+
+/** 截断长文本 */
+function truncate(text, max) {
+  const s = String(text == null ? '' : text);
+  return s.length > max ? s.slice(0, max) + '…' : s;
+}
+
+/**
+ * 统一错误提示：按云服务错误码前缀分类。
+ * @param {unknown} error
+ * @returns {string} 面向用户的中文提示
+ */
+function describeError(error) {
+  const code = (error && error.error && error.error.code) || '';
+  if (typeof code === 'string' && code.startsWith('quota_')) {
+    return '模型调用额度不足，请稍后再试或联系管理员充值。';
+  }
+  if (typeof code === 'string' && (code.startsWith('gateway_') || code.startsWith('model_'))) {
+    return '模型服务暂时不可用，请稍后重试。';
+  }
+  if (typeof code === 'string' && code.startsWith('auth_')) {
+    return '服务凭证异常，请检查应用配置或联系管理员。';
+  }
+  if (error && error.name === 'AbortError') {
+    return '已停止生成。';
+  }
+  return '请求失败：' + (error && error.message ? error.message : '未知错误，请检查网络后重试。');
+}
+
+/* ---------------- Tab 切换 ---------------- */
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach((b) => {
+    b.classList.toggle('active', b.dataset.tab === name);
+  });
+  document.querySelectorAll('.panel').forEach((p) => {
+    p.classList.toggle('active', p.id === 'panel-' + name);
+  });
+  if (name === 'kb') loadKbEntries();
+  if (name === 'history') loadHistory();
+}
+
+/* ============================================================
+ * 问答主流程（RAG + 流式生成）
+ * ============================================================ */
+
+/** 初始化聊天空态 */
+function renderChatEmpty() {
+  const box = document.getElementById('chatMessages');
+  box.innerHTML =
+    '<div class="empty-state">' +
+    '  <div class="big">🤖</div>' +
+    '  <h3>你好，我是知识问答助手</h3>' +
+    '  <p>我会先在知识库中检索相关内容，再基于知识库为你作答。</p>' +
+    '  <div class="suggest-chips">' +
+    '    <button class="chip" onclick="fillQuestion(this)">Java 中 HashMap 的原理是什么？</button>' +
+    '    <button class="chip" onclick="fillQuestion(this)">== 和 equals 有什么区别？</button>' +
+    '    <button class="chip" onclick="fillQuestion(this)">ArrayList 和 LinkedList 的区别</button>' +
+    '  </div>' +
+    '</div>';
+}
+
+function fillQuestion(btn) {
+  const input = document.getElementById('questionInput');
+  input.value = btn.textContent;
+  input.focus();
+}
+
+/** 从问题中提取关键词（去停用词、去标点，取前 3 个） */
+function extractKeywords(question) {
+  const stopwords = new Set([
+    '的', '了', '是', '在', '我', '有', '和', '就', '不', '人', '都', '一', '一个',
+    '什么', '怎么', '如何', '为什么', '哪', '哪些', '吗', '呢', '吧', '请问', '一下',
+    'the', 'is', 'a', 'an', 'of', 'to', 'in', 'and', 'what', 'how', 'why',
+  ]);
+  const tokens = question
+    .replace(/[，。！？；：、,.!?;:()"''【】\[\]<>《》]/g, ' ')
+    .split(/\s+/)
+    .map((t) => t.trim())
+    .filter((t) => t.length >= 2 && !stopwords.has(t.toLowerCase()));
+  // 去重并限制数量
+  return Array.from(new Set(tokens)).slice(0, 3);
+}
+
+/** 检索知识库：按关键词对 title/content 做模糊匹配，取前 5 条 */
+async function retrieveKnowledge(question) {
+  const keywords = extractKeywords(question);
+  let query = cloud.database
+    .from('knowledge_entries')
+    .select('id, category, title, content')
+    .order('created_at', { ascending: false })
+    .limit(5);
+
+  if (keywords.length > 0) {
+    // 组装 or 条件：title.ilike.%kw%,content.ilike.%kw%
+    const conditions = keywords
+      .map((kw) => 'title.ilike.%' + kw.replace(/[%,]/g, '') + '%,content.ilike.%' + kw.replace(/[%,]/g, '') + '%')
+      .join(',');
+    query = query.or(conditions);
+  }
+  // 无关键词时返回最近条目作为兜底上下文
+  const { data, error } = await query;
+  if (error) throw new Error('知识库检索失败：' + (error.message || '未知错误'));
+  return data || [];
+}
+
+/** 拉取当前可用模型（不硬编码模型 id） */
+async function ensureModel() {
+  if (state.modelId) return state.modelId;
+  const models = await cloud.llm.models.list();
+  const list = (models && (models.data || models)) || [];
+  const usable = Array.isArray(list) ? list.find((m) => m && m.disabled !== true) : null;
+  if (!usable) {
+    throw { error: { code: 'model_unavailable' }, message: '没有可用模型' };
+  }
+  state.modelId = usable.id;
+  return state.modelId;
+}
+
+/** 组装发送给大模型的 messages（首条必须是 system） */
+function buildMessages(question, entries) {
+  let kbSection;
+  if (entries.length > 0) {
+    kbSection = entries
+      .map((e, i) => '【知识' + (i + 1) + '】(' + (e.category || '未分类') + ') ' + e.title + '\n' + e.content)
+      .join('\n\n');
+  } else {
+    kbSection = '（本次未检索到相关知识库条目）';
+  }
+
+  const systemPrompt =
+    '你是一个严谨的知识问答助手。请基于以下知识库内容回答用户的问题：\n\n' + kbSection + '\n\n' +
+    '回答要求：\n' +
+    '1. 优先依据知识库内容作答，并在回答中体现知识库中的关键信息。\n' +
+    '2. 如果知识库中没有覆盖用户问题的内容，请明确说明"知识库中暂无相关内容"，然后给出通用的参考建议。\n' +
+    '3. 不要编造知识库中不存在的事实或细节。\n' +
+    '4. 使用简体中文，条理清晰，可适当分点。';
+
+  const messages = [{ role: 'system', content: systemPrompt }];
+  // 注入最近 N 轮对话历史（有界）
+  const recentHistory = state.history.slice(-state.HISTORY_MAX_TURNS * 2);
+  for (const item of recentHistory) {
+    messages.push({ role: item.role, content: item.content });
+  }
+  messages.push({ role: 'user', content: question });
+  return messages;
+}
+
+/** 追加一条消息气泡到聊天区，返回内容容器元素 */
+function appendMessage(role) {
+  const box = document.getElementById('chatMessages');
+  const empty = box.querySelector('.empty-state');
+  if (empty) empty.remove();
+
+  const row = document.createElement('div');
+  row.className = 'msg-row ' + role;
+
+  const avatar = document.createElement('div');
+  avatar.className = 'avatar ' + (role === 'user' ? 'user' : 'ai');
+  avatar.textContent = role === 'user' ? '🧑' : '🤖';
+
+  const col = document.createElement('div');
+  col.className = 'bubble-col';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble ' + role;
+
+  col.appendChild(bubble);
+  row.appendChild(avatar);
+  row.appendChild(col);
+  box.appendChild(row);
+  box.scrollTop = box.scrollHeight;
+  return { row, col, bubble };
+}
+
+/** 在 AI 气泡上方附加"参考知识库"信息 */
+function attachRefInfo(col, entries) {
+  const ref = document.createElement('div');
+  ref.className = 'ref-box';
+  let html = '📎 参考了 ' + entries.length + ' 条知识库条目';
+  if (entries.length > 0) {
+    html += '<div class="ref-titles">' +
+      entries.map((e) => '<span>' + escapeHtml(truncate(e.title, 30)) + '</span>').join('') +
+      '</div>';
+  }
+  ref.innerHTML = html;
+  col.insertBefore(ref, col.firstChild);
+}
+
+/** 设置生成中的 UI 状态 */
+function setGenerating(on) {
+  state.generating = on;
+  document.getElementById('askBtn').style.display = on ? 'none' : '';
+  document.getElementById('stopBtn').style.display = on ? '' : 'none';
+  document.getElementById('questionInput').disabled = on;
+}
+
+/** 停止生成 */
+function stopGeneration() {
+  if (state.abortController) {
+    state.abortController.abort();
+  }
+}
+
+/** 提问主流程 */
+async function askQuestion() {
+  if (state.generating) return;
+  const input = document.getElementById('questionInput');
+  const question = input.value.trim();
+  if (!question) {
+    showNotice('请输入问题后再发送。', 'warn');
+    return;
+  }
+  clearNotice();
+  input.value = '';
+  input.style.height = 'auto';
+
+  // 1. 渲染用户气泡
+  appendMessage('user').bubble.textContent = question;
+
+  // 2. 渲染 AI 占位气泡（加载动画）
+  const { col, bubble } = appendMessage('ai');
+  bubble.innerHTML = '<span class="typing"><i></i><i></i><i></i></span> 正在检索知识库…';
+
+  setGenerating(true);
+  state.abortController = new AbortController();
+
+  let answer = '';
+  let streamStarted = false;
+
+  try {
+    // 3. 检索知识库
+    const entries = await retrieveKnowledge(question);
+    attachRefInfo(col, entries);
+
+    // 4. 确保模型可用
+    bubble.innerHTML = '<span class="typing"><i></i><i></i><i></i></span> 正在调用大模型…';
+    const model = await ensureModel();
+
+    // 5. 组装 messages（messages[0] 必须是 system）
+    const messages = buildMessages(question, entries);
+
+    // 6. 流式调用（只支持 stream: true）
+    const stream = await cloud.llm.chat.completions.create({
+      model: model,
+      messages: messages,
+      stream: true,
+      signal: state.abortController.signal,
+    });
+
+    bubble.classList.add('streaming');
+    bubble.innerHTML = '';
+
+    for await (const chunk of stream) {
+      const delta = chunk && chunk.choices && chunk.choices[0] && chunk.choices[0].delta
+        ? chunk.choices[0].delta.content
+        : null;
+      if (delta) {
+        answer += delta;
+        streamStarted = true;
+        // 模型输出不可信：转义后渲染（打字机逐字渲染效果）
+        bubble.innerHTML = renderSafe(answer);
+        const box = document.getElementById('chatMessages');
+        box.scrollTop = box.scrollHeight;
+      }
+    }
+    bubble.classList.remove('streaming');
+
+    if (!answer.trim()) {
+      answer = '（模型未返回内容，请稍后重试。）';
+      bubble.innerHTML = renderSafe(answer);
+    }
+
+    // 7. 更新本地对话历史（有界）
+    state.history.push({ role: 'user', content: question });
+    state.history.push({ role: 'assistant', content: answer });
+    if (state.history.length > state.HISTORY_MAX_TURNS * 2) {
+      state.history = state.history.slice(-state.HISTORY_MAX_TURNS * 2);
+    }
+
+    // 8. 落库到 qa_history（失败不阻塞主流程，但要提示）
+    if (streamStarted || answer) {
+      const { error: insertError } = await cloud.database
+        .from('qa_history')
+        .insert({ question: question, answer: answer });
+      if (insertError) {
+        showNotice('回答已生成，但保存问答记录失败：' + (insertError.message || '未知错误'), 'warn');
+      }
+    }
+  } catch (err) {
+    bubble.classList.remove('streaming');
+    const msg = describeError(err);
+    if (err && err.name === 'AbortError') {
+      // 用户主动停止：保留已渲染文本
+      if (!answer) {
+        bubble.innerHTML = '<em style="color:#8395a7">已停止生成。</em>';
+      } else {
+        bubble.innerHTML = renderSafe(answer) + ' <em style="color:#8395a7">（已停止）</em>';
+        state.history.push({ role: 'user', content: question });
+        state.history.push({ role: 'assistant', content: answer });
+      }
+    } else if (err && err.error && err.error.code === 'model_unavailable') {
+      bubble.innerHTML = '<em style="color:#e17055">⚠️ 当前没有可用的大模型，请稍后重试或联系管理员。</em>';
+      showNotice('模型列表为空或全部不可用，无法生成回答。', 'error');
+    } else {
+      // 出错时保留已渲染的部分文本，并追加错误说明
+      bubble.innerHTML = (answer ? renderSafe(answer) + '<br>' : '') +
+        '<em style="color:#e17055">⚠️ ' + escapeHtml(msg) + '</em>';
+      showNotice(msg, 'error');
+    }
+  } finally {
+    setGenerating(false);
+    state.abortController = null;
+    document.getElementById('questionInput').focus();
+  }
+}
+
+/* ============================================================
+ * 知识库面板
+ * ============================================================ */
+
+/** 加载知识库条目（分类筛选 + 关键词搜索 + 分页） */
+async function loadKbEntries() {
+  const listEl = document.getElementById('kbList');
+  listEl.innerHTML = '<div class="empty-state"><div class="big">⏳</div><p>加载中…</p></div>';
+  const { page, pageSize, category, keyword } = state.kb;
+
+  try {
+    // 计数查询
+    let countQuery = cloud.database.from('knowledge_entries').select('*', { count: 'exact', head: true });
+    // 数据查询
+    let dataQuery = cloud.database
+      .from('knowledge_entries')
+      .select('id, category, title, content, created_at')
+      .order('created_at', { ascending: false })
+      .range((page - 1) * pageSize, page * pageSize - 1);
+
+    if (category) {
+      countQuery = countQuery.eq('category', category);
+      dataQuery = dataQuery.eq('category', category);
+    }
+    if (keyword) {
+      const safe = keyword.replace(/[%(),".\\]/g, '');
+      const cond = 'title.ilike.%' + safe + '%,content.ilike.%' + safe + '%';
+      countQuery = countQuery.or(cond);
+      dataQuery = dataQuery.or(cond);
+    }
+
+    const [countRes, dataRes] = await Promise.all([countQuery, dataQuery]);
+    if (countRes.error) throw new Error(countRes.error.message || '计数查询失败');
+    if (dataRes.error) throw new Error(dataRes.error.message || '列表查询失败');
+
+    state.kb.total = countRes.count || 0;
+    renderKbList(dataRes.data || []);
+    renderKbPager();
+    refreshCategoryOptions();
+  } catch (err) {
+    listEl.innerHTML = '<div class="empty-state"><div class="big">😥</div>' +
+      '<h3>知识库加载失败</h3><p>' + escapeHtml(err.message || '请检查网络后重试') + '</p></div>';
+    showNotice('知识库加载失败：' + (err.message || '未知错误'), 'error');
+  }
+}
+
+function renderKbList(entries) {
+  const listEl = document.getElementById('kbList');
+  if (entries.length === 0) {
+    listEl.innerHTML = '<div class="empty-state"><div class="big">📭</div>' +
+      '<h3>暂无知识条目</h3><p>换个关键词试试，或在下方新增一条知识。</p></div>';
+    return;
+  }
+  listEl.innerHTML = entries.map((e) =>
+    '<div class="kb-item">' +
+    '  <div class="kb-head"><span class="kb-cat">' + escapeHtml(e.category || '未分类') + '</span>' +
+    '  <h4>' + escapeHtml(e.title) + '</h4></div>' +
+    '  <div class="kb-content">' + renderSafe(e.content) + '</div>' +
+    '  <div class="kb-time">收录于 ' + escapeHtml(formatTime(e.created_at)) + '</div>' +
+    '</div>'
+  ).join('');
+}
+
+function renderKbPager() {
+  const { page, pageSize, total } = state.kb;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  document.getElementById('kbPageInfo').textContent =
+    '第 ' + page + ' / ' + totalPages + ' 页（共 ' + total + ' 条）';
+  document.getElementById('kbPrevBtn').disabled = page <= 1;
+  document.getElementById('kbNextBtn').disabled = page >= totalPages;
+}
+
+function kbPrevPage() {
+  if (state.kb.page > 1) {
+    state.kb.page--;
+    loadKbEntries();
+  }
+}
+function kbNextPage() {
+  const totalPages = Math.max(1, Math.ceil(state.kb.total / state.kb.pageSize));
+  if (state.kb.page < totalPages) {
+    state.kb.page++;
+    loadKbEntries();
+  }
+}
+
+function onKbFilterChange() {
+  state.kb.category = document.getElementById('kbCategoryFilter').value;
+  state.kb.page = 1;
+  loadKbEntries();
+}
+function onKbSearch() {
+  state.kb.keyword = document.getElementById('kbSearchInput').value.trim();
+  state.kb.page = 1;
+  loadKbEntries();
+}
+function resetKbFilter() {
+  state.kb.category = '';
+  state.kb.keyword = '';
+  state.kb.page = 1;
+  document.getElementById('kbCategoryFilter').value = '';
+  document.getElementById('kbSearchInput').value = '';
+  loadKbEntries();
+}
+
+/** 动态刷新分类下拉（从现有条目中收集分类） */
+async function refreshCategoryOptions() {
+  try {
+    const { data, error } = await cloud.database
+      .from('knowledge_entries')
+      .select('category')
+      .order('created_at', { ascending: false })
+      .limit(100);
+    if (error || !data) return;
+    const cats = Array.from(new Set(data.map((e) => e.category).filter(Boolean)));
+    const select = document.getElementById('kbCategoryFilter');
+    const current = select.value;
+    select.innerHTML = '<option value="">全部分类</option>' +
+      cats.map((c) => '<option value="' + escapeHtml(c) + '"' + (c === current ? ' selected' : '') + '>' +
+        escapeHtml(c) + '</option>').join('');
+  } catch (e) {
+    // 分类下拉刷新失败不影响主流程
+  }
+}
+
+/** 新增知识条目 */
+async function addKbEntry() {
+  const catEl = document.getElementById('kbNewCategory');
+  const titleEl = document.getElementById('kbNewTitle');
+  const contentEl = document.getElementById('kbNewContent');
+  const category = catEl.value.trim();
+  const title = titleEl.value.trim();
+  const content = contentEl.value.trim();
+
+  if (!category || !title || !content) {
+    showNotice('分类、标题、内容均为必填项。', 'warn');
+    return;
+  }
+
+  const btn = document.getElementById('kbAddBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> 保存中…';
+  try {
+    const { error } = await cloud.database
+      .from('knowledge_entries')
+      .insert({ category: category, title: title, content: content })
+      .select();
+    if (error) throw new Error(error.message || '插入失败');
+    catEl.value = '';
+    titleEl.value = '';
+    contentEl.value = '';
+    showNotice('✅ 知识条目已保存。', 'info');
+    state.kb.page = 1;
+    await loadKbEntries();
+  } catch (err) {
+    showNotice('保存失败：' + (err.message || '未知错误'), 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '保存条目';
+  }
+}
+
+/* ============================================================
+ * 最近问答面板
+ * ============================================================ */
+async function loadHistory() {
+  const listEl = document.getElementById('historyList');
+  listEl.innerHTML = '<div class="empty-state"><div class="big">⏳</div><p>加载中…</p></div>';
+  try {
+    const { data, error } = await cloud.database
+      .from('qa_history')
+      .select('id, question, answer, created_at')
+      .order('created_at', { ascending: false })
+      .limit(10);
+    if (error) throw new Error(error.message || '查询失败');
+
+    if (!data || data.length === 0) {
+      listEl.innerHTML = '<div class="empty-state"><div class="big">🗒️</div>' +
+        '<h3>暂无问答记录</h3><p>去"问答"页面向我提问吧。</p></div>';
+      return;
+    }
+    listEl.innerHTML = data.map((r) =>
+      '<div class="history-item">' +
+      '  <div class="q">Q：' + escapeHtml(r.question) + '</div>' +
+      '  <div class="a">A：' + renderSafe(truncate(r.answer, 160)) + '</div>' +
+      '  <div class="t">' + escapeHtml(formatTime(r.created_at)) + '</div>' +
+      '</div>'
+    ).join('');
+  } catch (err) {
+    listEl.innerHTML = '<div class="empty-state"><div class="big">😥</div>' +
+      '<h3>记录加载失败</h3><p>' + escapeHtml(err.message || '请检查网络后重试') + '</p></div>';
+    showNotice('问答记录加载失败：' + (err.message || '未知错误'), 'error');
+  }
+}
+
+/* ============================================================
+ * 输入框交互 & 启动
+ * ============================================================ */
+(function init() {
+  const input = document.getElementById('questionInput');
+
+  // Enter 发送，Shift+Enter 换行
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      askQuestion();
+    }
+  });
+
+  // 输入框自动增高
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 130) + 'px';
+  });
+
+  renderChatEmpty();
+
+  // 启动时预检模型列表：为空时给出明确空态提示（不阻塞提问，提问时会再检查）
+  cloud.llm.models.list().then((models) => {
+    const list = (models && (models.data || models)) || [];
+    const usable = Array.isArray(list) ? list.find((m) => m && m.disabled !== true) : null;
+    if (usable) {
+      state.modelId = usable.id;
+    } else {
+      showNotice('⚠️ 当前没有可用的大模型，问答功能暂不可用；你仍可浏览知识库。', 'warn');
+    }
+  }).catch((err) => {
+    showNotice('云服务连接检查失败：' + describeError(err) + '（仍可尝试提问）', 'warn');
+  });
+})();
+</script>
+</body>
+</html>

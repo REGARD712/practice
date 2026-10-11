@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2025 Annual Report — Orbit Analytics</title>
+<style>
+  :root{
+    --bg:#150f23;
+    --bg-2:#1f1633;
+    --surface:rgba(255,255,255,.035);
+    --surface-hover:rgba(255,255,255,.06);
+    --border:#362d59;
+    --border-soft:rgba(106,95,193,.22);
+    --purple:#6a5fc1;
+    --purple-deep:#422082;
+    --muted-purple:#79628c;
+    --lime:#c2ef4e;
+    --coral:#ffb287;
+    --pink:#fa7faa;
+    --text:#ffffff;
+    --text-2:rgba(229,231,235,.66);
+    --text-3:rgba(229,231,235,.42);
+    --font:-apple-system,"Segoe UI",system-ui,"Helvetica Neue",Helvetica,Arial,"PingFang SC","Microsoft YaHei",sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Courier New",monospace;
+    --ease:cubic-bezier(0.16,1,0.3,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font);
+    font-size:16px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{background:rgba(194,239,78,.25);color:#fff}
+
+  /* ---------- scroll progress ---------- */
+  #progress{
+    position:fixed;top:0;left:0;height:2px;width:0%;
+    background:linear-gradient(90deg,var(--purple),var(--lime));
+    z-index:100;transition:width .1s linear;
+  }
+
+  /* ---------- nav ---------- */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:90;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 32px;
+    background:rgba(21,15,35,.75);
+    backdrop-filter:blur(18px) saturate(180%);
+    -webkit-backdrop-filter:blur(18px) saturate(180%);
+    border-bottom:1px solid var(--border);
+  }
+  .nav-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px;letter-spacing:.2px}
+  .nav-logo .dot{width:10px;height:10px;border-radius:3px;background:var(--lime);box-shadow:0 0 12px rgba(194,239,78,.5)}
+  .nav-links{display:flex;gap:26px}
+  .nav-links a{
+    color:var(--text-2);text-decoration:none;font-size:13px;font-weight:500;
+    text-transform:uppercase;letter-spacing:.2px;transition:color .25s;
+  }
+  .nav-links a:hover{color:var(--purple)}
+  @media(max-width:820px){.nav-links{display:none}}
+
+  /* ---------- layout ---------- */
+  .container{max-width:1152px;margin:0 auto;padding:0 32px}
+  section{padding:96px 0;position:relative}
+  @media(max-width:640px){section{padding:64px 0}.container{padding:0 20px}}
+
+  .sec-label{
+    font-size:12px;font-weight:600;text-transform:uppercase;
+    letter-spacing:.25px;color:var(--lime);margin-bottom:14px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .sec-label::before{content:"";width:24px;height:1px;background:var(--lime);display:inline-block}
+  h2.sec-title{font-size:30px;font-weight:600;line-height:1.2;letter-spacing:-.5px}
+  .sec-desc{color:var(--text-2);margin-top:10px;max-width:60ch}
+
+  /* ---------- hero ---------- */
+  header.hero{
+    min-height:100dvh;display:flex;flex-direction:column;justify-content:center;
+    position:relative;overflow:hidden;padding:120px 0 80px;
+  }
+  .hero::before{
+    content:"";position:absolute;top:-30%;left:50%;transform:translateX(-50%);
+    width:900px;height:700px;border-radius:50%;
+    background:radial-gradient(closest-side,rgba(106,95,193,.28),rgba(66,32,130,.12) 55%,transparent 75%);
+    pointer-events:none;animation:breathe 8s ease-in-out infinite;
+  }
+  .hero::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);
+    background-size:28px 28px;
+    mask-image:radial-gradient(ellipse 70% 60% at 50% 40%,black 30%,transparent 75%);
+    -webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 40%,black 30%,transparent 75%);
+  }
+  @keyframes breathe{0%,100%{opacity:.7;transform:translateX(-50%) scale(1)}50%{opacity:1;transform:translateX(-50%) scale(1.06)}}
+  .hero-inner{position:relative;z-index:2}
+  .hero-tag{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--mono);font-size:12px;color:var(--lime);
+    border:1px solid rgba(194,239,78,.3);border-radius:9999px;
+    padding:6px 14px;margin-bottom:28px;background:rgba(194,239,78,.06);
+  }
+  .hero-tag .pulse{width:6px;height:6px;border-radius:50%;background:var(--lime);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(194,239,78,.5)}50%{opacity:.6;box-shadow:0 0 0 6px rgba(194,239,78,0)}}
+  h1.hero-title{
+    font-size:clamp(52px,10vw,104px);font-weight:800;line-height:1.02;
+    letter-spacing:-3px;max-width:14ch;
+  }
+  h1.hero-title .accent{color:var(--purple)}
+  .hero-sub{
+    margin-top:26px;font-size:clamp(17px,2.4vw,22px);color:var(--text-2);
+    max-width:56ch;line-height:1.55;
+  }
+  .hero-sub strong{color:var(--lime);font-weight:600}
+  .hero-meta{
+    margin-top:44px;display:flex;flex-wrap:wrap;gap:12px 36px;
+    font-family:var(--mono);font-size:13px;color:var(--text-3);
+  }
+  .hero-meta span{display:flex;align-items:center;gap:8px}
+  .hero-meta span::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--muted-purple)}
+  .scroll-hint{
+    position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
+    font-size:10px;letter-spacing:.25px;text-transform:uppercase;color:var(--text-3);
+    display:flex;flex-direction:column;align-items:center;gap:8px;z-index:2;
+  }
+  .scroll-hint .bar{width:1px;height:36px;background:linear-gradient(to bottom,var(--purple),transparent);animation:drop 1.8s var(--ease) infinite}
+  @keyframes drop{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+  /* hero entrance */
+  .fade-up{opacity:0;transform:translateY(28px);animation:fadeUp 1s var(--ease) forwards}
+  @keyframes fadeUp{to{opacity:1;transform:none}}
+  .d1{animation-delay:.1s}.d2{animation-delay:.28s}.d3{animation-delay:.46s}.d4{animation-delay:.64s}
+
+  /* ---------- metric cards ---------- */
+  .metrics-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:44px;
+  }
+  @media(max-width:980px){.metrics-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.metrics-grid{grid-template-columns:1fr}}
+  .metric-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:26px 24px;position:relative;overflow:hidden;
+    transition:transform .4s var(--ease),border-color .3s,background .3s;
+  }
+  .metric-card:hover{transform:translateY(-4px);border-color:var(--purple);background:var(--surface-hover)}
+  .metric-card::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--purple),transparent);
+    opacity:0;transition:opacity .3s;
+  }
+  .metric-card:hover::before{opacity:1}
+  .metric-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.25px;color:var(--text-3);margin-bottom:16px}
+  .metric-value{font-size:clamp(34px,4vw,44px);font-weight:700;letter-spacing:-1.5px;line-height:1;font-variant-numeric:tabular-nums}
+  .metric-value .suffix{font-size:.55em;color:var(--text-2);font-weight:600;margin-left:2px}
+  .metric-delta{
+    display:inline-flex;align-items:center;gap:6px;margin-top:16px;
+    font-family:var(--mono);font-size:12px;color:var(--lime);
+    background:rgba(194,239,78,.08);border:1px solid rgba(194,239,78,.2);
+    border-radius:9999px;padding:4px 10px;
+  }
+  .metric-delta svg{width:10px;height:10px}
+  .metric-delta.neutral{color:var(--coral);background:rgba(255,178,135,.08);border-color:rgba(255,178,135,.2)}
+
+  /* ---------- growth chart ---------- */
+  .chart-panel{
+    margin-top:44px;background:var(--surface);border:1px solid var(--border);
+    border-radius:12px;padding:34px 30px 26px;
+  }
+  .chart-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:12px;margin-bottom:8px}
+  .chart-head .name{font-size:15px;font-weight:600}
+  .chart-head .unit{font-family:var(--mono);font-size:12px;color:var(--text-3)}
+  .chart-wrap{width:100%}
+  .chart-wrap svg{width:100%;height:auto;display:block}
+  .grid-line{stroke:rgba(106,95,193,.14);stroke-width:1}
+  .axis-text{fill:var(--text-3);font-family:var(--mono);font-size:11px}
+  .growth-line{
+    fill:none;stroke:var(--purple);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;
+    filter:drop-shadow(0 0 8px rgba(106,95,193,.55));
+  }
+  .growth-area{fill:url(#areaGrad);opacity:0;transition:opacity 1.2s ease .5s}
+  .chart-in .growth-area{opacity:1}
+  .growth-dot{fill:var(--bg-2);stroke:var(--lime);stroke-width:2;opacity:0;transition:opacity .4s ease}
+  .growth-dot.hl{stroke-width:3}
+  .chart-in .growth-dot{opacity:1}
+  .dot-label{fill:#fff;font-family:var(--mono);font-size:12px;font-weight:600;opacity:0;transition:opacity .5s ease 1.1s}
+  .chart-in .dot-label{opacity:1}
+
+  /* ---------- timeline ---------- */
+  .timeline{margin-top:52px;position:relative;padding-left:36px}
+  .timeline::before{
+    content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;
+    background:linear-gradient(to bottom,var(--purple) 0%,var(--border) 100%);
+    transform-origin:top;transform:scaleY(0);transition:transform 2.4s var(--ease);
+  }
+  .timeline.ready::before{transform:scaleY(1)}
+  .tl-item{position:relative;padding:0 0 42px 24px}
+  .tl-item:last-child{padding-bottom:0}
+  .tl-item::before{
+    content:"";position:absolute;left:-36px;top:4px;width:18px;height:18px;border-radius:50%;
+    background:var(--bg-2);border:2px solid var(--purple);
+    transition:border-color .3s,box-shadow .3s,background .3s;
+  }
+  .tl-item:hover::before{border-color:var(--lime);box-shadow:0 0 14px rgba(194,239,78,.45);background:rgba(194,239,78,.12)}
+  .tl-quarter{
+    font-family:var(--mono);font-size:11px;color:var(--lime);letter-spacing:.25px;
+    text-transform:uppercase;margin-bottom:8px;
+  }
+  .tl-title{font-size:18px;font-weight:600;letter-spacing:-.2px;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+  .tl-title svg{width:17px;height:17px;color:var(--purple);flex-shrink:0}
+  .tl-item:hover .tl-title svg{color:var(--lime)}
+  .tl-desc{color:var(--text-2);font-size:14.5px;max-width:64ch}
+
+  /* ---------- donut ---------- */
+  .feature-layout{
+    display:grid;grid-template-columns:340px 1fr;gap:56px;margin-top:48px;align-items:center;
+  }
+  @media(max-width:820px){.feature-layout{grid-template-columns:1fr;gap:36px;justify-items:center}}
+  .donut-wrap{position:relative;width:280px}
+  .donut-wrap svg{width:100%;height:auto;transform:rotate(-90deg)}
+  .donut-seg{
+    fill:none;stroke-width:26;stroke-linecap:butt;
+    stroke-dasharray:0 999;transition:stroke-dasharray 1.4s var(--ease);
+  }
+  .donut-center{
+    position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center;
+  }
+  .donut-center .big{font-size:34px;font-weight:700;letter-spacing:-1px}
+  .donut-center .small{font-size:11px;text-transform:uppercase;letter-spacing:.25px;color:var(--text-3);margin-top:4px}
+  .feature-list{width:100%;display:flex;flex-direction:column;gap:22px}
+  .feature-item{opacity:0;transform:translateX(20px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+  .feature-item.visible{opacity:1;transform:none}
+  .feature-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
+  .feature-name{font-size:15px;font-weight:500;display:flex;align-items:center;gap:10px}
+  .feature-name .swatch{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+  .feature-pct{font-family:var(--mono);font-size:14px;color:var(--text-2)}
+  .feature-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.06);overflow:hidden}
+  .feature-bar i{
+    display:block;height:100%;width:0;border-radius:3px;
+    transition:width 1.3s var(--ease);
+  }
+
+  /* ---------- team ---------- */
+  .team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:44px}
+  @media(max-width:980px){.team-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.team-grid{grid-template-columns:1fr}}
+  .team-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:28px 24px;transition:transform .4s var(--ease),border-color .3s,background .3s;
+  }
+  .team-card:hover{transform:translateY(-4px);border-color:var(--purple);background:var(--surface-hover)}
+  .team-icon{
+    width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    background:var(--purple-deep);border:1px solid var(--border);margin-bottom:20px;
+    transition:background .3s;
+  }
+  .team-card:hover .team-icon{background:rgba(106,95,193,.3)}
+  .team-icon svg{width:20px;height:20px;color:var(--lime)}
+  .team-name{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.25px;color:var(--text-3);margin-bottom:10px}
+  .team-stat{font-size:21px;font-weight:700;letter-spacing:-.5px;margin-bottom:10px}
+  .team-desc{color:var(--text-2);font-size:13.5px;line-height:1.6}
+
+  /* ---------- outlook ---------- */
+  .outlook{background:var(--bg-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+  .outlook-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:44px}
+  @media(max-width:820px){.outlook-grid{grid-template-columns:1fr}}
+  .outlook-card{
+    position:relative;background:var(--surface);border:1px solid var(--border);
+    border-radius:12px;padding:30px 26px;overflow:hidden;
+    transition:transform .4s var(--ease),border-color .3s,background .3s;
+  }
+  .outlook-card:hover{transform:translateY(-4px);border-color:var(--lime);background:var(--surface-hover)}
+  .outlook-num{
+    position:absolute;top:18px;right:22px;font-family:var(--mono);
+    font-size:44px;font-weight:700;color:rgba(255,255,255,.05);letter-spacing:-2px;
+  }
+  .outlook-icon{width:42px;height:42px;margin-bottom:22px;color:var(--lime)}
+  .outlook-title{font-size:18px;font-weight:600;letter-spacing:-.2px;margin-bottom:10px}
+  .outlook-desc{color:var(--text-2);font-size:14.5px;line-height:1.65}
+
+  /* ---------- footer ---------- */
+  footer{padding:56px 0 48px;border-top:1px solid var(--border)}
+  .footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px}
+  .footer-left{display:flex;align-items:center;gap:10px;font-weight:700;font-size:14px}
+  .footer-right{font-family:var(--mono);font-size:12px;color:var(--text-3)}
+
+  /* ---------- reveal ---------- */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+  .reveal.visible{opacity:1;transform:none}
+
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+    .reveal,.fade-up,.feature-item{opacity:1!important;transform:none!important}
+    .growth-area,.growth-dot,.dot-label{opacity:1!important}
+    .timeline::before{transform:scaleY(1)!important}
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<nav>
+  <div class="nav-logo"><span class="dot"></span>Orbit Analytics</div>
+  <div class="nav-links">
+    <a href="#metrics">Metrics</a>
+    <a href="#growth">Growth</a>
+    <a href="#milestones">Milestones</a>
+    <a href="#features">Features</a>
+    <a href="#team">Team</a>
+    <a href="#outlook">2026</a>
+  </div>
+</nav>
+
+<!-- ============ 1. HERO ============ -->
+<header class="hero">
+  <div class="container hero-inner">
+    <div class="hero-tag fade-up d1"><span class="pulse"></span>FY 2025 · PRODUCT &amp; ENGINEERING REPORT</div>
+    <h1 class="hero-title fade-up d2">2025<br>Annual <span class="accent">Report</span></h1>
+    <p class="hero-sub fade-up d3">
+      为 <strong>128,000+</strong> 构建者提供产品智能 —— 一年里我们把延迟砍半、把用户翻倍，
+      并在四个季度内完成了从工具到平台的跃迁。
+    </p>
+    <div class="hero-meta fade-up d4">
+      <span>ORBIT ANALYTICS</span>
+      <span>JAN 01 — DEC 31, 2025</span>
+      <span>V 2.0</span>
+    </div>
+  </div>
+  <div class="scroll-hint"><span>Scroll</span><span class="bar"></span></div>
+</header>
+
+<!-- ============ 2. KEY METRICS ============ -->
+<section id="metrics">
+  <div class="container">
+    <div class="sec-label reveal">Key Metrics</div>
+    <h2 class="sec-title reveal">一年成绩单</h2>
+    <p class="sec-desc reveal">四个数字，讲完 2025 年的增长故事。</p>
+
+    <div class="metrics-grid">
+      <div class="metric-card reveal" style="transition-delay:.05s">
+        <div class="metric-label">Total Users</div>
+        <div class="metric-value"><span class="count" data-target="128400" data-decimals="0">0</span></div>
+        <div class="metric-delta"><svg viewBox="0 0 12 12" fill="currentColor"><path d="M6 1l5 6H1z"/></svg>+156% YoY</div>
+      </div>
+      <div class="metric-card reveal" style="transition-delay:.15s">
+        <div class="metric-label">API Calls</div>
+        <div class="metric-value"><span class="count" data-target="8.6" data-decimals="1">0</span><span class="suffix">B</span></div>
+        <div class="metric-delta"><svg viewBox="0 0 12 12" fill="currentColor"><path d="M6 1l5 6H1z"/></svg>+320% YoY</div>
+      </div>
+      <div class="metric-card reveal" style="transition-delay:.25s">
+        <div class="metric-label">Uptime</div>
+        <div class="metric-value"><span class="count" data-target="99.98" data-decimals="2">0</span><span class="suffix">%</span></div>
+        <div class="metric-delta neutral">SLA 99.9% Met · 0 P0</div>
+      </div>
+      <div class="metric-card reveal" style="transition-delay:.35s">
+        <div class="metric-label">NPS Score</div>
+        <div class="metric-value"><span class="count" data-target="72" data-decimals="0">0</span></div>
+        <div class="metric-delta"><svg viewBox="0 0 12 12" fill="currentColor"><path d="M6 1l5 6H1z"/></svg>Top 10% SaaS</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3. USER GROWTH ============ -->
+<section id="growth">
+  <div class="container">
+    <div class="sec-label reveal">User Growth</div>
+    <h2 class="sec-title reveal">月活跃用户增长曲线</h2>
+    <p class="sec-desc reveal">12 个月，MAU 从 52K 一路爬到 128K —— Q3 的插件生态上线带来了最陡峭的一段。</p>
+
+    <div class="chart-panel reveal" id="growthPanel">
+      <div class="chart-head">
+        <span class="name">Monthly Active Users</span>
+        <span class="unit">UNIT: 1,000 USERS · SOURCE: ORBIT CORE DB</span>
+      </div>
+      <div class="chart-wrap">
+        <svg id="growthChart" viewBox="0 0 760 340" role="img" aria-label="2025 年 12 个月月活跃用户折线图，从 52K 增长到 128K"></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. MILESTONES ============ -->
+<section id="milestones">
+  <div class="container">
+    <div class="sec-label reveal">Product Milestones</div>
+    <h2 class="sec-title reveal">产品里程碑</h2>
+    <p class="sec-desc reveal">一年持续交付，逐季度回放。</p>
+
+    <div class="timeline" id="timeline">
+      <div class="tl-item reveal">
+        <div class="tl-quarter">Q1 · JAN</div>
+        <div class="tl-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>Platform 2.0 正式发布</div>
+        <div class="tl-desc">架构全面重构，查询管线提速 3 倍，并上线全新的插件系统，为下半年生态爆发打下地基。</div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-quarter">Q1 · MAR</div>
+        <div class="tl-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>全球边缘节点扩展</div>
+        <div class="tl-desc">新增 12 个边缘区域，全球 p95 延迟降至 80ms 以内，亚洲用户查询耗时下降 46%。</div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-quarter">Q2 · APR</div>
+        <div class="tl-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>企业版（Enterprise Tier）上线</div>
+        <div class="tl-desc">通过 SOC 2 Type II 合规，支持 SSO、审计日志与专属支持，首个季度即签下 40 家企业客户。</div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-quarter">Q2 · JUN</div>
+        <div class="tl-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>AI 异常检测发布</div>
+        <div class="tl-desc">自动识别指标异动并归因，上线首月即被 40% 的活跃团队启用，告警噪音降低 62%。</div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-quarter">Q3 · AUG</div>
+        <div class="tl-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>突破 100,000 用户</div>
+        <div class="tl-desc">八月底月活突破十万大关，社区贡献量同比上涨 280%，海外用户占比首次过半。</div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-quarter">Q3 · SEP</div>
+        <div class="tl-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>插件市场（Marketplace）上线</div>
+        <div class="tl-desc">发布当天即有 200+ 社区插件可用，成为全年用户增长最陡峭的拐点。</div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-quarter">Q4 · OCT</div>
+        <div class="tl-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>B 轮融资 $45M</div>
+        <div class="tl-desc">完成 4500 万美元 B 轮融资，用于加速研发投入与国际化扩张。</div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-quarter">Q4 · DEC</div>
+        <div class="tl-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Platform 3.0 预览版发布</div>
+        <div class="tl-desc">公布下一代多模态分析引擎，支持实时协作看板与自然语言查询，2026 Q2 正式 GA。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5. FEATURE USAGE ============ -->
+<section id="features">
+  <div class="container">
+    <div class="sec-label reveal">Feature Usage</div>
+    <h2 class="sec-title reveal">功能使用分布</h2>
+    <p class="sec-desc reveal">开发者把时间花在了哪里 —— Top 5 功能的使用占比。</p>
+
+    <div class="feature-layout">
+      <div class="donut-wrap reveal" id="donutWrap">
+        <svg viewBox="0 0 220 220" role="img" aria-label="Top 5 功能使用占比环形图">
+          <circle cx="110" cy="110" r="88" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="26"/>
+          <g id="donutSegs"></g>
+        </svg>
+        <div class="donut-center">
+          <div class="big">35%</div>
+          <div class="small">Top Feature</div>
+        </div>
+      </div>
+      <div class="feature-list" id="featureList">
+        <div class="feature-item" data-pct="35" data-color="#c2ef4e">
+          <div class="feature-head">
+            <span class="feature-name"><span class="swatch" style="background:#c2ef4e"></span>事件分析 · Event Analytics</span>
+            <span class="feature-pct">35%</span>
+          </div>
+          <div class="feature-bar"><i style="background:#c2ef4e"></i></div>
+        </div>
+        <div class="feature-item" data-pct="25" data-color="#6a5fc1">
+          <div class="feature-head">
+            <span class="feature-name"><span class="swatch" style="background:#6a5fc1"></span>漏斗洞察 · Funnels</span>
+            <span class="feature-pct">25%</span>
+          </div>
+          <div class="feature-bar"><i style="background:#6a5fc1"></i></div>
+        </div>
+        <div class="feature-item" data-pct="20" data-color="#fa7faa">
+          <div class="feature-head">
+            <span class="feature-name"><span class="swatch" style="background:#fa7faa"></span>AI 问答 · Ask AI</span>
+            <span class="feature-pct">20%</span>
+          </div>
+          <div class="feature-bar"><i style="background:#fa7faa"></i></div>
+        </div>
+        <div class="feature-item" data-pct="12" data-color="#ffb287">
+          <div class="feature-head">
+            <span class="feature-name"><span class="swatch" style="background:#ffb287"></span>会话回放 · Session Replay</span>
+            <span class="feature-pct">12%</span>
+          </div>
+          <div class="feature-bar"><i style="background:#ffb287"></i></div>
+        </div>
+        <div class="feature-item" data-pct="8" data-color="#79628c">
+          <div class="feature-head">
+            <span class="feature-name"><span class="swatch" style="background:#79628c"></span>数据管道 · Pipelines</span>
+            <span class="feature-pct">8%</span>
+          </div>
+          <div class="feature-bar"><i style="background:#79628c"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. TEAM ============ -->
+<section id="team">
+  <div class="container">
+    <div class="sec-label reveal">Team Highlights</div>
+    <h2 class="sec-title reveal">团队高光时刻</h2>
+    <p class="sec-desc reveal">每个团队今年都交出了大动作。</p>
+
+    <div class="team-grid">
+      <div class="team-card reveal" style="transition-delay:.05s">
+        <div class="team-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+        <div class="team-name">Engineering</div>
+        <div class="team-stat">交付 47 个功能</div>
+        <div class="team-desc">合并 1,200+ PR，Q3–Q4 零 P0 事故，全部核心服务完成 Kubernetes 迁移。</div>
+      </div>
+      <div class="team-card reveal" style="transition-delay:.15s">
+        <div class="team-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></div>
+        <div class="team-name">Product</div>
+        <div class="team-stat">NPS +22 分</div>
+        <div class="team-desc">新开 3 条产品线，满意度从 50 提升到 72，客户流失率下降 34%。</div>
+      </div>
+      <div class="team-card reveal" style="transition-delay:.25s">
+        <div class="team-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg></div>
+        <div class="team-name">Design</div>
+        <div class="team-stat">设计系统 2.0</div>
+        <div class="team-desc">统一 180+ 设计令牌的组件库，设计到开发的交付耗时缩短 60%。</div>
+      </div>
+      <div class="team-card reveal" style="transition-delay:.35s">
+        <div class="team-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></div>
+        <div class="team-name">Growth &amp; Ops</div>
+        <div class="team-stat">用户增长 156%</div>
+        <div class="team-desc">自然流量获客提升 4 倍，社区活动覆盖 8 个国家的 15,000 名开发者。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7. OUTLOOK 2026 ============ -->
+<section id="outlook" class="outlook">
+  <div class="container">
+    <div class="sec-label reveal">Looking Ahead</div>
+    <h2 class="sec-title reveal">展望 2026</h2>
+    <p class="sec-desc reveal">三个战略方向，决定下一章的走向。</p>
+
+    <div class="outlook-grid">
+      <div class="outlook-card reveal" style="transition-delay:.05s">
+        <div class="outlook-num">01</div>
+        <svg class="outlook-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+        <div class="outlook-title">多模态 AI 分析引擎</div>
+        <div class="outlook-desc">把自然语言查询、自动归因与实时协作看板统一到一个 AI 层 —— 让「问数据」像聊天一样简单，Platform 3.0 将于 Q2 正式 GA。</div>
+      </div>
+      <div class="outlook-card reveal" style="transition-delay:.15s">
+        <div class="outlook-num">02</div>
+        <svg class="outlook-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+        <div class="outlook-title">全球优先基础设施</div>
+        <div class="outlook-desc">目标在 30+ 区域实现低于 50ms 的查询延迟，并与主流云厂商合作，落地主权化部署方案，服务合规要求严格的地区客户。</div>
+      </div>
+      <div class="outlook-card reveal" style="transition-delay:.25s">
+        <div class="outlook-num">03</div>
+        <svg class="outlook-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <div class="outlook-title">社区驱动增长</div>
+        <div class="outlook-desc">开源插件 SDK，设立 $2M 开发者基金，扶持生态建设者与社区贡献者 —— 让 Orbit 的下一个 100K 用户由社区自己长出来。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-left"><span class="nav-logo"><span class="dot"></span></span>Orbit Analytics · 2025 Annual Report</div>
+    <div class="footer-right">BUILT WITH INLINE SVG · NO EXTERNAL DEPENDENCIES</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- scroll progress ---------- */
+  var bar = document.getElementById("progress");
+  function onScroll(){
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + "%";
+  }
+  window.addEventListener("scroll", onScroll, {passive:true});
+  onScroll();
+
+  /* ---------- count-up ---------- */
+  function easeOutExpo(t){ return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+  function formatNum(v, decimals){
+    if(decimals > 0) return v.toFixed(decimals);
+    return Math.round(v).toLocaleString("en-US");
+  }
+  function countUp(el){
+    var target = parseFloat(el.dataset.target);
+    var decimals = parseInt(el.dataset.decimals || "0", 10);
+    if(reduced){ el.textContent = formatNum(target, decimals); return; }
+    var dur = 1800, start = null;
+    function step(ts){
+      if(!start) start = ts;
+      var p = Math.min((ts - start) / dur, 1);
+      el.textContent = formatUp(target * easeOutExpo(p), decimals, target);
+      if(p < 1) requestAnimationFrame(step);
+      else el.textContent = formatNum(target, decimals);
+    }
+    function formatUp(v, d, t){
+      // keep full width while counting so layout doesn't jump
+      return v < t && d === 0 ? Math.round(v).toLocaleString("en-US") : v.toFixed(d);
+    }
+    requestAnimationFrame(step);
+  }
+
+  /* ---------- growth line chart ---------- */
+  var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var values = [52, 56, 63, 71, 78, 84, 91, 97, 105, 112, 120, 128]; // in K
+  var svgNS = "http://www.w3.org/2000/svg";
+  var chart = document.getElementById("growthChart");
+
+  function buildChart(){
+    var W = 760, H = 340;
+    var padL = 46, padR = 26, padT = 26, padB = 40;
+    var maxV = 140, minV = 40;
+    var x = function(i){ return padL + (i / (values.length - 1)) * (W - padL - padR); };
+    var y = function(v){ return padT + (1 - (v - minV) / (maxV - minV)) * (H - padT - padB); };
+
+    // defs: area gradient
+    var defs = document.createElementNS(svgNS, "defs");
+    defs.innerHTML =
+      '<linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0%" stop-color="#6a5fc1" stop-opacity=".35"/>' +
+      '<stop offset="100%" stop-color="#6a5fc1" stop-opacity="0"/>' +
+      '</linearGradient>';
+    chart.appendChild(defs);
+
+    // gridlines + y labels
+    for(var g = minV; g <= maxV; g += 20){
+      var gl = document.createElementNS(svgNS, "line");
+      gl.setAttribute("x1", padL); gl.setAttribute("x2", W - padR);
+      gl.setAttribute("y1", y(g)); gl.setAttribute("y2", y(g));
+      gl.setAttribute("class", "grid-line");
+      chart.appendChild(gl);
+      var t = document.createElementNS(svgNS, "text");
+      t.setAttribute("x", padL - 10); t.setAttribute("y", y(g) + 4);
+      t.setAttribute("text-anchor", "end"); t.setAttribute("class", "axis-text");
+      t.textContent = g + "K";
+      chart.appendChild(t);
+    }
+    // x labels
+    months.forEach(function(m, i){
+      var t = document.createElementNS(svgNS, "text");
+      t.setAttribute("x", x(i)); t.setAttribute("y", H - 12);
+      t.setAttribute("text-anchor", "middle"); t.setAttribute("class", "axis-text");
+      t.textContent = m;
+      chart.appendChild(t);
+    });
+
+    // area path
+    var areaD = "M" + x(0) + "," + y(values[0]);
+    values.forEach(function(v, i){ if(i) areaD += " L" + x(i) + "," + y(v); });
+    var areaPath = document.createElementNS(svgNS, "path");
+    areaPath.setAttribute("d", areaD + " L" + x(values.length - 1) + "," + y(minV) + " L" + x(0) + "," + y(minV) + " Z");
+    areaPath.setAttribute("class", "growth-area");
+    chart.appendChild(areaPath);
+
+    // line path
+    var linePath = document.createElementNS(svgNS, "path");
+    linePath.setAttribute("d", areaD);
+    linePath.setAttribute("class", "growth-line");
+    chart.appendChild(linePath);
+
+    // dots + label on last point
+    values.forEach(function(v, i){
+      var c = document.createElementNS(svgNS, "circle");
+      c.setAttribute("cx", x(i)); c.setAttribute("cy", y(v)); c.setAttribute("r", i === values.length - 1 ? 5 : 3.5);
+      if(i === values.length - 1) c.setAttribute("class", "growth-dot hl");
+      else c.setAttribute("class", "growth-dot");
+      c.style.transitionDelay = (i * 60) + "ms";
+      chart.appendChild(c);
+    });
+    var lbl = document.createElementNS(svgNS, "text");
+    lbl.setAttribute("x", x(11) - 8); lbl.setAttribute("y", y(128) - 16);
+    lbl.setAttribute("text-anchor", "end"); lbl.setAttribute("class", "dot-label");
+    lbl.textContent = "128K MAU";
+    chart.appendChild(lbl);
+
+    // draw-in animation
+    function drawLine(){
+      chart.classList.add("chart-in");
+      if(reduced) return;
+      var len = linePath.getTotalLength();
+      linePath.style.strokeDasharray = len;
+      linePath.style.strokeDashoffset = len;
+      linePath.style.transition = "stroke-dashoffset 2s cubic-bezier(0.16,1,0.3,1)";
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){
+        linePath.style.strokeDashoffset = "0";
+      });});
+    }
+    return drawLine;
+  }
+  var drawChart = buildChart();
+
+  /* ---------- donut chart ---------- */
+  var donutSegs = document.getElementById("donutSegs");
+  var featureItems = Array.prototype.slice.call(document.querySelectorAll(".feature-item"));
+  var segColors = featureItems.map(function(f){ return f.dataset.color; });
+  var segPcts = featureItems.map(function(f){ return parseFloat(f.dataset.pct); });
+  var R = 88, C = 2 * Math.PI * R, GAP = 2.5; // degrees gap between segments
+
+  function buildDonut(){
+    var offset = 0;
+    segPcts.forEach(function(pct, i){
+      var frac = pct / 100;
+      var gapFrac = GAP / 360;
+      var len = Math.max(frac - gapFrac, 0.005) * C;
+      var seg = document.createElementNS(svgNS, "circle");
+      seg.setAttribute("cx", 110); seg.setAttribute("cy", 110); seg.setAttribute("r", R);
+      seg.setAttribute("stroke", segColors[i]);
+      seg.setAttribute("class", "donut-seg");
+      seg.setAttribute("stroke-dasharray", "0 " + C);
+      seg.dataset.len = len;
+      seg.dataset.offset = offset;
+      // dashoffset negative moves start clockwise
+      seg.setAttribute("stroke-dashoffset", -offset);
+      seg.style.transitionDelay = (i * 140) + "ms";
+      donutSegs.appendChild(seg);
+      offset += frac * C;
+    });
+  }
+  buildDonut();
+
+  function animateDonut(){
+    var segs = donutSegs.children;
+    for(var i = 0; i < segs.length; i++){
+      var s = segs[i];
+      if(reduced){ s.setAttribute("stroke-dasharray", s.dataset.len + " " + C); }
+      else { s.setAttribute("stroke-dasharray", s.dataset.len + " " + C); }
+    }
+    featureItems.forEach(function(item){
+      item.classList.add("visible");
+      var bar = item.querySelector(".feature-bar i");
+      bar.style.width = item.dataset.pct + "%";
+      bar.style.transitionDelay = (featureItems.indexOf(item) * 140 + 200) + "ms";
+    });
+  }
+
+  /* ---------- intersection observer ---------- */
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(!e.isIntersecting) return;
+      var el = e.target;
+      el.classList.add("visible");
+      // count-ups inside
+      var counts = el.querySelectorAll(".count");
+      counts.forEach(function(c){
+        if(!c.dataset.done){ c.dataset.done = "1"; countUp(c); }
+      });
+      // section-specific triggers
+      if(el.id === "growthPanel"){ drawChart(); }
+      if(el.id === "timeline"){ el.classList.add("ready"); }
+      if(el.id === "donutWrap"){ animateDonut(); }
+      io.unobserve(el);
+    });
+  }, {threshold: 0.18, rootMargin: "0px 0px -8% 0px"});
+
+  document.querySelectorAll(".reveal").forEach(function(el){ io.observe(el); });
+
+  // safety: if user has reduced motion, trigger chart states immediately
+  if(reduced){
+    document.getElementById("growthPanel").classList.add("chart-in");
+    document.getElementById("timeline").classList.add("ready");
+    animateDonut();
+  }
+})();
+</script>
+</body>
+</html>
