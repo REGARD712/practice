@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>团团的介绍 · 我家猫咪找家计划</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rausch:#ff385c;
+  --rausch-dark:#e00b41;
+  --hof:#222222;
+  --foggy:#6a6a6a;
+  --grey-500:#c1c1c1;
+  --bebe:#ebebeb;
+  --deco:#dddddd;
+  --faint:#f7f7f7;
+  --white:#ffffff;
+  --font-sans:'DM Sans','Inter','PingFang SC','Hiragino Sans GB','Microsoft YaHei','Noto Sans SC',sans-serif;
+  --radius-card:12px;
+  --radius-btn:9999px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:#e8e8ec;overflow:hidden;font-family:var(--font-sans)}
+img{display:block}
+
+/* ============ CANVAS ============ */
+#canvas{
+  position:fixed;top:50%;left:50%;
+  width:1280px;height:720px;
+  background:var(--faint);
+  color:var(--hof);
+  box-shadow:0 10px 60px rgba(0,0,0,.16),0 2px 8px rgba(0,0,0,.08);
+  transform:translate(-50%,-50%) scale(1);
+  font-family:var(--font-sans);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ============ SLIDE BASE ============ */
+.slide{
+  position:absolute;inset:0;
+  background:var(--faint);
+  display:grid;
+  padding:56px 72px;
+  opacity:0;visibility:hidden;
+  transition:opacity .5s cubic-bezier(.2,.7,.2,1),visibility .5s;
+}
+.slide.active{opacity:1;visibility:visible;z-index:2}
+
+/* ============ TYPO HELPERS ============ */
+.kicker{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--foggy)}
+.h-1{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.01em;color:var(--hof)}
+.lead{font-size:15px;font-weight:400;line-height:1.65;color:var(--foggy)}
+.label{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--foggy)}
+.heart{color:var(--rausch)}
+
+/* ============ CHROME ============ */
+.chrome-top,.chrome-bottom{
+  position:absolute;left:72px;right:72px;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--foggy);z-index:6;
+}
+.chrome-top{top:26px}
+.chrome-bottom{bottom:26px}
+.chrome-top b,.chrome-bottom b{font-weight:600;color:var(--hof)}
+#canvas:has(.s-cover-split.active) .chrome-top .cr,
+#canvas:has(.s-cover-split.active) .chrome-bottom .cr{color:#fff;text-shadow:0 1px 10px rgba(0,0,0,.45)}
+#canvas:has(.s-cover-split.active) .chrome-top .cr b,
+#canvas:has(.s-cover-split.active) .chrome-bottom .cr b{color:#fff}
+#canvas:has(.s-close.active) .chrome-top,
+#canvas:has(.s-close.active) .chrome-bottom{opacity:0;visibility:hidden}
+
+/* ============ NAV DOTS ============ */
+.dot-nav{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:7}
+.dot-nav button{width:7px;height:7px;border-radius:var(--radius-btn);background:var(--grey-500);border:none;cursor:pointer;padding:0;transition:all .3s ease}
+.dot-nav button.on{background:var(--rausch);width:20px}
+#canvas:has(.s-cover-split.active) .dot-nav button{background:rgba(255,255,255,.6)}
+#canvas:has(.s-cover-split.active) .dot-nav button.on{background:var(--rausch)}
+
+/* ============ STAGGER ============ */
+.slide.active .stagger>*{animation:rise .65s cubic-bezier(.2,.7,.2,1) both}
+.slide.active .stagger>*:nth-child(1){animation-delay:.05s}
+.slide.active .stagger>*:nth-child(2){animation-delay:.13s}
+.slide.active .stagger>*:nth-child(3){animation-delay:.21s}
+.slide.active .stagger>*:nth-child(4){animation-delay:.29s}
+.slide.active .stagger>*:nth-child(5){animation-delay:.37s}
+.slide.active .stagger>*:nth-child(6){animation-delay:.45s}
+.slide.active .stagger>*:nth-child(7){animation-delay:.53s}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+/* ============ T01-B COVER SPLIT ============ */
+.s-cover-split{grid-template-columns:1fr 1fr;padding:0}
+.cover-split-text{padding:40px 52px;display:flex;flex-direction:column;justify-content:center}
+.cover-split-text .kicker{display:flex;align-items:center;gap:10px}
+.kicker .brand-dot{width:9px;height:9px;border-radius:50%;background:var(--rausch);flex-shrink:0}
+.cover-split-text .h-display{font-size:72px;line-height:1.06;font-weight:700;letter-spacing:-.02em;color:var(--hof);margin-top:22px}
+.cover-split-text .lead{margin-top:24px;max-width:40ch}
+.cover-split-tags{margin-top:30px;display:flex;gap:12px;flex-wrap:wrap}
+.cover-split-tags span{font-size:12px;font-weight:500;color:var(--foggy);border:1px solid var(--deco);border-radius:var(--radius-btn);padding:7px 16px;background:var(--white)}
+.cover-split-img{overflow:hidden}
+.cover-split-img img{width:100%;height:100%;object-fit:cover}
+
+/* ============ T10 FEATURE SPLIT ============ */
+.s-feature{grid-template-columns:55% 1fr;gap:64px;align-items:center}
+.feature-img{height:552px;border-radius:var(--radius-card);overflow:hidden;align-self:center}
+.feature-img img{width:100%;height:100%;object-fit:cover}
+.feature-text{max-height:582px;overflow:hidden;align-self:center}
+.feature-text .h-1{font-size:42px;line-height:1.15;margin-top:14px}
+.feature-text .lead{margin-top:16px}
+.feature-points{margin-top:26px}
+.feature-point{display:grid;grid-template-columns:52px 1fr;gap:18px;padding:15px 0;border-top:1px solid var(--bebe)}
+.feature-point:first-child{border-top:none;padding-top:4px}
+.feature-point .idx{font-size:13px;font-weight:600;color:var(--rausch);padding-top:3px}
+.feature-point .h{font-size:17px;font-weight:600;color:var(--hof)}
+.feature-point .d{font-size:13.5px;line-height:1.6;color:var(--foggy);margin-top:5px}
+
+/* ============ SHARED GALLERY HEAD ============ */
+.gallery-head{display:grid;grid-template-columns:auto 1fr;align-items:end;gap:32px}
+.gallery-head .h-1{font-size:40px;margin-top:12px}
+.gallery-head .lead{font-size:14px;justify-self:end;text-align:right;max-width:32ch}
+
+/* ============ T12 TRIO ============ */
+.s-trio{padding-top:80px;padding-bottom:84px;gap:16px;grid-template-rows:auto 1fr}
+.trio-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;min-height:0;overflow:hidden}
+.trio-main,.trio-card{min-height:0;overflow:hidden;display:flex;flex-direction:column}
+.trio-side{display:grid;grid-template-rows:1fr 1fr;gap:16px;min-height:0}
+.trio-img{flex:1;min-height:0;overflow:hidden;border-radius:var(--radius-card)}
+.trio-img img{width:100%;height:100%;object-fit:cover}
+.trio-cap{display:flex;align-items:baseline;gap:12px;padding-top:10px}
+.trio-cap .title{font-size:14px;font-weight:500;color:var(--hof)}
+
+/* ============ T13 HERO ============ */
+.s-hero{grid-template-rows:auto auto;align-content:center;gap:0}
+.hero-img{height:448px;max-height:456px;overflow:hidden;border-radius:var(--radius-card);min-height:0}
+.hero-img img{width:100%;height:100%;object-fit:cover}
+.hero-bottom{display:grid;grid-template-columns:1fr auto;align-items:end;gap:32px;padding:22px 4px 0}
+.hero-bottom .h-1{font-size:40px;margin-top:8px}
+.hero-bottom .lead{margin-top:8px;font-size:14px}
+.hero-meta{display:flex;flex-direction:column;gap:9px;text-align:right}
+.hero-meta .hm{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--foggy)}
+.hero-meta .hm strong{font-size:14px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--hof);margin-left:10px}
+.hero-meta .tagline{font-size:12px;font-weight:600;color:var(--rausch)}
+
+/* ============ T16 MOSAIC ============ */
+.s-mosaic{padding-top:80px;padding-bottom:84px;gap:16px;grid-template-rows:auto 1fr}
+.mosaic-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:1fr 1fr;gap:10px;min-height:0;overflow:hidden}
+.mosaic-card{min-height:0;overflow:hidden;position:relative;border-radius:var(--radius-card)}
+.mosaic-card img{width:100%;height:100%;object-fit:cover}
+.mosaic-card:nth-child(1){grid-column:1/3}
+.mosaic-card:nth-child(3){grid-row:1/3}
+.mosaic-card .cap{position:absolute;left:0;right:0;bottom:0;padding:28px 14px 10px;background:linear-gradient(to top,rgba(0,0,0,.55),transparent);color:#fff;font-size:11px;font-weight:500;letter-spacing:.04em}
+
+/* ============ T04 GRID LINES ============ */
+.s-lines{display:flex;flex-direction:column;justify-content:center;gap:28px}
+.lines-head{display:grid;grid-template-columns:auto 1fr;align-items:end;gap:32px}
+.lines-head .h-1{font-size:40px;margin-top:12px}
+.lines-head .lead{font-size:14px;justify-self:end;text-align:right;max-width:40ch}
+.lines-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;overflow:hidden;flex-shrink:0}
+.line-cell{background:var(--white);border-radius:var(--radius-card);padding:18px 18px 20px;display:flex;flex-direction:column;gap:6px;position:relative}
+.line-cell .num{position:absolute;top:14px;right:16px;font-size:12px;font-weight:600;color:var(--grey-500)}
+.line-cell .name{font-size:17px;font-weight:600;color:var(--hof);margin-top:2px}
+.line-cell .en{font-size:10px;font-weight:600;letter-spacing:.12em;color:var(--grey-500);text-transform:uppercase}
+.line-cell .cell-img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;margin-top:10px}
+.line-cell .desc{font-size:12px;line-height:1.55;color:var(--foggy);margin-top:10px}
+
+/* ============ T18 DENSE TABLE ============ */
+.s-dense-table{grid-template-rows:auto auto;align-content:center;gap:22px}
+.dense-head{display:grid;grid-template-columns:auto 1fr;align-items:end;gap:32px}
+.dense-head .h-1{font-size:42px;line-height:1.15;margin-top:12px}
+.dense-head .lead{font-size:14px;justify-self:end;text-align:right;max-width:40ch}
+.dense-table{background:var(--white);border-radius:var(--radius-card);overflow:hidden;display:flex;flex-direction:column}
+.dt-row{display:grid;grid-template-columns:150px 118px 176px 178px 1fr;gap:12px;padding:15px 22px;border-bottom:1px solid var(--bebe);align-items:center;font-size:13px;color:var(--hof)}
+.dt-row:last-child{border-bottom:none}
+.dt-header{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--foggy);background:var(--faint)}
+.dt-label{font-weight:600}
+.dt-ok{color:var(--rausch);font-weight:600}
+.dt-muted{color:var(--foggy)}
+
+/* ============ T05 TEAM CARDS ============ */
+.s-team{grid-template-columns:40% 1fr;gap:72px;align-items:center}
+.s-team .side{max-height:582px;overflow:hidden}
+.s-team .h-1{font-size:40px;line-height:1.25;margin-top:16px}
+.s-team .lead{margin-top:18px}
+.team-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-height:582px;overflow:hidden;align-content:center}
+.team-card{background:var(--white);border-radius:var(--radius-card);padding:22px;min-height:168px;display:flex;flex-direction:column;gap:10px}
+.team-card .idx{font-size:11px;font-weight:600;letter-spacing:.1em;color:var(--grey-500);text-transform:uppercase}
+.team-card .title{font-size:18px;font-weight:600;color:var(--hof)}
+.team-card .en-sub{font-size:10px;font-weight:600;letter-spacing:.14em;color:var(--grey-500);text-transform:uppercase;margin-top:-6px}
+.team-card .desc{font-size:13px;line-height:1.6;color:var(--foggy);margin-top:auto}
+
+/* ============ T08 CLOSING ============ */
+.s-close{grid-template-columns:1fr 1fr;padding:0}
+.close-left{background:var(--rausch);color:#fff;padding:28px 46px 28px 77px;display:flex;flex-direction:column;justify-content:space-between}
+.chrome-min{display:flex;justify-content:space-between;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase}
+.close-left .chrome-min{color:rgba(255,255,255,.75)}
+.manifesto .meta{font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.85)}
+.manifesto h2{font-size:72px;font-weight:700;line-height:1.08;letter-spacing:-.02em;color:#fff;margin-top:18px}
+.manifesto .sub{font-size:15px;line-height:1.7;margin-top:16px;color:rgba(255,255,255,.9);max-width:30ch}
+.sig{display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.75)}
+.close-right{background:var(--white);padding:28px 77px 28px 46px;display:flex;flex-direction:column;justify-content:space-between}
+.close-right .chrome-min{color:var(--foggy)}
+.takeaways{display:flex;flex-direction:column;justify-content:center}
+.take-item{display:grid;grid-template-columns:auto 1fr;gap:22px;padding:19px 0;border-bottom:1px solid var(--bebe)}
+.take-item:last-child{border-bottom:none}
+.take-item .num{font-size:38px;font-weight:700;color:var(--deco);line-height:1}
+.take-item h3{font-size:19px;font-weight:600;color:var(--hof)}
+.take-item p{font-size:13.5px;line-height:1.6;color:var(--foggy);margin-top:6px}
+.foot{display:flex;justify-content:center;padding-top:16px}
+.cta-pill{background:var(--rausch);color:#fff;border-radius:var(--radius-btn);padding:13px 28px;font-size:14px;font-weight:600;letter-spacing:.02em}
+</style>
+</head>
+<body>
+<div id="canvas">
+
+  <!-- ======== 01 · COVER ======== -->
+  <section class="slide s-cover-split active">
+    <div class="cover-split-text stagger">
+      <span class="kicker"><span class="brand-dot"></span>团团找家计划 <span class="heart">♥</span> CAT ADOPTION</span>
+      <h1 class="h-display">你好，<br>我是团团</h1>
+      <p class="lead">一只两岁的橘白小猫，正在找一个温暖的家。这份小小的档案，装着它的日常、喜好与健康，也希望装下你的心动。</p>
+      <div class="cover-split-tags">
+        <span>中华田园猫 · 橘白</span><span>2 岁 · 小母猫</span><span>已绝育 · 疫苗齐全</span>
+      </div>
+    </div>
+    <div class="cover-split-img">
+      <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=adorable%20orange%20and%20white%20tabby%20cat%20sitting%20on%20a%20sunlit%20windowsill%2C%20golden%20morning%20light%2C%20potted%20plants%20beside%20warm%20cozy%20lifestyle%20photography%2C%20soft%20golden%20natural%20light%2C%20cream%20Scandinavian%20home%20interior%2C%20warm%20healing%20tones%2C%20no%20text%2C%20no%20watermark&image_size=portrait_4_3" alt="团团坐在洒满阳光的窗台上">
+    </div>
+  </section>
+
+  <!-- ======== 02 · 基本档案 ======== -->
+  <section class="slide s-feature">
+    <div class="feature-img stagger"><img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=gentle%20orange%20and%20white%20tabby%20cat%20close-up%20portrait%20with%20big%20amber%20eyes%20looking%20at%20camera%2C%20soft%20window%20light%20warm%20cozy%20lifestyle%20photography%2C%20soft%20golden%20natural%20light%2C%20cream%20Scandinavian%20home%20interior%2C%20warm%20healing%20tones%2C%20no%20text%2C%20no%20watermark&image_size=portrait_4_3" alt="团团的正面特写，琥珀色大眼睛"></div>
+    <div class="feature-text stagger">
+      <span class="kicker">01 / 基本档案 PROFILE</span>
+      <h1 class="h-1">先认识一下团团</h1>
+      <p class="lead">它是家里的阳光制造机，也是一位认真等待新家人的小朋友。</p>
+      <div class="feature-points">
+        <div class="feature-point"><span class="idx">01</span><div><div class="h">品种与年龄</div><div class="d">中华田园猫 · 橘白花色，2024 年春出生，今年两岁。</div></div></div>
+        <div class="feature-point"><span class="idx">02</span><div><div class="h">性格关键词</div><div class="d">温柔、粘人、有点慢热；熟悉之后是寸步不离的小跟班。</div></div></div>
+        <div class="feature-point"><span class="idx">03</span><div><div class="h">基础信息</div><div class="d">体重 4.2kg · 已绝育 · 已植入芯片 · 猫砂盆熟练用户。</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== 03 · 日常生活 · 三图 ======== -->
+  <section class="slide s-trio">
+    <div class="gallery-head stagger">
+      <div><span class="kicker">02 / 日常生活 DAILY LIFE</span><h1 class="h-1">团团的一天</h1></div>
+      <p class="lead">从窗台放哨到认真干饭，每一天都过得投入又可爱。</p>
+    </div>
+    <div class="trio-grid stagger">
+      <div class="trio-main">
+        <div class="trio-img"><img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=orange%20and%20white%20tabby%20cat%20playing%20with%20a%20feather%20wand%20toy%20on%20a%20cream%20carpet%2C%20joyful%20action%20moment%2C%20living%20room%20warm%20cozy%20lifestyle%20photography%2C%20soft%20golden%20natural%20light%2C%20cream%20Scandinavian%20home%20interior%2C%20warm%20healing%20tones%2C%20no%20text%2C%20no%20watermark&image_size=landscape_16_9" alt="团团在客厅地毯上玩逗猫棒"></div>
+        <div class="trio-cap"><span class="label">SCENE 01</span><span class="title">逗猫棒大战 · 全力以赴</span></div>
+      </div>
+      <div class="trio-side">
+        <div class="trio-card">
+          <div class="trio-img"><img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=orange%20and%20white%20tabby%20cat%20eating%20from%20a%20ceramic%20bowl%20in%20a%20bright%20cozy%20kitchen%20corner%2C%20morning%20light%20warm%20cozy%20lifestyle%20photography%2C%20soft%20golden%20natural%20light%2C%20cream%20Scandinavian%20home%20interior%2C%20warm%20healing%20tones%2C%20no%20text%2C%20no%20watermark&image_size=landscape_4_3" alt="团团在厨房角落吃猫粮"></div>
+          <div class="trio-cap"><span class="label">SCENE 02</span><span class="title">认真干饭</span></div>
+        </div>
+        <div class="trio-card">
+          <div class="trio-img"><img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=orange%20and%20white%20tabby%20cat%20stretching%20on%20a%20wooden%20floor%20after%20a%20nap%2C%20sunlit%20living%20room%20warm%20cozy%20lifestyle%20photography%2C%20soft%20golden%20natural%20light%2C%20cream%20Scandinavian%20home%20interior%2C%20warm%20healing%20tones%2C%20no%20text%2C%20no%20watermark&image_size=landscape_4_3" alt="团团午睡后在木地板上伸懒腰"></div>
+          <div class="trio-cap"><span class="label">SCENE 03</span><span class="title">饭后拉伸</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== 04 · 日常生活 · 大图 ======== -->
+  <section class="slide s-hero">
+    <div class="hero-img stagger"><img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=orange%20and%20white%20tabby%20cat%20sleeping%20peacefully%20curled%20up%20on%20a%20cream%20cushion%20by%20a%20sunny%20window%2C%20dreamy%20golden%20afternoon%20light%20warm%20cozy%20lifestyle%20photography%2C%20soft%20golden%20natural%20light%2C%20cream%20Scandinavian%20home%20interior%2C%20warm%20healing%20tones%2C%20no%20text%2C%20no%20watermark&image_size=landscape_16_9" alt="团团蜷在飘窗垫上晒着太阳午睡"></div>
+    <div class="hero-bottom stagger">
+      <div>
+        <span class="kicker">02 / 日常生活 NAP TIME</span>
+        <h1 class="h-1">午后两点，固定午睡</h1>
+        <p class="lead">雷打不动的阳光浴时段，睡姿每天不重样。</p>
+      </div>
+      <div class="hero-meta">
+        <span class="hm">常驻 C 位<strong>飘窗垫</strong></span>
+        <span class="hm">日均睡眠<strong>约 6 小时</strong></span>
+        <span class="hm">睡姿风格<strong>治愈系</strong></span>
+        <span class="tagline">♥ 呼噜声免费试听</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== 05 · 日常生活 · 拼贴 ======== -->
+  <section class="slide s-mosaic">
+    <div class="gallery-head stagger">
+      <div><span class="kicker">02 / 日常生活 ONE DAY</span><h1 class="h-1">团团的高光时刻</h1></div>
+      <p class="lead">相册里出现最多的六个瞬间，拼起来就是它的一天。</p>
+    </div>
+    <div class="mosaic-grid stagger">
+      <div class="mosaic-card"><img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=orange%20and%20white%20tabby%20cat%20stretching%20in%20morning%20sunlight%20on%20a%20cream%20rug%2C%20cozy%20bedroom%20warm%20cozy%20lifestyle%20photography%2C%20soft%20golden%20natural%20light%2C%20cream%20Scandinavian%20home%20interior%2C%20warm%20healing%20tones%2C%20no%20text%2C%20no%20watermark&image_size=landscape_4_3" alt="清晨团团在地毯上伸懒腰"><div class="cap">清晨拉伸</div></div>
+      <div class="mosaic-card"><img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=orange%20and%20white%20tabby%20cat%20eating%20breakfast%20from%20a%20ceramic%20bowl%2C%20bright%20kitchen%20morning%20warm%20cozy%20lifestyle%20photography%2C%20soft%20golden%20natural%20light%2C%20cream%20Scandinavian%20home%20interior%2C%20warm%20healing%20tones%2C%20no%20text%2C%20no%20watermark&image_size=landscape_4_3" alt="团团吃早餐"><div class="cap">干饭时间</div></div>
+      <div class="mosaic-card"><img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=orange%20and%20white%20tabby%20cat%20sitting%20upright%20by%20a%20window%20watching%20birds%20outside%2C%20warm%20backlight%20warm%20cozy%20lifestyle%20photography%2C%20soft%20golden%20natural%20light%2C%20cream%20Scandinavian%20home%20interior%2C%20warm%20healing%20tones%2C%20no%20text%2C%20no%20watermark&image_size=portrait_4_3" alt="团团端坐在窗边看窗外的小鸟"><div class="cap">看鸟放哨</div></div>
+      <div class="mosaic-card"><img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=orange%20and%20white%20tabby%20cat%20curled%20asleep%20on%20a%20windowsill%20cushion%2C%20warm%20afternoon%20sun%20warm%20cozy%20lifestyle%20photography%2C%20soft%20golden%20natural%20light%2C%20cream%20Scandinavian%20home%20interior%2C%20warm%20healing%20tones%2C%20no%20text%2C%20no%20watermark&image_size=landscape_4_3" alt="午后团团蜷在窗台垫上睡觉"><div class="cap">午后小睡</div></div>
+      <div class="mosaic-card"><img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=orange%20and%20white%20tabby%20cat%20chasing%20a%20small%20ball%20across%20a%20wooden%20floor%2C%20playful%20action%2C%20cozy%20living%20room%20warm%20cozy%20lifestyle%20photography%2C%20soft%20golden%20natural%20light%2C%20cream%20Scandinavian%20home%20interior%2C%20warm%20healing%20tones%2C%20no%20text%2C%20no%20watermark&image_size=landscape_4_3" alt="团团追着小球跑"><div class="cap">玩球时刻</div></div>
+      <div class="mosaic-card"><img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=orange%20and%20white%20tabby%20cat%20cuddling%20on%20a%20person%20lap%20in%20the%20evening%2C%20warm%20lamp%20light%2C%20cozy%20sofa%20warm%20cozy%20lifestyle%20photography%2C%20soft%20golden%20natural%20light%2C%20cream%20Scandinavian%20home%20interior%2C%20warm%20healing%20tones%2C%20no%20text%2C%20no%20watermark&image_size=landscape_4_3" alt="夜晚团团窝在人的腿上贴贴"><div class="cap">晚间贴贴</div></div>
+    </div>
+  </section>
+
+  <!-- ======== 06 · 喜好与习惯 ======== -->
+  <section class="slide s-lines">
+    <div class="lines-head stagger">
+      <div><span class="kicker">03 / 喜好与习惯 LIKES & HABITS</span><h1 class="h-1">让团团快乐的四件小事</h1></div>
+      <p class="lead">每天必做，做完就很满足——这也是它表达爱的方式。</p>
+    </div>
+    <div class="lines-grid stagger">
+      <div class="line-cell"><span class="num">01</span><div class="name">晒太阳</div><div class="en">Sunbathing</div><img class="cell-img" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=orange%20and%20white%20tabby%20cat%20sunbathing%20on%20a%20sunny%20windowsill%20with%20eyes%20closed%2C%20blissful%20expression%2C%20golden%20light%20warm%20cozy%20lifestyle%20photography%2C%20soft%20golden%20natural%20light%2C%20cream%20Scandinavian%20home%20interior%2C%20warm%20healing%20tones%2C%20no%20text%2C%20no%20watermark&image_size=landscape_4_3" alt="团团闭眼在窗台晒太阳"><div class="desc">追着阳光在家「搬家」，飘窗垫是它的头等舱。</div></div>
+      <div class="line-cell"><span class="num">02</span><div class="name">逗猫棒</div><div class="en">Playtime</div><img class="cell-img" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=orange%20and%20white%20tabby%20cat%20leaping%20to%20catch%20a%20feather%20toy%2C%20dynamic%20playful%20moment%2C%20cozy%20living%20room%20warm%20cozy%20lifestyle%20photography%2C%20soft%20golden%20natural%20light%2C%20cream%20Scandinavian%20home%20interior%2C%20warm%20healing%20tones%2C%20no%20text%2C%20no%20watermark&image_size=landscape_4_3" alt="团团跳起来扑逗猫棒"><div class="desc">每晚十分钟互动时间，跑酷模式全开。</div></div>
+      <div class="line-cell"><span class="num">03</span><div class="name">看小鸟</div><div class="en">Bird TV</div><img class="cell-img" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=orange%20and%20white%20tabby%20cat%20watching%20sparrows%20through%20window%20glass%2C%20curious%20expression%2C%20warm%20light%20warm%20cozy%20lifestyle%20photography%2C%20soft%20golden%20natural%20light%2C%20cream%20Scandinavian%20home%20interior%2C%20warm%20healing%20tones%2C%20no%20text%2C%20no%20watermark&image_size=landscape_4_3" alt="团团隔着玻璃好奇地看麻雀"><div class="desc">窗外的麻雀，是它的每日连载剧。</div></div>
+      <div class="line-cell"><span class="num">04</span><div class="name">踩奶</div><div class="en">Kneading</div><img class="cell-img" src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=orange%20and%20white%20tabby%20cat%20kneading%20a%20soft%20cream%20blanket%20with%20eyes%20closed%2C%20happy%20purring%20expression%2C%20warm%20bedroom%20warm%20cozy%20lifestyle%20photography%2C%20soft%20golden%20natural%20light%2C%20cream%20Scandinavian%20home%20interior%2C%20warm%20healing%20tones%2C%20no%20text%2C%20no%20watermark&image_size=landscape_4_3" alt="团团眯眼在毯子上踩奶"><div class="desc">踩到软毯子时，呼噜声开到最大档。</div></div>
+    </div>
+  </section>
+
+  <!-- ======== 07 · 健康与疫苗 ======== -->
+  <section class="slide s-dense-table">
+    <div class="dense-head stagger">
+      <div><span class="kicker">04 / 健康与疫苗 HEALTH RECORD</span><h1 class="h-1">健康状况一览</h1></div>
+      <p class="lead">疫苗齐全、定期体检，请放心接下这份健康档案。</p>
+    </div>
+    <div class="dense-table stagger">
+      <div class="dt-row dt-header"><span>项目</span><span>状态</span><span>最近时间</span><span>机构</span><span>备注</span></div>
+      <div class="dt-row"><span class="dt-label">猫三联疫苗</span><span class="dt-ok">✔ 已完成</span><span>2026-03 年度加强</span><span>瑞鹏宠物医院</span><span class="dt-muted">幼年已完成基础三针</span></div>
+      <div class="dt-row"><span class="dt-label">狂犬疫苗</span><span class="dt-ok">✔ 已完成</span><span>2026-03</span><span>瑞鹏宠物医院</span><span class="dt-muted">与猫三联同批接种</span></div>
+      <div class="dt-row"><span class="dt-label">绝育手术</span><span class="dt-ok">✔ 已恢复</span><span>2025-06</span><span>安安宠医</span><span class="dt-muted">术后恢复良好，性格更稳定</span></div>
+      <div class="dt-row"><span class="dt-label">体内外驱虫</span><span class="dt-ok">✔ 每月一次</span><span>最近 2026-09</span><span>居家用药</span><span class="dt-muted">体外大宠爱 + 体内海乐妙</span></div>
+      <div class="dt-row"><span class="dt-label">年度体检</span><span class="dt-ok">✔ 各项正常</span><span>2026-03</span><span>瑞鹏宠物医院</span><span class="dt-muted">血常规与生化指标均正常</span></div>
+    </div>
+  </section>
+
+  <!-- ======== 08 · 领养要求 ======== -->
+  <section class="slide s-team">
+    <div class="side stagger">
+      <span class="kicker">05 / 领养要求 ADOPTION TERMS</span>
+      <h1 class="h-1">我们想为团团找这样的家</h1>
+      <p class="lead">要求不高，认真就好——稳定、有爱、愿意陪它慢慢长大。</p>
+    </div>
+    <div class="team-cards stagger">
+      <div class="team-card"><span class="idx">— 01</span><div class="title">安全第一</div><div class="en-sub">Safe Home</div><div class="desc">全屋封窗或安装纱窗，阳台不散养，外出必用航空箱。</div></div>
+      <div class="team-card"><span class="idx">— 02</span><div class="title">全家同意</div><div class="en-sub">Approval</div><div class="desc">同住的家人与房东都同意，不因搬家、怀孕等原因遗弃。</div></div>
+      <div class="team-card"><span class="idx">— 03</span><div class="title">科学喂养</div><div class="en-sub">Proper Care</div><div class="desc">定期疫苗驱虫，生病及时就医，以适龄猫粮为主食。</div></div>
+      <div class="team-card"><span class="idx">— 04</span><div class="title">终身承诺</div><div class="en-sub">Lifetime Love</div><div class="desc">接受不定期回访，任何变动都不弃养，陪它到老。</div></div>
+    </div>
+  </section>
+
+  <!-- ======== 09 · 结尾 · 联系方式 ======== -->
+  <section class="slide s-close">
+    <div class="close-left">
+      <div class="chrome-min"><span>09 / 09</span><span>CLOSING</span></div>
+      <div class="manifesto stagger">
+        <div class="meta">ADOPT · DON'T SHOP</div>
+        <h2>期待<br>与你相见</h2>
+        <div class="sub">如果你愿意给团团一个家，欢迎随时来家里坐坐，它会用呼噜声欢迎你。</div>
+      </div>
+      <div class="sig"><span>团团找家计划</span><span>2026 · 秋</span></div>
+    </div>
+    <div class="close-right">
+      <div class="chrome-min"><span>Next Steps</span><span>03 Steps</span></div>
+      <div class="takeaways stagger">
+        <div class="take-item"><div class="num">01</div><div><h3>预约看猫</h3><p>加微信发「想见团团」，本周末即可安排上门参观。</p></div></div>
+        <div class="take-item"><div class="num">02</div><div><h3>先聊一聊</h3><p>有任何疑问都可以先聊，可分享更多日常小视频。</p></div></div>
+        <div class="take-item"><div class="num">03</div><div><h3>试用相处</h3><p>支持送猫上门体验，让你们先慢慢熟悉彼此。</p></div></div>
+      </div>
+      <div class="foot"><span class="cta-pill">♥ 微信 tuantuan-home ｜ 电话 138-0000-2026</span></div>
+    </div>
+  </section>
+
+  <!-- ======== CHROME ======== -->
+  <div class="chrome-top"><span>团团的介绍 · MEET TUANTUAN</span><span class="cr"><b>2026</b> · 找家档案</span></div>
+  <div class="chrome-bottom"><span>团团找家计划</span><span class="cr"><b id="pgNum">01</b> / 09</span></div>
+  <div class="dot-nav" id="dots"></div>
+</div>
+
+<script>
+(function(){
+  var canvas = document.getElementById('canvas');
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var dotsEl = document.getElementById('dots');
+  var pgNum = document.getElementById('pgNum');
+  var cur = 0, lock = false;
+
+  function fit(){
+    var s = Math.min(window.innerWidth/1280, window.innerHeight/720);
+    canvas.style.transform = 'translate(-50%,-50%) scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  fit();
+
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+
+  slides.forEach(function(_, i){
+    var b = document.createElement('button');
+    b.setAttribute('aria-label', '第 ' + (i+1) + ' 页');
+    if(i === 0) b.className = 'on';
+    b.addEventListener('click', function(){ goTo(i); });
+    dotsEl.appendChild(b);
+  });
+
+  function goTo(i){
+    i = Math.max(0, Math.min(slides.length - 1, i));
+    if(i === cur) return;
+    slides[cur].classList.remove('active');
+    slides[i].classList.add('active');
+    cur = i;
+    pgNum.textContent = pad(i + 1);
+    Array.prototype.forEach.call(dotsEl.children, function(d, k){
+      d.classList.toggle('on', k === i);
+    });
+  }
+
+  function step(dir){
+    if(lock) return;
+    var n = cur + dir;
+    if(n < 0 || n >= slides.length) return;
+    lock = true;
+    goTo(n);
+    setTimeout(function(){ lock = false; }, 560);
+  }
+
+  window.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' '){ e.preventDefault(); step(1); }
+    else if(e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp'){ e.preventDefault(); step(-1); }
+    else if(e.key === 'Home'){ e.preventDefault(); goTo(0); }
+    else if(e.key === 'End'){ e.preventDefault(); goTo(slides.length - 1); }
+  });
+
+  window.addEventListener('wheel', function(e){
+    var d = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+    if(Math.abs(d) < 20) return;
+    step(d > 0 ? 1 : -1);
+  }, { passive: true });
+
+  var tx = 0, ty = 0;
+  window.addEventListener('touchstart', function(e){
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+  }, { passive: true });
+  window.addEventListener('touchend', function(e){
+    var dx = e.changedTouches[0].clientX - tx;
+    var dy = e.changedTouches[0].clientY - ty;
+    if(Math.max(Math.abs(dx), Math.abs(dy)) < 40) return;
+    if(Math.abs(dx) > Math.abs(dy)) step(dx < 0 ? 1 : -1);
+    else step(dy < 0 ? 1 : -1);
+  }, { passive: true });
+})();
+</script>
+</body>
+</html>
