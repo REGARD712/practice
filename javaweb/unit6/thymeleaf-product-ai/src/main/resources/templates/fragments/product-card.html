@@ -1,0 +1,12 @@
+<div th:fragment="productCard(product)" class="product-card">
+    <h2 th:text="${product.name}">产品名称</h2>
+    <p th:text="${product.description}">产品描述</p>
+    <p>编号：<span th:text="${product.id}">1</span></p>
+    <p>价格：<span class="price" th:text="|￥${product.price}|">￥0.00</span></p>
+    <p>
+        库存：
+        <span class="low-stock" th:if="${product.stock < 10}"
+              th:text="|${product.stock} 件（库存紧张）|">库存紧张</span>
+        <span th:if="${product.stock >= 10}" th:text="|${product.stock} 件|">库存充足</span>
+    </p>
+</div>
