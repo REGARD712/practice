@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" role="img" aria-label="景点图片占位图">
+  <defs>
+    <linearGradient id="sky" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#dcefe5"/>
+      <stop offset="1" stop-color="#b7d8c6"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="560" fill="url(#sky)"/>
+  <circle cx="740" cy="145" r="58" fill="#f8e6ae"/>
+  <path d="M0 410 230 190l174 180 131-137 278 327H0Z" fill="#7eaa91"/>
+  <path d="m360 560 204-250 255 250H360Z" fill="#5d8c72"/>
+  <path d="M0 470c132-42 249-39 376 7s281 45 584-15v98H0Z" fill="#3f765d"/>
+  <g fill="#fff" opacity=".9">
+    <path d="M177 425h80v72h-80z"/>
+    <path d="m165 430 52-45 52 45z"/>
+    <path d="M207 456h20v41h-20z" fill="#c58f61"/>
+  </g>
+  <text x="480" y="530" fill="#fff" font-family="sans-serif" font-size="26" text-anchor="middle">暂无景点图片</text>
+</svg>
