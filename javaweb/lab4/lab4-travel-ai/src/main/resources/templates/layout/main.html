@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      th:fragment="layout(content)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>旅游景点分享</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css}">
+    <style>
+        body {
+            min-height: 100vh;
+            background: #f5f7f6;
+            color: #25332e;
+        }
+
+        .navbar-brand {
+            letter-spacing: .04em;
+        }
+
+        .page-hero {
+            background: linear-gradient(120deg, #e7f3ed, #f5f7f6 72%);
+        }
+
+        .attraction-card {
+            border: 0;
+            border-radius: 1rem;
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .attraction-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 1rem 2rem rgba(30, 55, 44, .1) !important;
+        }
+
+        .attraction-image {
+            height: 210px;
+            object-fit: cover;
+            border-radius: 1rem 1rem 0 0;
+        }
+
+        .rating-stars {
+            color: #f2ad35;
+            letter-spacing: .1em;
+        }
+
+        .rating-empty {
+            color: #d8dfdb;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column">
+<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/attractions}">
+            <i class="bi bi-compass me-2" aria-hidden="true"></i>行旅 · 景点分享
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#mainNavbar" aria-controls="mainNavbar"
+                aria-expanded="false" aria-label="切换导航">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/attractions}">景点管理</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main class="flex-grow-1" th:replace="${content}">
+    <div class="container py-5"></div>
+</main>
+
+<footer class="bg-white border-top py-4 mt-5">
+    <div class="container text-center text-secondary small">
+        © 2026 行旅 · 旅游景点分享
+    </div>
+</footer>
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

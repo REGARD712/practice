@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>电影名片墙</title>
+<link th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}"
+rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container py-5">
+<h1 class="text-center mb-4">🎬 电影分享站</h1>
+<div class="row">
+<div class="col-12 col-md-6 col-lg-4 mb-4" th:each="movie :
+${movies}">
+<div class="card h-100 shadow-sm">
+<div class="card-body">
+<h5 class="card-title" th:text="${movie.title}">电影名
+</h5>
+<hr>
+<p><strong>导演：</strong> <span
+th:text="${movie.director}">导演</span></p>
+<p><strong>年份：</strong> <span
+th:text="${movie.releaseYear}">2020</span></p>
+<p><strong>评分：</strong>
+<span th:text="${movie.rating}"></span> / 10
+<span th:if="${movie.rating >= 9.0}" class="badge bgwarning
+text-dark ms-2">神作</span>
+</p>
+<p><strong>简介：</strong> <span
+th:text="${movie.summary}">简介</span></p>
+<div>
+<strong>主演：</strong>
+<span class="badge bg-secondary me-1" th:each="actor
+: ${movie.actors}" th:text="${actor}">演员</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="text-center mt-4">
+<small class="text-muted">资料更新于: <span
+th:text="${#temporals.format(today, 'yyyy-MM-dd')}">2025-01-01</span></small>
+</div>
+</div>
+</body>
+</html>
