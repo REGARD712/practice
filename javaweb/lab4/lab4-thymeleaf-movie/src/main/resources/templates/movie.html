@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>电影资料分享</title>
+</head>
+<body>
+<h1 th:text="'🎬 电影推荐：' + ${title}">电影名称</h1>
+<hr>
+<h2>基本信息</h2>
+<ul>
+    <li>导演：<span th:text="${director}">导演</span></li>
+    <li>上映年份：<span th:text="${releaseYear}">2020</span></li>
+    <li>评分：<span th:text="${rating}">0.0</span> / 10</li>
+</ul>
+<h2>剧情简介</h2>
+<p th:text="${summary}">简介内容</p>
+<h2>主演阵容</h2>
+<ul>
+    <li th:each="actor : ${actors}" th:text="${actor}">演员</li>
+</ul>
+<h2>页面信息</h2>
+<p>资料更新于：<span th:text="${#temporals.format(today, 'yyyy-MM-dd')}">2025-
+01-01</span></p>
+<p th:if="${rating > 9.0}">🌟 神作级别！强烈推荐！</p>
+</body>
+</html>
