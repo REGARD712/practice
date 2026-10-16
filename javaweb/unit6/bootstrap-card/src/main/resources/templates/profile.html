@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>个人名片</title>
+    <!-- 使用WebJars引入Bootstrap CSS -->
+    <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+<!-- 1. container: Bootstrap的核心布局容器，用于包裹页面内容 -->
+<div class="container py-5">
+    <!-- 2. row: 网格系统的行，用于包裹列 -->
+    <div class="row">
+        <!--
+          3. col-12 col-md-6 col-lg-4: 定义了在大型设备(lg)上，一个卡片占4/12的宽度，即一行三张卡片；
+          在中等设备(md)上占6/12，即一行两张卡片；在小型设备(sm)和更小的设备上占满整行。
+          4. mb-4: margin-bottom，设置卡片下方的外边距，用于垂直间距
+          5. th:each: Thymeleaf的循环指令，用于遍历'users'列表
+        -->
+        <div class="col-12 col-md-6 col-lg-4 mb-4" th:each="user : ${users}">
+            <!-- 6. card: Bootstrap卡片组件的基础类 -->
+            <div class="card h-100">
+                <!-- 7. card-body: 卡片的内容区域 -->
+                <div class="card-body">
+                    <!-- 8. card-title: 卡片标题的样式 -->
+                    <h5 class="card-title" th:text="${user.name}">用户姓名</h5>
+                    <hr>
+                    <!-- 使用简单的<p>标签展示用户信息 -->
+                    <p><strong>年龄:</strong> <span th:text="${user.age} + '岁'">25岁</span></p>
+                    <p><strong>邮箱:</strong> <span th:text="${user.email}">user@example.com</span></p>
+                    <p><strong>简介:</strong> <span th:text="${user.bio}">简介内容</span></p>
+                    <div>
+                        <strong>技能:</strong>
+                        <!-- 9. badge: 标记或标签的样式 -->
+                        <!-- 10. bg-secondary: 设置背景色为灰色 -->
+                        <span class="badge bg-secondary me-1" th:each="skill : ${user.skills}"
+                              th:text="${skill}">技能</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页面时间 -->
+    <div class="text-center mt-4">
+        <small class="text-muted">
+            页面生成于: <span th:text="${#temporals.format(now, 'yyyy-MM-dd HH:mm')}">2025-01-01 12:00</span>
+        </small>
+    </div>
+
+    <!-- WebJars引入提示 -->
+    <div class="text-center mt-3">
+        <small class="text-success">✓ Bootstrap已通过WebJars加载</small>
+    </div>
+</div>
+</body>
+</html>
