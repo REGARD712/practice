@@ -1,0 +1,1989 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>大学四年，想做的 100 件小事</title>
+<!-- 本工作台通过 WorkBuddy「资料库」skill 搭建、存储和部署 -->
+<style>
+:root{
+  --bg:#f8f4ec;
+  --paper:#fffdf8;
+  --paper-2:#fdfaf3;
+  --ink:#3c352c;
+  --ink-soft:#6e6458;
+  --ink-faint:#a1957f;
+  --line:#ece3d4;
+  --line-soft:#f4eee3;
+  --accent:#b8894f;
+  --accent-soft:#f5ebd9;
+  --c-todo-bg:#f2ece1;  --c-todo-tx:#8c8171;  --c-todo-bd:#e7dfd0;
+  --c-wait-bg:#e6eef2;  --c-wait-tx:#5d818f;  --c-wait-bd:#d5e4ea;
+  --c-done-bg:#f9edd2;  --c-done-tx:#a17f2c;  --c-done-bd:#f0debb;
+  --c-later-bg:#ece7f1; --c-later-tx:#7f7395; --c-later-bd:#ded7e9;
+  --radius:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{max-width:100%;overflow-x:hidden;}
+body{
+  background-color:var(--bg);
+  background-image:radial-gradient(circle at 1px 1px, rgba(184,137,79,.075) 1px, transparent 0);
+  background-size:22px 22px;
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  font-size:14px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.serif{font-family:"Noto Serif SC","Source Han Serif SC","Songti SC","STSong","SimSun",Georgia,"Times New Roman",serif;}
+img{max-width:100%;height:auto;display:block;}
+button{font-family:inherit;}
+::selection{background:#f0e2c9;}
+
+header.site{
+  position:sticky;top:0;z-index:60;
+  background:rgba(248,244,236,.94);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner{
+  max-width:1000px;margin:0 auto;padding:10px 18px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.brand{font-size:13px;color:var(--ink-faint);letter-spacing:.5px;white-space:nowrap;}
+.brand b{color:var(--ink);font-weight:600;}
+nav.tabs{display:flex;gap:3px;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:3px;}
+nav.tabs button{
+  border:none;background:transparent;color:var(--ink-soft);
+  padding:7px 16px;border-radius:999px;cursor:pointer;font-size:13px;
+  transition:all .18s ease;white-space:nowrap;min-height:32px;
+}
+nav.tabs button.on{background:var(--ink);color:#fff;}
+.sync{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-faint);white-space:nowrap;}
+.sync .dot{width:7px;height:7px;border-radius:50%;background:#cfc4a7;}
+.sync.ok .dot{background:#8fae83;}
+.sync.loading .dot{background:#d8b876;}
+.sync.offline .dot{background:#c99a92;}
+.hbar{max-width:1000px;margin:0 auto;padding:0 18px 11px;}
+.hbar-row{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ink-faint);flex-wrap:wrap;}
+.hbar-row b{color:var(--ink);font-weight:600;font-size:13.5px;}
+.hnext{margin-left:auto;color:var(--ink-faint);}
+.hlv{
+  padding:2px 11px;border:1px solid var(--line);border-radius:999px;
+  background:var(--paper-2);color:var(--ink-soft);white-space:nowrap;
+}
+.htrack{height:4px;background:var(--line-soft);border-radius:99px;overflow:hidden;margin-top:8px;}
+.hfill{height:100%;width:0;background:linear-gradient(90deg,#ddc095,var(--accent));border-radius:99px;transition:width .6s ease;}
+
+.wrap{max-width:1000px;margin:0 auto;padding:0 18px 90px;}
+.page-head{padding:46px 0 26px;text-align:center;}
+.page-head h1{font-size:26px;font-weight:600;letter-spacing:1.5px;}
+.page-head .sub{margin-top:10px;color:var(--ink-faint);font-size:13px;letter-spacing:2px;}
+.page-head .quote{margin-top:20px;color:var(--ink-soft);font-size:13px;letter-spacing:1.5px;}
+.page-head .quote::before,.page-head .quote::after{
+  content:"";display:inline-block;width:26px;height:1px;background:var(--line);
+  vertical-align:middle;margin:0 12px;
+}
+
+.stat-bar{
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+  padding:18px 22px;display:flex;align-items:center;gap:26px;flex-wrap:wrap;
+  box-shadow:0 1px 3px rgba(120,95,55,.035);
+}
+.stat-num{display:flex;align-items:baseline;gap:6px;white-space:nowrap;}
+.stat-num .n{font-size:26px;font-weight:600;letter-spacing:.5px;color:var(--accent);}
+.stat-num .d{font-size:13px;color:var(--ink-faint);}
+.stat-mid{flex:1;min-width:170px;}
+.progress-track{height:5px;background:var(--line-soft);border-radius:99px;overflow:hidden;}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#ddc095,var(--accent));border-radius:99px;transition:width .6s ease;}
+.progress-label{margin-top:7px;font-size:12px;color:var(--ink-faint);display:flex;justify-content:space-between;gap:10px;}
+.stat-chapter{
+  font-size:13px;color:var(--ink-soft);white-space:nowrap;
+  padding:6px 15px;border:1px solid var(--line);border-radius:999px;background:var(--paper-2);
+}
+
+.tools{display:flex;align-items:center;gap:10px;margin:24px 0 8px;flex-wrap:wrap;}
+.search-box{
+  display:flex;align-items:center;gap:8px;flex:1;min-width:180px;max-width:330px;
+  background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:9px 16px;
+  transition:border-color .18s;
+}
+.search-box:focus-within{border-color:#dbc9a8;}
+.search-box svg{flex:none;color:var(--ink-faint);}
+.search-box input{
+  border:none;outline:none;background:transparent;font-family:inherit;
+  font-size:16px;color:var(--ink);width:100%;min-height:22px;
+}
+.search-box input::placeholder{color:var(--ink-faint);font-size:13.5px;}
+.sel-wrap{position:relative;display:inline-flex;align-items:center;}
+select.filter{
+  appearance:none;-webkit-appearance:none;
+  border:1px solid var(--line);border-radius:999px;padding:9px 38px 9px 16px;
+  font-family:inherit;font-size:13.5px;color:var(--ink-soft);cursor:pointer;outline:none;
+  background:var(--paper);transition:border-color .18s;min-height:40px;
+}
+select.filter:hover{border-color:#e0d4bd;}
+select.filter:focus{border-color:#dbc9a8;}
+.sel-wrap .caret{position:absolute;right:14px;pointer-events:none;color:var(--ink-faint);}
+.count-chip{font-size:12px;color:var(--ink-faint);margin-left:auto;letter-spacing:.5px;}
+
+.cat-block{margin-top:26px;}
+.cat-title{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--ink-faint);letter-spacing:2px;}
+.cat-title .cat-name{white-space:nowrap;}
+.cat-title .cat-count{
+  font-size:11px;letter-spacing:0;padding:1px 9px;border-radius:999px;
+  background:var(--paper);border:1px solid var(--line);color:var(--ink-faint);
+}
+.cat-title::after{content:"";flex:1;height:1px;background:var(--line);}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:12px;margin-top:14px;}
+.card{
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px 15px;cursor:pointer;text-align:left;font-family:inherit;color:inherit;
+  display:flex;flex-direction:column;gap:9px;min-height:106px;
+  box-shadow:0 1px 2px rgba(120,95,55,.03);
+  transition:box-shadow .18s ease,transform .18s ease,border-color .18s ease;
+}
+.card:hover{box-shadow:0 5px 16px rgba(120,95,55,.09);transform:translateY(-1px);border-color:#e4d8c1;}
+.card:active{transform:translateY(0);}
+.card:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.card.s-done{border-color:#f0e4c8;}
+.card.s-wait{border-color:#dde9ee;}
+.card.s-later{border-color:#e1dbeb;}
+.card-top{display:flex;align-items:center;justify-content:space-between;gap:6px;}
+.card-num{font-size:11px;color:var(--ink-faint);letter-spacing:1px;font-family:Georgia,serif;}
+.card-marks{display:flex;gap:6px;align-items:center;}
+.card-marks .mark-photo{color:var(--ink-faint);opacity:.8;}
+.mark-mood{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--ink-faint);display:inline-block;opacity:.6;}
+.mark-mood.m-warm{border-color:#d9a94e;}
+.card-name{font-size:13.5px;line-height:1.5;color:var(--ink);flex:1;word-break:break-word;}
+.card.done .card-name{color:#514839;}
+.card-bot{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap;}
+.pill{font-size:11px;padding:2.5px 10px;border-radius:999px;border:1px solid;letter-spacing:.5px;white-space:nowrap;}
+.pill.todo{background:var(--c-todo-bg);color:var(--c-todo-tx);border-color:var(--c-todo-bd);}
+.pill.wait{background:var(--c-wait-bg);color:var(--c-wait-tx);border-color:var(--c-wait-bd);}
+.pill.done{background:var(--c-done-bg);color:var(--c-done-tx);border-color:var(--c-done-bd);}
+.pill.later{background:var(--c-later-bg);color:var(--c-later-tx);border-color:var(--c-later-bd);}
+.card-date{font-size:11px;color:var(--ink-faint);white-space:nowrap;}
+.grid-empty{
+  grid-column:1/-1;text-align:center;padding:64px 16px;color:var(--ink-faint);
+  font-size:13px;letter-spacing:1px;border:1px dashed var(--line);border-radius:var(--radius);
+  background:var(--paper-2);
+}
+.skeleton{border:1px dashed var(--line);border-radius:var(--radius);background:var(--paper-2);
+  grid-column:1/-1;padding:48px 16px;text-align:center;color:var(--ink-faint);font-size:13px;}
+
+.modal-mask{
+  position:fixed;inset:0;background:rgba(60,53,44,.34);z-index:100;
+  display:none;align-items:flex-start;justify-content:center;
+  padding:5vh 16px 16px;overflow-y:auto;
+}
+.modal-mask.show{display:flex;}
+.modal{
+  background:var(--paper);border:1px solid var(--line);border-radius:16px;width:100%;max-width:520px;
+  box-shadow:0 20px 54px rgba(60,53,44,.18);
+}
+.modal-head{padding:20px 22px 0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+.m-num{font-size:11px;color:var(--ink-faint);letter-spacing:1.5px;font-family:Georgia,serif;}
+.modal-head h3{font-size:16.5px;font-weight:600;margin-top:3px;}
+.modal-close{
+  border:none;background:var(--line-soft);width:30px;height:30px;border-radius:50%;
+  cursor:pointer;color:var(--ink-soft);font-size:13px;line-height:1;flex:none;
+  transition:background .15s;
+}
+.modal-close:hover{background:#efe7d8;color:var(--ink);}
+.modal-body{padding:18px 22px 22px;display:flex;flex-direction:column;gap:18px;}
+.field label{display:block;font-size:12px;color:var(--ink-faint);letter-spacing:1px;margin-bottom:9px;}
+.status-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:8px;}
+.status-row button{
+  border:1px solid var(--line);background:var(--paper-2);border-radius:9px;padding:10px 4px;
+  font-size:12.5px;color:var(--ink-soft);cursor:pointer;transition:all .15s;min-height:42px;
+}
+.status-row button:hover{border-color:#e0d4bd;}
+.status-row button.on.f-todo{background:var(--c-todo-bg);border-color:var(--c-todo-bd);color:var(--c-todo-tx);}
+.status-row button.on.f-wait{background:var(--c-wait-bg);border-color:var(--c-wait-bd);color:var(--c-wait-tx);}
+.status-row button.on.f-done{background:var(--c-done-bg);border-color:var(--c-done-bd);color:var(--c-done-tx);}
+.status-row button.on.f-later{background:var(--c-later-bg);border-color:var(--c-later-bd);color:var(--c-later-tx);}
+input[type=date]{
+  font-family:inherit;font-size:16px;color:var(--ink);
+  border:1px solid var(--line);border-radius:9px;padding:10px 12px;background:var(--paper-2);
+  outline:none;transition:border-color .15s;min-height:42px;
+}
+input[type=date]:focus{border-color:#dbc9a8;}
+.mood-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.mood-grid button{
+  border:1px solid var(--line);background:var(--paper-2);border-radius:999px;
+  padding:8px 15px;font-size:12.5px;color:var(--ink-soft);cursor:pointer;
+  transition:all .15s;min-height:38px;
+}
+.mood-grid button:hover{border-color:#e0d4bd;}
+.mood-grid button.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+textarea.note{
+  width:100%;min-height:80px;resize:vertical;
+  font-family:inherit;font-size:16px;color:var(--ink);line-height:1.7;
+  border:1px solid var(--line);border-radius:9px;padding:11px 12px;background:var(--paper-2);
+  outline:none;transition:border-color .15s;
+}
+textarea.note:focus{border-color:#dbc9a8;}
+.photo-area{display:flex;flex-direction:column;gap:10px;}
+.photo-thumbs{display:flex;flex-wrap:wrap;gap:10px;}
+.thumb{position:relative;width:88px;height:66px;border-radius:9px;overflow:hidden;border:1px solid var(--line);background:var(--line-soft);}
+.thumb img{width:100%;height:100%;object-fit:cover;}
+.thumb .thumb-ph{display:flex;align-items:center;justify-content:center;height:100%;font-size:11px;color:var(--ink-faint);}
+.thumb .del{
+  position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;border:none;
+  background:rgba(255,253,248,.92);color:var(--ink-soft);font-size:11px;line-height:1;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+.thumb .del:hover{background:#fff;color:var(--ink);}
+.thumb .ptag{
+  position:absolute;left:0;bottom:0;right:0;background:rgba(60,53,44,.62);color:#fff;
+  font-size:10px;text-align:center;line-height:1.6;
+}
+.photo-add{
+  align-self:flex-start;border:1px dashed #dccfb6;border-radius:9px;background:var(--paper-2);
+  padding:10px 18px;font-size:12.5px;color:var(--ink-soft);cursor:pointer;transition:all .15s;min-height:42px;
+}
+.photo-add:hover{border-color:var(--accent);color:var(--ink);}
+.hint{font-size:11.5px;color:var(--ink-faint);}
+.modal-foot{display:flex;gap:10px;justify-content:flex-end;padding:0 22px 22px;}
+.btn{
+  border:1px solid var(--line);background:var(--paper);border-radius:999px;
+  padding:11px 26px;font-size:13.5px;color:var(--ink-soft);cursor:pointer;
+  transition:all .15s;min-height:44px;
+}
+.btn:hover{color:var(--ink);border-color:#e0d4bd;}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+.btn.primary:hover{background:#a87a41;}
+.btn:disabled{opacity:.6;cursor:default;}
+
+.chapter-hero{
+  background:var(--paper);border:1px solid var(--line);border-radius:16px;
+  padding:38px 32px 30px;text-align:center;box-shadow:0 1px 3px rgba(120,95,55,.035);
+}
+.chapter-hero .lv{font-size:13px;letter-spacing:3px;color:var(--ink-faint);}
+.chapter-hero h2{font-size:24px;font-weight:600;margin-top:8px;letter-spacing:1px;}
+.chapter-hero .say{margin-top:12px;color:var(--ink-soft);font-size:13.5px;}
+.chapter-hero .cnt{margin-top:18px;font-size:13px;color:var(--ink-faint);}
+.chapter-hero .cnt b{color:var(--accent);font-size:18px;font-weight:600;margin:0 2px;}
+
+.roadmap{margin-top:44px;padding:0 6px;}
+.road-track{position:relative;height:2px;background:var(--line-soft);border-radius:99px;margin:0 28px;}
+.road-fill{position:absolute;left:0;top:0;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .6s ease;}
+.road-nodes{display:flex;justify-content:space-between;margin-top:-7px;}
+.road-node{display:flex;flex-direction:column;align-items:center;gap:10px;flex:1;min-width:0;}
+.road-dot{width:12px;height:12px;border-radius:50%;background:var(--paper);border:2px solid var(--line);transition:all .3s;}
+.road-node.passed .road-dot{border-color:var(--accent);background:var(--accent-soft);}
+.road-node.current .road-dot{border-color:var(--accent);background:var(--accent);box-shadow:0 0 0 4px rgba(184,137,79,.18);}
+.road-name{font-size:12px;color:var(--ink-faint);letter-spacing:1px;white-space:nowrap;}
+.road-node.passed .road-name{color:var(--ink-soft);}
+.road-node.current .road-name{color:var(--ink);font-weight:600;}
+
+.sec-title{margin:54px 0 20px;display:flex;align-items:center;gap:12px;font-size:14px;color:var(--ink);letter-spacing:2px;font-weight:600;}
+.sec-title::after{content:"";flex:1;height:1px;background:var(--line);}
+.stats3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;}
+.stat-card{
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px 24px;box-shadow:0 1px 3px rgba(120,95,55,.035);
+}
+.stat-card .t{font-size:12px;color:var(--ink-faint);letter-spacing:2px;}
+.stat-card .v{margin-top:12px;font-size:19px;font-weight:600;letter-spacing:.5px;line-height:1.45;}
+.tag-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+.tag{font-size:12.5px;color:var(--ink-soft);background:var(--paper-2);border:1px solid var(--line);border-radius:999px;padding:4px 14px;letter-spacing:1px;}
+.letter{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:30px 32px;box-shadow:0 1px 3px rgba(120,95,55,.035);}
+.letter p{color:var(--ink-soft);font-size:14px;line-height:2.05;letter-spacing:.5px;text-align:justify;}
+.timeline{display:flex;flex-direction:column;gap:10px;}
+.tl-item{
+  display:flex;gap:18px;background:var(--paper);border:1px solid var(--line);
+  border-radius:var(--radius);padding:16px 20px;cursor:pointer;align-items:center;
+  transition:box-shadow .18s,transform .18s,border-color .18s;
+}
+.tl-item:hover{box-shadow:0 5px 16px rgba(120,95,55,.09);transform:translateY(-1px);border-color:#e4d8c1;}
+.tl-photo{width:74px;height:56px;border-radius:9px;overflow:hidden;border:1px solid var(--line);flex:none;background:var(--line-soft);}
+.tl-photo img{width:100%;height:100%;object-fit:cover;}
+.tl-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;}
+.tl-name{font-size:14px;font-weight:500;color:var(--ink);}
+.tl-meta{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--ink-faint);flex-wrap:wrap;}
+.tl-meta .mood{color:var(--c-wait-tx);}
+.tl-note{font-size:12.5px;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+footer.site{margin-top:64px;text-align:center;color:var(--ink-faint);font-size:12px;letter-spacing:2px;line-height:2;}
+
+.toast{
+  position:fixed;left:50%;bottom:40px;transform:translateX(-50%) translateY(16px);
+  background:var(--ink);color:#fff;font-size:13px;letter-spacing:1px;
+  padding:11px 26px;border-radius:999px;z-index:200;opacity:0;
+  transition:all .3s ease;pointer-events:none;max-width:88vw;text-align:center;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media (max-width:720px){
+  .wrap{padding:0 14px 72px;}
+  .nav-inner{padding:9px 14px;}
+  .brand{display:none;}
+  .hbar{padding:0 14px 10px;}
+  .hbar-row{font-size:11.5px;gap:8px;}
+  .hnext{margin-left:0;width:100%;}
+  .page-head{padding:34px 0 22px;}
+  .page-head h1{font-size:21px;}
+  .page-head .quote::before,.page-head .quote::after{width:14px;margin:0 8px;}
+  .stat-bar{gap:14px;padding:16px 18px;}
+  .stat-num .n{font-size:23px;}
+  .count-chip{margin-left:0;}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(146px,1fr));gap:10px;}
+  .card{padding:12px 13px;min-height:98px;}
+  .card-name{font-size:13px;}
+  .stats3{grid-template-columns:1fr;}
+  .chapter-hero{padding:30px 20px 26px;}
+  .chapter-hero h2{font-size:20px;}
+  .road-name{font-size:11px;}
+  .tl-photo{width:62px;height:48px;}
+  .letter{padding:24px 20px;}
+  .modal-mask{padding:3vh 10px 14px;}
+  .photo-thumbs{gap:8px;}
+  .thumb{width:78px;height:60px;}
+}
+@media (max-width:380px){
+  .grid{grid-template-columns:repeat(2,1fr);}
+  nav.tabs button{padding:7px 11px;font-size:12px;}
+}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="nav-inner">
+    <div class="brand"><b>100 件小事</b> · 大学手账</div>
+    <nav class="tabs">
+      <button type="button" id="tab-list" class="on" data-tab="list">100 件小事</button>
+      <button type="button" id="tab-chapter" data-tab="chapter">我的大学章节</button>
+    </nav>
+    <div class="sync" id="sync-chip">
+      <span class="dot"></span><span id="sync-text">同步中</span>
+    </div>
+  </div>
+  <div class="hbar">
+    <div class="hbar-row">
+      <span>已珍藏 <b id="hd-count" data-sp-bindable="database" data-sp-database-id="rbIlBY2JxbuqTB9havrvKa">0</b>/100</span>
+      <span class="hnext" id="hd-next"></span>
+      <span class="hlv" id="hd-lv">Lv.1 · 第一章 · 初见</span>
+    </div>
+    <div class="htrack"><div class="hfill" id="hd-bar"></div></div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section id="page-list">
+
+    <div class="page-head">
+      <h1 class="serif">大学四年，想做的 100 件小事</h1>
+      <p class="sub">慢慢完成，也慢慢记住。</p>
+      <p class="quote serif">有些事情不是为了完成，而是为了记住。</p>
+    </div>
+
+    <div class="stat-bar">
+      <div class="stat-num">
+        <span class="n" id="st-count" data-sp-bindable="database" data-sp-database-id="rbIlBY2JxbuqTB9havrvKa">0</span>
+        <span class="d">/ 100 已珍藏</span>
+      </div>
+      <div class="stat-mid">
+        <div class="progress-track"><div class="progress-fill" id="st-bar"></div></div>
+        <div class="progress-label">
+          <span id="st-pct" data-sp-bindable="database" data-sp-database-id="rbIlBY2JxbuqTB9havrvKa">0%</span>
+          <span id="st-next"></span>
+        </div>
+      </div>
+      <div class="stat-chapter" id="st-chapter">Lv.1 · 第一章 · 初见</div>
+    </div>
+
+    <div class="tools">
+      <label class="search-box" for="search-input">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <input id="search-input" type="text" placeholder="搜索一件小事或编号…" autocomplete="off">
+      </label>
+      <span class="sel-wrap">
+        <select class="filter" id="cat-filter"><option value="">全部分类</option></select>
+        <svg class="caret" width="11" height="11" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M1 3l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      </span>
+      <span class="count-chip" id="filter-count"></span>
+    </div>
+
+    <div id="list-body"></div>
+  </section>
+
+  <section id="page-chapter" style="display:none">
+
+    <div class="page-head">
+      <h1 class="serif">我的大学章节</h1>
+      <p class="sub">一步一步，都是走过的路。</p>
+    </div>
+
+    <div class="chapter-hero">
+      <div class="lv" id="ch-lv">Lv.1</div>
+      <h2 class="serif" id="ch-name">第一章 · 初见</h2>
+      <p class="say" id="ch-say"></p>
+      <p class="cnt">已珍藏 <b id="ch-count" data-sp-bindable="database" data-sp-database-id="rbIlBY2JxbuqTB9havrvKa">0</b>/100 件 · <span id="ch-left"></span></p>
+    </div>
+
+    <div class="roadmap">
+      <div class="road-track"><div class="road-fill" id="road-fill"></div></div>
+      <div class="road-nodes" id="road-nodes"></div>
+    </div>
+
+    <h3 class="sec-title">此刻的大学</h3>
+    <div class="stats3">
+      <div class="stat-card">
+        <div class="t">已经珍藏</div>
+        <div class="v" id="s-done" data-sp-bindable="database" data-sp-database-id="rbIlBY2JxbuqTB9havrvKa">0 件小事</div>
+      </div>
+      <div class="stat-card">
+        <div class="t">最近的心情</div>
+        <div class="v" id="s-mood" data-sp-bindable="database" data-sp-database-id="rbIlBY2JxbuqTB9havrvKa">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="t">我的大学关键词</div>
+        <div class="tag-list" id="s-kw"></div>
+      </div>
+    </div>
+
+    <h3 class="sec-title">写给现在的自己</h3>
+    <div class="letter"><p class="serif" id="letter-text"></p></div>
+
+    <h3 class="sec-title">最近珍藏</h3>
+    <div class="timeline" id="timeline"></div>
+
+    <footer class="site">
+      大学四年，想做的 100 件小事<br>
+      有些事情不是为了完成，而是为了记住。
+    </footer>
+  </section>
+
+</div>
+
+<div class="modal-mask" id="modal-mask">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-name">
+    <div class="modal-head">
+      <div>
+        <div class="m-num" id="m-num"></div>
+        <h3 class="serif" id="m-name"></h3>
+      </div>
+      <button type="button" class="modal-close" id="btn-close" aria-label="关闭">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label id="lb-status">状态</label>
+        <div class="status-row" id="m-status"></div>
+      </div>
+      <div class="field">
+        <label for="m-date">完成日期</label>
+        <input type="date" id="m-date">
+      </div>
+      <div class="field">
+        <label id="lb-mood">当时的心情</label>
+        <div class="mood-grid" id="m-mood"></div>
+      </div>
+      <div class="field">
+        <label for="m-note">一句话记录</label>
+        <textarea class="note" id="m-note" maxlength="100" placeholder="那天发生了什么…"></textarea>
+      </div>
+      <div class="field photo-area">
+        <label id="lb-photo">照片</label>
+        <div class="photo-thumbs" id="m-photos"></div>
+        <button type="button" class="photo-add" id="btn-add-photo">＋ 添加照片</button>
+        <input type="file" id="m-file" accept="image/*" multiple style="display:none">
+        <p class="hint" id="m-photo-hint"></p>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn" id="btn-cancel">取消</button>
+      <button type="button" class="btn primary" id="btn-save">保存记录</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<template id="tpl-card">
+  <button type="button" class="card">
+    <div class="card-top">
+      <span class="card-num" data-sp-bindable="database" data-sp-database-id="rbIlBY2JxbuqTB9havrvKa"></span>
+      <span class="card-marks">
+        <svg class="mark-photo" viewBox="0 0 14 14" width="13" height="13" fill="none" aria-hidden="true"><rect x="1" y="3" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"></rect><circle cx="4.8" cy="6.5" r="1.2" fill="currentColor"></circle><path d="M1.5 11l3.2-3 2.6 2.4L9.6 8l3 2.6" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"></path></svg>
+        <span class="mark-mood"></span>
+      </span>
+    </div>
+    <div class="card-name" data-sp-bindable="database" data-sp-database-id="rbIlBY2JxbuqTB9havrvKa"></div>
+    <div class="card-bot">
+      <span class="pill" data-sp-bindable="database" data-sp-database-id="rbIlBY2JxbuqTB9havrvKa"></span>
+      <span class="card-date"></span>
+    </div>
+  </button>
+</template>
+
+<template id="tpl-cat">
+  <div class="cat-block">
+    <div class="cat-title">
+      <span class="cat-name" data-sp-bindable="database" data-sp-database-id="rbIlBY2JxbuqTB9havrvKa"></span>
+      <span class="cat-count"></span>
+    </div>
+    <div class="grid"></div>
+  </div>
+</template>
+
+<template id="tpl-tl">
+  <div class="tl-item">
+    <div class="tl-photo"></div>
+    <div class="tl-main">
+      <div class="tl-name" data-sp-bindable="database" data-sp-database-id="rbIlBY2JxbuqTB9havrvKa"></div>
+      <div class="tl-meta"><span class="tl-date"></span><span class="mood"></span></div>
+      <div class="tl-note"></div>
+    </div>
+  </div>
+</template>
+
+<script>
+(function () {
+  'use strict';
+
+  var DATABASE_ID = 'rbIlBY2JxbuqTB9havrvKa';
+
+  var CHAPTERS = [
+    { lv: 1, name: '第一章 · 初见', say: '你正在慢慢认识这所校园。', min: 0 },
+    { lv: 2, name: '第二章 · 相遇', say: '你开始遇见喜欢的人和事。', min: 20 },
+    { lv: 3, name: '第三章 · 生长', say: '你正在成为更完整的自己。', min: 40 },
+    { lv: 4, name: '第四章 · 远行', say: '你走出了熟悉的生活半径。', min: 60 },
+    { lv: 5, name: '第五章 · 珍藏', say: '你的大学已经有了许多故事。', min: 80 },
+    { lv: 6, name: '终章 · 满载而归', say: '这一段青春，值得被好好记住。', min: 100 }
+  ];
+  var ROAD_NAMES = ['初见', '相遇', '生长', '远行', '珍藏', '满载而归'];
+
+  var CAT_FALLBACK = ['校园时光', '青春日常', '朋友之间', '一个人的浪漫', '小小远方',
+    '关于热爱', '勇敢一点', '感受世界', '留下痕迹', '好好告别'];
+  var STATUS_FALLBACK = ['想去做', '等待发生', '已经珍藏', '留给以后'];
+  var MOOD_FALLBACK = ['平静', '期待', '惊喜', '感动', '放松', '疲惫', '迷茫', '想念', '自由', '其他'];
+
+  var STATUS_CLASS = { '想去做': 'todo', '等待发生': 'wait', '已经珍藏': 'done', '留给以后': 'later' };
+
+  var KW_DICT = ['日落', '日出', '晚风', '操场', '天台', '校园', '小路', '长椅', '广播', '校门',
+    '食堂', '早餐', '外卖', '宿舍', '火锅', '电影', '蛋糕', '朋友', '书', '信',
+    '话剧', '演出', '音乐', '歌', '画', '照片', '花', '山', '河', '海',
+    '城市', '火车', '旅行', '图书馆', '窗', '夜', '星星', '雪', '春天', '夏天', '冬天'];
+
+  var db = null;
+  try {
+    if (window.__SMART_PAGE__ && window.__SMART_PAGE__.database) {
+      db = window.__SMART_PAGE__.database;
+    }
+  } catch (e0) {
+    db = null;
+  }
+
+  var ROWS = [];
+  var SCHEMA_OPTIONS = {};
+  var state = { tab: 'list', kw: '', cat: '' };
+  var loaded = false;
+  var syncState = 'loading';
+  var toastTimer = null;
+
+  var editing = null;
+  var modalPending = [];
+  var form = { status: '', date: '', mood: '', note: '', photos: [] };
+
+  function $(id) {
+    return document.getElementById(id);
+  }
+
+  function clearNode(el) {
+    while (el && el.firstChild) {
+      el.removeChild(el.firstChild);
+    }
+  }
+
+  function setText(id, s) {
+    var el = $(id);
+    if (el) {
+      el.textContent = s;
+    }
+  }
+
+  function pad3(n) {
+    var s = String(parseInt(n, 10) || 0);
+    while (s.length < 3) {
+      s = '0' + s;
+    }
+    return s;
+  }
+
+  function numOf(row) {
+    if (!row) {
+      return 0;
+    }
+    var v = row['编号'];
+    if (typeof v === 'number') {
+      return v;
+    }
+    var p = parseFloat(v);
+    return isNaN(p) ? 0 : p;
+  }
+
+  function textOf(row, key) {
+    if (!row) {
+      return '';
+    }
+    var v = row[key];
+    if (v === null || v === undefined) {
+      return '';
+    }
+    return String(v);
+  }
+
+  function isoDate(row) {
+    var d = row ? row['完成日期'] : '';
+    if (!d) {
+      return '';
+    }
+    return String(d).slice(0, 10);
+  }
+
+  function fmtDate(iso) {
+    if (!iso) {
+      return '';
+    }
+    var p = String(iso).split('-');
+    if (p.length < 3) {
+      return iso;
+    }
+    return p[0].slice(2) + '.' + p[1] + '.' + p[2];
+  }
+
+  function recordIdOf(rec) {
+    if (!rec) {
+      return '';
+    }
+    if (rec.record_id) {
+      return rec.record_id;
+    }
+    if (rec.recordId) {
+      return rec.recordId;
+    }
+    return '';
+  }
+
+  function photosOf(row) {
+    var a = row ? row['照片'] : null;
+    if (!a || !a.length) {
+      return [];
+    }
+    return a;
+  }
+
+  function photoUrl(item) {
+    if (!item) {
+      return '';
+    }
+    return item.imageUrl || item.url || '';
+  }
+
+  function firstPhotoUrl(row) {
+    var a = photosOf(row);
+    if (!a.length) {
+      return '';
+    }
+    return photoUrl(a[0]);
+  }
+
+  function statusClass(text) {
+    return STATUS_CLASS[text] || 'todo';
+  }
+
+  function shortName(name) {
+    var s = String(name || '');
+    var i = s.indexOf(' · ');
+    return i >= 0 ? s.slice(i + 3) : s;
+  }
+
+  function optionTextList(field, fallback) {
+    var opts = SCHEMA_OPTIONS[field];
+    var out = [];
+    var i;
+    if (opts && opts.length) {
+      for (i = 0; i < opts.length; i++) {
+        out.push(opts[i].text);
+      }
+      return out;
+    }
+    for (i = 0; i < fallback.length; i++) {
+      out.push(fallback[i]);
+    }
+    return out;
+  }
+
+  function optionIdByText(field, text) {
+    var opts = SCHEMA_OPTIONS[field] || [];
+    for (var i = 0; i < opts.length; i++) {
+      if (opts[i].text === text) {
+        return opts[i].id;
+      }
+    }
+    return '';
+  }
+
+  function rowByNum(num) {
+    for (var i = 0; i < ROWS.length; i++) {
+      if (numOf(ROWS[i]) === num) {
+        return ROWS[i];
+      }
+    }
+    return null;
+  }
+
+  function doneRows() {
+    var out = [];
+    var i;
+    for (i = 0; i < ROWS.length; i++) {
+      if (textOf(ROWS[i], '状态') === '已经珍藏') {
+        out.push(ROWS[i]);
+      }
+    }
+    out.sort(function (a, b) {
+      var x = isoDate(a);
+      var y = isoDate(b);
+      if (x === y) {
+        return numOf(b) - numOf(a);
+      }
+      return x < y ? 1 : -1;
+    });
+    return out;
+  }
+
+  function doneCount() {
+    var n = 0;
+    for (var i = 0; i < ROWS.length; i++) {
+      if (textOf(ROWS[i], '状态') === '已经珍藏') {
+        n++;
+      }
+    }
+    return n;
+  }
+
+  function chapterOf(n) {
+    var c = CHAPTERS[0];
+    for (var i = 0; i < CHAPTERS.length; i++) {
+      if (n >= CHAPTERS[i].min) {
+        c = CHAPTERS[i];
+      }
+    }
+    return c;
+  }
+
+  function setSync(s) {
+    syncState = s;
+    var chip = $('sync-chip');
+    if (chip) {
+      chip.className = 'sync ' + s;
+    }
+    setText('sync-text', s === 'ok' ? '已同步' : (s === 'loading' ? '同步中' : '离线模式'));
+  }
+
+  function toast(msg) {
+    var t = $('toast');
+    if (!t) {
+      return;
+    }
+    t.textContent = msg;
+    t.classList.add('show');
+    if (toastTimer) {
+      clearTimeout(toastTimer);
+    }
+    toastTimer = setTimeout(function () {
+      t.classList.remove('show');
+    }, 2200);
+  }
+
+  function tplClone(id) {
+    var t = $(id);
+    if (!t || !t.content) {
+      return null;
+    }
+    var first = t.content.firstElementChild;
+    return first ? first.cloneNode(true) : null;
+  }
+
+  function bindMark(el) {
+    el.setAttribute('data-sp-bindable', 'database');
+    el.setAttribute('data-sp-database-id', DATABASE_ID);
+    return el;
+  }
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) {
+      e.className = cls;
+    }
+    if (text !== null && text !== undefined) {
+      e.textContent = text;
+    }
+    return e;
+  }
+
+  var IDB_NAME = 'c100w_pending_photos';
+  var IDB_STORE = 'pending';
+  var idbPromise = null;
+
+  function idb() {
+    if (idbPromise) {
+      return idbPromise;
+    }
+    idbPromise = new Promise(function (resolve) {
+      try {
+        if (!window.indexedDB) {
+          resolve(null);
+          return;
+        }
+        var req = indexedDB.open(IDB_NAME, 1);
+        req.onupgradeneeded = function () {
+          var d = req.result;
+          if (!d.objectStoreNames.contains(IDB_STORE)) {
+            d.createObjectStore(IDB_STORE, { keyPath: 'id', autoIncrement: true });
+          }
+        };
+        req.onsuccess = function () {
+          resolve(req.result);
+        };
+        req.onerror = function () {
+          resolve(null);
+        };
+      } catch (e) {
+        resolve(null);
+      }
+    });
+    return idbPromise;
+  }
+
+  function idbPut(rec) {
+    return idb().then(function (d) {
+      if (!d) {
+        return null;
+      }
+      return new Promise(function (resolve) {
+        try {
+          var tx = d.transaction(IDB_STORE, 'readwrite');
+          var store = tx.objectStore(IDB_STORE);
+          var r = store.put(rec);
+          r.onsuccess = function () {
+            resolve(r.result);
+          };
+          r.onerror = function () {
+            resolve(null);
+          };
+        } catch (e) {
+          resolve(null);
+        }
+      });
+    }).catch(function () {
+      return null;
+    });
+  }
+
+  function idbList(num) {
+    return idb().then(function (d) {
+      if (!d) {
+        return [];
+      }
+      return new Promise(function (resolve) {
+        var out = [];
+        try {
+          var tx = d.transaction(IDB_STORE, 'readonly');
+          var cur = tx.objectStore(IDB_STORE).openCursor();
+          cur.onsuccess = function (ev) {
+            var c = ev.target.result;
+            if (!c) {
+              resolve(out);
+              return;
+            }
+            if (c.value && c.value.num === num) {
+              out.push(c.value);
+            }
+            c.continue();
+          };
+          cur.onerror = function () {
+            resolve(out);
+          };
+        } catch (e) {
+          resolve(out);
+        }
+      });
+    }).catch(function () {
+      return [];
+    });
+  }
+
+  function idbDeleteRecord(id) {
+    return idb().then(function (d) {
+      if (!d || !id) {
+        return null;
+      }
+      try {
+        var tx = d.transaction(IDB_STORE, 'readwrite');
+        tx.objectStore(IDB_STORE).delete(id);
+      } catch (e) {
+        return null;
+      }
+      return null;
+    }).catch(function () {
+      return null;
+    });
+  }
+
+  function idbDeleteNum(num) {
+    return idb().then(function (d) {
+      if (!d) {
+        return null;
+      }
+      return new Promise(function (resolve) {
+        try {
+          var tx = d.transaction(IDB_STORE, 'readwrite');
+          var cur = tx.objectStore(IDB_STORE).openCursor();
+          cur.onsuccess = function (ev) {
+            var c = ev.target.result;
+            if (!c) {
+              resolve(null);
+              return;
+            }
+            if (c.value && c.value.num === num) {
+              c.delete();
+            }
+            c.continue();
+          };
+          cur.onerror = function () {
+            resolve(null);
+          };
+        } catch (e) {
+          resolve(null);
+        }
+      });
+    }).catch(function () {
+      return null;
+    });
+  }
+
+  function compressImage(file) {
+    return new Promise(function (resolve) {
+      if (!file || String(file.type).indexOf('image/') !== 0) {
+        resolve({ data: '', dataUrl: '' });
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = function (ev) {
+        var img = new Image();
+        img.onload = function () {
+          try {
+            var max = 1000;
+            var w = img.naturalWidth || img.width || 0;
+            var h = img.naturalHeight || img.height || 0;
+            var k = 1;
+            if (w > max || h > max) {
+              k = Math.min(max / w, max / h);
+            }
+            var cw = Math.max(1, Math.round(w * k));
+            var ch = Math.max(1, Math.round(h * k));
+            var cv = document.createElement('canvas');
+            cv.width = cw;
+            cv.height = ch;
+            cv.getContext('2d').drawImage(img, 0, 0, cw, ch);
+            var dataUrl = cv.toDataURL('image/jpeg', 0.82);
+            resolve({ data: dataUrl.split(',')[1] || '', dataUrl: dataUrl, width: cw, height: ch });
+          } catch (e) {
+            resolve({ data: '', dataUrl: '' });
+          }
+        };
+        img.onerror = function () {
+          resolve({ data: '', dataUrl: '' });
+        };
+        img.src = String(ev.target.result);
+      };
+      reader.onerror = function () {
+        resolve({ data: '', dataUrl: '' });
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function uploadBlob(dataBase64, fileName) {
+    if (!db) {
+      return Promise.resolve('');
+    }
+    return db.uploadImage({ data: dataBase64, contentType: 'image/jpeg', fileName: fileName })
+      .then(function (r) {
+        return (r && r.url) ? r.url : '';
+      })
+      .catch(function () {
+        return '';
+      });
+  }
+
+  function renderProgress() {
+    var n = doneCount();
+    var ch = chapterOf(n);
+    var idx = CHAPTERS.indexOf(ch);
+    var bar1 = $('hd-bar');
+    var bar2 = $('st-bar');
+    if (bar1) {
+      bar1.style.width = n + '%';
+    }
+    if (bar2) {
+      bar2.style.width = n + '%';
+    }
+    setText('hd-count', String(n));
+    setText('st-count', String(n));
+    setText('st-pct', Math.round(n) + '%');
+    setText('ch-count', String(n));
+    setText('s-done', n + ' 件小事');
+    var lvText = 'Lv.' + ch.lv + ' · ' + ch.name;
+    setText('hd-lv', lvText);
+    setText('st-chapter', lvText);
+    var nextText;
+    var leftText;
+    if (idx < CHAPTERS.length - 1) {
+      var gap = CHAPTERS[idx + 1].min - n;
+      nextText = '距「' + shortName(CHAPTERS[idx + 1].name) + '」还差 ' + gap + ' 件';
+      leftText = '距离下一章还差 ' + gap + ' 件';
+    } else {
+      nextText = '已抵达终章';
+      leftText = '已经走完了全部章节';
+    }
+    setText('hd-next', nextText);
+    setText('st-next', nextText);
+    setText('ch-left', leftText);
+  }
+
+  function matchKw(row, kw) {
+    if (!kw) {
+      return true;
+    }
+    var num = numOf(row);
+    if (pad3(num).indexOf(kw) >= 0 || String(num) === kw) {
+      return true;
+    }
+    if (textOf(row, '小事').indexOf(kw) >= 0) {
+      return true;
+    }
+    if (textOf(row, '一句话记录').indexOf(kw) >= 0) {
+      return true;
+    }
+    if (textOf(row, '分类').indexOf(kw) >= 0) {
+      return true;
+    }
+    return false;
+  }
+
+  function cardNode(row) {
+    var n = numOf(row);
+    var st = textOf(row, '状态') || '想去做';
+    var card = tplClone('tpl-card');
+    if (!card) {
+      return el('div', 'card');
+    }
+    card.className = 'card s-' + statusClass(st) + (st === '已经珍藏' ? ' done' : '');
+    card.setAttribute('data-num', String(n));
+    card.setAttribute('title', textOf(row, '小事'));
+    card.addEventListener('click', function () {
+      openModal(n);
+    });
+
+    var numEl = card.querySelector('.card-num');
+    if (numEl) {
+      numEl.textContent = '№ ' + pad3(n);
+    }
+
+    var photoIcon = card.querySelector('.mark-photo');
+    if (photoIcon && !photosOf(row).length) {
+      photoIcon.style.display = 'none';
+    }
+
+    var mood = textOf(row, '心情');
+    var moodDot = card.querySelector('.mark-mood');
+    if (moodDot) {
+      if (mood) {
+        moodDot.className = 'mark-mood' + ((mood === '惊喜' || mood === '期待') ? ' m-warm' : '');
+        moodDot.setAttribute('title', mood);
+      } else {
+        moodDot.style.display = 'none';
+      }
+    }
+
+    var nameEl = card.querySelector('.card-name');
+    if (nameEl) {
+      nameEl.textContent = textOf(row, '小事');
+    }
+
+    var pill = card.querySelector('.pill');
+    if (pill) {
+      pill.className = 'pill ' + statusClass(st);
+      pill.textContent = st;
+    }
+
+    var dateEl = card.querySelector('.card-date');
+    if (dateEl) {
+      if (st === '已经珍藏' && isoDate(row)) {
+        dateEl.textContent = fmtDate(isoDate(row));
+      } else {
+        dateEl.style.display = 'none';
+      }
+    }
+    return card;
+  }
+
+  function catBlock(cat, list) {
+    var block = tplClone('tpl-cat');
+    if (!block) {
+      return el('div', 'cat-block');
+    }
+    var nameEl = block.querySelector('.cat-name');
+    if (nameEl) {
+      nameEl.textContent = cat;
+    }
+    var countEl = block.querySelector('.cat-count');
+    if (countEl) {
+      countEl.textContent = list.length + ' 件';
+    }
+    var grid = block.querySelector('.grid');
+    if (grid) {
+      for (var i = 0; i < list.length; i++) {
+        grid.appendChild(cardNode(list[i]));
+      }
+    }
+    return block;
+  }
+
+  function renderCards() {
+    var body = $('list-body');
+    if (!body) {
+      return;
+    }
+    clearNode(body);
+
+    if (!loaded) {
+      body.appendChild(el('div', 'skeleton', '正在从资料库读取你的 100 件小事…'));
+      setText('filter-count', '');
+      return;
+    }
+
+    var kw = state.kw.trim();
+    var cats = state.cat ? [state.cat] : optionTextList('分类', CAT_FALLBACK);
+    var total = 0;
+
+    for (var ci = 0; ci < cats.length; ci++) {
+      var cat = cats[ci];
+      var list = [];
+      for (var i = 0; i < ROWS.length; i++) {
+        var r = ROWS[i];
+        if (textOf(r, '分类') !== cat) {
+          continue;
+        }
+        if (!matchKw(r, kw)) {
+          continue;
+        }
+        list.push(r);
+      }
+      if (!list.length) {
+        continue;
+      }
+      list.sort(function (a, b) {
+        return numOf(a) - numOf(b);
+      });
+      total += list.length;
+      body.appendChild(catBlock(cat, list));
+    }
+
+    if (!total) {
+      var msg;
+      if (syncState === 'offline') {
+        msg = '暂时读不到资料库的数据，请检查网络后刷新页面。';
+      } else if (kw || state.cat) {
+        msg = '没有找到匹配的小事，换个关键词或分类试试。';
+      } else {
+        msg = '清单里还没有内容，可以在资料库的数据表里添加。';
+      }
+      body.appendChild(el('div', 'grid-empty', msg));
+    }
+
+    setText('filter-count', '显示 ' + total + ' / ' + ROWS.length + ' 件');
+  }
+
+  function renderChapter() {
+    var n = doneCount();
+    var ch = chapterOf(n);
+    var idx = CHAPTERS.indexOf(ch);
+    setText('ch-lv', 'Lv.' + ch.lv);
+    setText('ch-name', ch.name);
+    setText('ch-say', '“' + ch.say + '”');
+
+    var fill = $('road-fill');
+    if (fill) {
+      fill.style.width = (idx / (CHAPTERS.length - 1) * 100) + '%';
+    }
+
+    var nodes = $('road-nodes');
+    if (nodes) {
+      clearNode(nodes);
+      for (var i = 0; i < ROAD_NAMES.length; i++) {
+        var node = el('div', 'road-node' + (i < idx ? ' passed' : (i === idx ? ' current passed' : '')));
+        node.appendChild(el('div', 'road-dot'));
+        node.appendChild(el('div', 'road-name', ROAD_NAMES[i]));
+        nodes.appendChild(node);
+      }
+    }
+
+    var done = doneRows();
+    var moodCount = {};
+    var i2;
+    for (i2 = 0; i2 < done.length; i2++) {
+      var mo = textOf(done[i2], '心情');
+      if (mo) {
+        moodCount[mo] = (moodCount[mo] || 0) + 1;
+      }
+    }
+    var moodOrder = optionTextList('心情', MOOD_FALLBACK);
+    var pairs = [];
+    for (var mk in moodCount) {
+      if (Object.prototype.hasOwnProperty.call(moodCount, mk)) {
+        pairs.push([mk, moodCount[mk]]);
+      }
+    }
+    pairs.sort(function (a, b) {
+      if (b[1] !== a[1]) {
+        return b[1] - a[1];
+      }
+      return moodOrder.indexOf(a[0]) - moodOrder.indexOf(b[0]);
+    });
+    var topMoods = [];
+    for (var i3 = 0; i3 < pairs.length && i3 < 3; i3++) {
+      topMoods.push(pairs[i3][0]);
+    }
+    setText('s-mood', topMoods.length ? topMoods.join(' · ') : '还没有记录');
+
+    var kwCount = {};
+    var i4;
+    for (i4 = 0; i4 < done.length; i4++) {
+      var text = textOf(done[i4], '小事') + textOf(done[i4], '一句话记录');
+      for (var k = 0; k < KW_DICT.length; k++) {
+        if (text.indexOf(KW_DICT[k]) >= 0) {
+          kwCount[KW_DICT[k]] = (kwCount[KW_DICT[k]] || 0) + 1;
+        }
+      }
+    }
+    var kps = [];
+    for (var kk in kwCount) {
+      if (Object.prototype.hasOwnProperty.call(kwCount, kk)) {
+        kps.push([kk, kwCount[kk]]);
+      }
+    }
+    kps.sort(function (a, b) {
+      if (b[1] !== a[1]) {
+        return b[1] - a[1];
+      }
+      return KW_DICT.indexOf(a[0]) - KW_DICT.indexOf(b[0]);
+    });
+    var kws = [];
+    for (var i5 = 0; i5 < kps.length && i5 < 5; i5++) {
+      kws.push(kps[i5][0]);
+    }
+
+    var kwBox = $('s-kw');
+    if (kwBox) {
+      clearNode(kwBox);
+      var src = kws.length ? kws : ['等待被写下'];
+      for (var i6 = 0; i6 < src.length; i6++) {
+        kwBox.appendChild(bindMark(el('span', 'tag', src[i6])));
+      }
+    }
+
+    var letter = $('letter-text');
+    if (letter) {
+      letter.textContent = buildLetter(n, ch, kws, done);
+    }
+  }
+
+  function buildLetter(n, ch, kws, done) {
+    if (!n) {
+      return '清单还是崭新的。不用着急，大学很长，慢慢来。从第一件小事开始，把它轻轻放进回忆里。';
+    }
+    var s = '到现在，你已经把 ' + n + ' 件小事好好收了起来。';
+    if (kws.length) {
+      var pick = [];
+      for (var i = 0; i < kws.length && i < 4; i++) {
+        pick.push(kws[i]);
+      }
+      s += '翻看这些记录，' + pick.join('、') + '，是这段时间留给你的关键词。';
+    }
+    if (done.length) {
+      s += '最近的一件，是「' + textOf(done[0], '小事') + '」。';
+    }
+    if (ch.lv <= 2) {
+      s += '你正在慢慢认识这所校园，生活正在长出自己的节奏。';
+    } else if (ch.lv === 3) {
+      s += '你正在成为更完整的自己，也留下了一些值得回头看的痕迹。';
+    } else if (ch.lv === 4) {
+      s += '你走出了熟悉的生活半径，看见的地方比想象中更远。';
+    } else if (ch.lv === 5) {
+      s += '你的大学已经有了许多故事，它们都好好地放在这里。';
+    } else {
+      s += '这一段青春，值得被好好记住。';
+    }
+    return s;
+  }
+
+  function tlNode(row) {
+    var item = tplClone('tpl-tl');
+    if (!item) {
+      return el('div', 'tl-item');
+    }
+    item.addEventListener('click', function () {
+      openModal(numOf(row));
+    });
+
+    var wrap = item.querySelector('.tl-photo');
+    var url = firstPhotoUrl(row);
+    if (wrap) {
+      if (url) {
+        var im = document.createElement('img');
+        im.setAttribute('alt', '');
+        im.setAttribute('loading', 'lazy');
+        im.setAttribute('src', url);
+        wrap.appendChild(im);
+      } else {
+        wrap.style.display = 'none';
+      }
+    }
+
+    var nameEl = item.querySelector('.tl-name');
+    if (nameEl) {
+      nameEl.textContent = textOf(row, '小事');
+    }
+    var dateEl = item.querySelector('.tl-date');
+    if (dateEl) {
+      dateEl.textContent = fmtDate(isoDate(row));
+    }
+    var moodEl = item.querySelector('.mood');
+    var mood = textOf(row, '心情');
+    if (moodEl) {
+      if (mood) {
+        moodEl.textContent = mood;
+      } else {
+        moodEl.style.display = 'none';
+      }
+    }
+    var noteEl = item.querySelector('.tl-note');
+    var note = textOf(row, '一句话记录');
+    if (noteEl) {
+      if (note) {
+        noteEl.textContent = note;
+      } else {
+        noteEl.style.display = 'none';
+      }
+    }
+    return item;
+  }
+
+  function renderTimeline() {
+    var box = $('timeline');
+    if (!box) {
+      return;
+    }
+    clearNode(box);
+    var done = doneRows();
+    if (!done.length) {
+      box.appendChild(el('div', 'grid-empty', loaded ? '还没有珍藏的小事，从第一件开始吧。' : '正在从资料库读取…'));
+      return;
+    }
+    var max = 8;
+    var limit = done.length < max ? done.length : max;
+    for (var i = 0; i < limit; i++) {
+      box.appendChild(tlNode(done[i]));
+    }
+  }
+
+  function refreshAll() {
+    renderProgress();
+    renderCards();
+    renderChapter();
+    renderTimeline();
+  }
+
+  function renderModalStatus() {
+    var box = $('m-status');
+    if (!box) {
+      return;
+    }
+    clearNode(box);
+    var opts = optionTextList('状态', STATUS_FALLBACK);
+    for (var i = 0; i < opts.length; i++) {
+      var text = opts[i];
+      var b = el('button', 'f-' + statusClass(text) + (text === form.status ? ' on' : ''), text);
+      b.type = 'button';
+      b.setAttribute('data-v', text);
+      b.addEventListener('click', function (ev) {
+        form.status = ev.currentTarget.getAttribute('data-v');
+        renderModalStatus();
+      });
+      box.appendChild(b);
+    }
+  }
+
+  function renderModalMood() {
+    var box = $('m-mood');
+    if (!box) {
+      return;
+    }
+    clearNode(box);
+    var opts = optionTextList('心情', MOOD_FALLBACK);
+    for (var i = 0; i < opts.length; i++) {
+      var text = opts[i];
+      var b = el('button', text === form.mood ? 'on' : '', text);
+      b.type = 'button';
+      b.setAttribute('data-m', text);
+      b.addEventListener('click', function (ev) {
+        var v = ev.currentTarget.getAttribute('data-m');
+        form.mood = (form.mood === v) ? '' : v;
+        renderModalMood();
+      });
+      box.appendChild(b);
+    }
+  }
+
+  function thumbNode(src, isPending, idx) {
+    var d = el('div', 'thumb');
+    if (src) {
+      var im = document.createElement('img');
+      im.setAttribute('alt', '');
+      im.setAttribute('src', src);
+      d.appendChild(im);
+    } else {
+      d.appendChild(el('span', 'thumb-ph', '读取中'));
+    }
+    if (isPending) {
+      d.appendChild(el('span', 'ptag', '待保存'));
+    }
+    var b = el('button', 'del', '✕');
+    b.type = 'button';
+    b.setAttribute('aria-label', '删除这张照片');
+    b.addEventListener('click', function () {
+      removePhoto(idx, isPending);
+    });
+    d.appendChild(b);
+    return d;
+  }
+
+  function renderModalPhotos() {
+    var box = $('m-photos');
+    if (!box) {
+      return;
+    }
+    clearNode(box);
+    var i;
+    for (i = 0; i < form.photos.length; i++) {
+      box.appendChild(thumbNode(form.photos[i].imageUrl || form.photos[i].url || '', false, i));
+    }
+    for (i = 0; i < modalPending.length; i++) {
+      var it = modalPending[i];
+      var src = it.url || (it.blob ? URL.createObjectURL(it.blob) : '');
+      box.appendChild(thumbNode(src, !it.url, i));
+    }
+    var total = form.photos.length + modalPending.length;
+    setText('m-photo-hint', total ? ('已添加 ' + total + ' 张，最多 9 张。') : '最多 9 张，照片会压缩后上传到资料库。');
+  }
+
+  function removePhoto(idx, isPending) {
+    if (isPending) {
+      var it = modalPending[idx];
+      if (it) {
+        modalPending.splice(idx, 1);
+        if (it.id) {
+          idbDeleteRecord(it.id);
+        }
+      }
+    } else {
+      form.photos.splice(idx, 1);
+    }
+    renderModalPhotos();
+  }
+
+  function makeUploader(item) {
+    return function () {
+      return compressImage(item.blob).then(function (res) {
+        return uploadBlob(res.data, item.name || 'photo.jpg');
+      }).then(function (url) {
+        if (url) {
+          item.url = url;
+          idbPut({ id: item.id, num: item.num, name: item.name, type: item.type, blob: item.blob, url: url });
+        }
+        return url;
+      });
+    };
+  }
+
+  function resumeUploads(items) {
+    var chain = Promise.resolve();
+    for (var i = 0; i < items.length; i++) {
+      chain = chain.then(makeUploader(items[i]));
+    }
+    chain.then(function () {
+      renderModalPhotos();
+    }).catch(function () {
+      renderModalPhotos();
+    });
+  }
+
+  function handleOnePhoto(file, num) {
+    idbPut({ num: num, name: file.name, type: file.type, blob: file, url: '' }).then(function (key) {
+      var item = { id: key, num: num, name: file.name, type: file.type, blob: file, url: '' };
+      modalPending.push(item);
+      renderModalPhotos();
+      return makeUploader(item)();
+    }).then(function (url) {
+      renderModalPhotos();
+      if (!url) {
+        toast('照片暂未上传成功，保存时会自动重试');
+      }
+    }).catch(function () {
+      toast('照片处理失败，请重试');
+    });
+  }
+
+  function onPickPhotos(ev) {
+    var input = ev.target;
+    var files = input.files;
+    if (!files || !files.length) {
+      return;
+    }
+    var list = [];
+    var i;
+    for (i = 0; i < files.length; i++) {
+      list.push(files[i]);
+    }
+    input.value = '';
+    if (!editing) {
+      return;
+    }
+    var num = numOf(editing);
+    var room = 9 - (form.photos.length + modalPending.length);
+    if (room <= 0) {
+      toast('最多添加 9 张照片');
+      return;
+    }
+    var count = list.length < room ? list.length : room;
+    for (i = 0; i < count; i++) {
+      handleOnePhoto(list[i], num);
+    }
+    if (list.length > room) {
+      toast('最多 9 张，已保留前 ' + room + ' 张');
+    }
+  }
+
+  function loadModalPending(num) {
+    modalPending = [];
+    idbList(num).then(function (list) {
+      var missing = [];
+      for (var i = 0; i < list.length; i++) {
+        var item = {
+          id: list[i].id,
+          num: list[i].num,
+          name: list[i].name || '照片',
+          type: list[i].type || '',
+          blob: list[i].blob,
+          url: list[i].url || ''
+        };
+        modalPending.push(item);
+        if (!item.url) {
+          missing.push(item);
+        }
+      }
+      if (editing && numOf(editing) === num && modalPending.length) {
+        renderModalPhotos();
+        if (missing.length) {
+          resumeUploads(missing);
+        }
+      }
+    });
+  }
+
+  function openModal(num) {
+    var row = rowByNum(num);
+    if (!row) {
+      return;
+    }
+    editing = row;
+    form.status = textOf(row, '状态') || '想去做';
+    form.date = isoDate(row);
+    form.mood = textOf(row, '心情');
+    form.note = textOf(row, '一句话记录');
+    form.photos = [];
+    var ps = photosOf(row);
+    for (var i = 0; i < ps.length; i++) {
+      form.photos.push({
+        title: ps[i].title || '照片',
+        imageUrl: photoUrl(ps[i]),
+        width: ps[i].width || 0,
+        height: ps[i].height || 0
+      });
+    }
+
+    setText('m-num', '№ ' + pad3(num) + ' · ' + (textOf(row, '分类') || '未分类'));
+    setText('m-name', textOf(row, '小事'));
+    var dEl = $('m-date');
+    if (dEl) {
+      dEl.value = form.date;
+    }
+    var nEl = $('m-note');
+    if (nEl) {
+      nEl.value = form.note;
+    }
+    renderModalStatus();
+    renderModalMood();
+    renderModalPhotos();
+    loadModalPending(num);
+
+    var mask = $('modal-mask');
+    if (mask) {
+      mask.classList.add('show');
+    }
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    var mask = $('modal-mask');
+    if (mask) {
+      mask.classList.remove('show');
+    }
+    document.body.style.overflow = '';
+    editing = null;
+    modalPending = [];
+  }
+
+  function finishPending() {
+    var pending = [];
+    for (var i = 0; i < modalPending.length; i++) {
+      if (!modalPending[i].url) {
+        pending.push(modalPending[i]);
+      }
+    }
+    if (!pending.length) {
+      return Promise.resolve();
+    }
+    var chain = Promise.resolve();
+    for (var j = 0; j < pending.length; j++) {
+      chain = chain.then(makeUploader(pending[j]));
+    }
+    return chain;
+  }
+
+  function saveRecord() {
+    if (!editing) {
+      return;
+    }
+    var num = numOf(editing);
+    var recordId = recordIdOf(editing);
+    if (!recordId) {
+      toast('这条小事缺少记录 ID，暂时无法保存');
+      return;
+    }
+    var btn = $('btn-save');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = '保存中…';
+    }
+    setSync('loading');
+
+    finishPending().then(function () {
+      var images = [];
+      var i;
+      for (i = 0; i < form.photos.length; i++) {
+        if (form.photos[i].imageUrl) {
+          images.push({
+            title: form.photos[i].title || '照片',
+            imageUrl: form.photos[i].imageUrl,
+            width: form.photos[i].width || 0,
+            height: form.photos[i].height || 0
+          });
+        }
+      }
+      for (i = 0; i < modalPending.length; i++) {
+        if (modalPending[i].url) {
+          images.push({ title: modalPending[i].name || '照片', imageUrl: modalPending[i].url });
+        }
+      }
+      var capped = [];
+      for (i = 0; i < images.length && capped.length < 9; i++) {
+        capped.push(images[i]);
+      }
+
+      var props = {};
+      props['状态'] = { select: optionIdByText('状态', form.status) || form.status };
+      props['完成日期'] = { date: form.date || '' };
+      props['心情'] = { select: form.mood ? (optionIdByText('心情', form.mood) || form.mood) : '' };
+      props['一句话记录'] = { text: form.note || '' };
+      props['照片'] = { image: { images: capped } };
+
+      return db.updateRecord({ databaseId: DATABASE_ID, recordId: recordId, properties: props })
+        .then(function () {
+          return idbDeleteNum(num);
+        })
+        .then(function () {
+          closeModal();
+          toast('已保存到资料库');
+          return reloadData();
+        })
+        .catch(function () {
+          setSync('ok');
+          toast('保存失败，请稍后重试');
+        });
+    }).catch(function () {
+      setSync('ok');
+      toast('保存失败，请稍后重试');
+    }).then(function () {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = '保存记录';
+      }
+    });
+  }
+
+  function fillCatFilter() {
+    var sel = $('cat-filter');
+    if (!sel) {
+      return;
+    }
+    var keep = state.cat;
+    clearNode(sel);
+    var o0 = document.createElement('option');
+    o0.value = '';
+    o0.textContent = '全部分类';
+    sel.appendChild(o0);
+    var cats = optionTextList('分类', CAT_FALLBACK);
+    for (var i = 0; i < cats.length; i++) {
+      var o = document.createElement('option');
+      o.value = cats[i];
+      o.textContent = cats[i];
+      sel.appendChild(o);
+    }
+    sel.value = keep;
+  }
+
+  function loadSchema() {
+    return db.getSchema({ databaseId: DATABASE_ID })
+      .then(function (schema) {
+        var props = (schema && schema.properties) || [];
+        for (var i = 0; i < props.length; i++) {
+          var f = props[i];
+          if (!f) {
+            continue;
+          }
+          if ((f.type === 'select' || f.type === 'multi_select') && f.config && f.config.options) {
+            SCHEMA_OPTIONS[f.name] = f.config.options;
+          }
+        }
+        fillCatFilter();
+        return true;
+      })
+      .catch(function () {
+        return false;
+      });
+  }
+
+  function applyRows(rows) {
+    var out = [];
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      if (recordIdOf(r)) {
+        out.push(r);
+      }
+    }
+    out.sort(function (a, b) {
+      return numOf(a) - numOf(b);
+    });
+    ROWS = out;
+    loaded = true;
+    setSync('ok');
+    refreshAll();
+  }
+
+  function onLoadFail() {
+    loaded = true;
+    setSync('offline');
+    refreshAll();
+    toast('没能读取资料库数据，请稍后刷新重试');
+  }
+
+  function fetchPage(startCursor, acc, guard) {
+    acc = acc || [];
+    guard = guard || 0;
+    if (guard > 100) {
+      applyRows(acc);
+      return Promise.resolve();
+    }
+    return db.query({
+      databaseId: DATABASE_ID,
+      sorts: [{ property: '编号', direction: 'ascending' }],
+      pageSize: 200,
+      startCursor: startCursor
+    }).then(function (result) {
+      acc = acc.concat(result.results || []);
+      var next = result.nextCursor;
+      if (result.hasMore && next && next !== startCursor && (result.results || []).length) {
+        return fetchPage(next, acc, guard + 1);
+      }
+      applyRows(acc);
+    }).catch(function () {
+      onLoadFail();
+    });
+  }
+
+  function reloadData() {
+    if (!db) {
+      loaded = true;
+      setSync('offline');
+      refreshAll();
+      return Promise.resolve();
+    }
+    setSync('loading');
+    return fetchPage('', [], 0);
+  }
+
+  function subscribe() {
+    if (!db || typeof db.onUpdated !== 'function') {
+      return;
+    }
+    db.onUpdated(function (info) {
+      var ids = (info && info.databaseIds) || [];
+      for (var i = 0; i < ids.length; i++) {
+        if (ids[i] === DATABASE_ID) {
+          reloadData();
+          return;
+        }
+      }
+    });
+  }
+
+  function switchTab(p) {
+    state.tab = p;
+    var tl = $('tab-list');
+    var tc = $('tab-chapter');
+    if (tl) {
+      tl.className = (p === 'list') ? 'on' : '';
+    }
+    if (tc) {
+      tc.className = (p === 'chapter') ? 'on' : '';
+    }
+    var pl = $('page-list');
+    var pc = $('page-chapter');
+    if (pl) {
+      pl.style.display = (p === 'list') ? '' : 'none';
+    }
+    if (pc) {
+      pc.style.display = (p === 'chapter') ? '' : 'none';
+    }
+    window.scrollTo(0, 0);
+    refreshAll();
+  }
+
+  var searchTimer = null;
+  function onSearchInput() {
+    var si = $('search-input');
+    state.kw = si ? si.value : '';
+    if (searchTimer) {
+      clearTimeout(searchTimer);
+    }
+    searchTimer = setTimeout(function () {
+      refreshAll();
+    }, 130);
+  }
+
+  function bindEvents() {
+    var tl = $('tab-list');
+    if (tl) {
+      tl.addEventListener('click', function () {
+        switchTab('list');
+      });
+    }
+    var tc = $('tab-chapter');
+    if (tc) {
+      tc.addEventListener('click', function () {
+        switchTab('chapter');
+      });
+    }
+    var si = $('search-input');
+    if (si) {
+      si.addEventListener('input', onSearchInput);
+    }
+    var cf = $('cat-filter');
+    if (cf) {
+      cf.addEventListener('change', function () {
+        state.cat = cf.value || '';
+        refreshAll();
+      });
+    }
+    var mask = $('modal-mask');
+    if (mask) {
+      mask.addEventListener('click', function (ev) {
+        if (ev.target === mask) {
+          closeModal();
+        }
+      });
+    }
+    var bc = $('btn-close');
+    if (bc) {
+      bc.addEventListener('click', closeModal);
+    }
+    var bx = $('btn-cancel');
+    if (bx) {
+      bx.addEventListener('click', closeModal);
+    }
+    var bs = $('btn-save');
+    if (bs) {
+      bs.addEventListener('click', saveRecord);
+    }
+    var bp = $('btn-add-photo');
+    var mf = $('m-file');
+    if (bp && mf) {
+      bp.addEventListener('click', function () {
+        mf.click();
+      });
+      mf.addEventListener('change', onPickPhotos);
+    }
+    document.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Escape') {
+        closeModal();
+      }
+    });
+  }
+
+  function init() {
+    bindEvents();
+    fillCatFilter();
+    setSync(db ? 'loading' : 'offline');
+    refreshAll();
+    if (!db) {
+      loaded = true;
+      refreshAll();
+      toast('当前为离线模式：未检测到资料库连接');
+      return;
+    }
+    loadSchema().then(function () {
+      subscribe();
+      reloadData();
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+
+</script>
+</body>
+</html>
