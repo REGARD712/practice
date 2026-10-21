@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>消息表单</title>
+    <link th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <h1 th:if="${message.id == null}">发布新消息</h1>
+    <h1 th:if="${message.id != null}">编辑消息</h1>
+    <form th:action="@{${message.id != null ? '/messages/' + message.id : '/messages'}}" th:object="${message}" method="post">
+        <input type="hidden" name="_method" th:value="${message.id != null ? 'put' : 'post'}">
+        <input type="hidden" th:field="*{id}">
+        <div class="mb-3">
+            <label class="form-label">标题</label>
+            <label>
+                <input th:field="*{title}" class="form-control" required>
+            </label>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">内容</label>
+            <label>
+                <textarea th:field="*{content}" class="form-control" rows="3" required></textarea>
+            </label>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">作者</label>
+            <label>
+                <select th:field="*{userId}" class="form-select" required>
+                    <option th:each="u : ${users}" th:value="${u.id}" th:text="${u.username}"></option>
+                </select>
+            </label>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">分类</label>
+            <label>
+                <select th:field="*{categoryId}" class="form-select" required>
+                    <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+                </select>
+            </label>
+        </div>
+        <button type="submit" class="btn btn-primary">保存</button>
+        <a th:href="@{/}" class="btn btn-secondary">返回</a>
+    </form>
+</div>
+<script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
