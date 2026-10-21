@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>登录</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --danger: #dc2626;
+      --success: #16a34a;
+      --shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at top right, #60a5fa 0%, transparent 32%),
+        radial-gradient(circle at bottom left, #818cf8 0%, transparent 28%),
+        var(--bg);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      color: var(--text);
+    }
+
+    .card {
+      width: min(420px, 100%);
+      background: var(--card);
+      border-radius: 20px;
+      padding: 32px 28px 28px;
+      box-shadow: var(--shadow);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 26px;
+    }
+
+    .subtitle {
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .hint {
+      background: #eff6ff;
+      color: #1e40af;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0 12px;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 4px 0 20px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .row label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      height: 46px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    button[type="submit"]:hover {
+      background: var(--primary-hover);
+    }
+
+    .message {
+      min-height: 22px;
+      margin-top: 14px;
+      font-size: 14px;
+    }
+
+    .message.error {
+      color: var(--danger);
+    }
+
+    .message.success {
+      color: var(--success);
+    }
+
+    .welcome {
+      display: none;
+      text-align: center;
+    }
+
+    .welcome h2 {
+      margin: 8px 0 10px;
+    }
+
+    .welcome p {
+      color: var(--muted);
+      margin: 0 0 20px;
+    }
+
+    .welcome button {
+      height: 42px;
+      padding: 0 18px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <section id="login-panel">
+      <h1>欢迎回来</h1>
+      <p class="subtitle">请输入账号和密码登录。</p>
+      <div class="hint">演示账号：admin / 123456</div>
+
+      <form id="login-form" novalidate>
+        <div class="field">
+          <label for="username">用户名</label>
+          <input id="username" name="username" type="text" autocomplete="username" required />
+        </div>
+
+        <div class="field">
+          <label for="password">密码</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" required />
+        </div>
+
+        <div class="row">
+          <label>
+            <input id="remember" type="checkbox" />
+            记住我
+          </label>
+        </div>
+
+        <button type="submit">登录</button>
+        <p id="message" class="message" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section id="welcome-panel" class="welcome">
+      <h2>登录成功</h2>
+      <p id="welcome-text"></p>
+      <button type="button" id="logout-btn">退出登录</button>
+    </section>
+  </main>
+
+  <script>
+    const DEMO_USER = "admin";
+    const DEMO_PASSWORD = "123456";
+    const STORAGE_KEY = "demo-login-user";
+
+    const loginPanel = document.getElementById("login-panel");
+    const welcomePanel = document.getElementById("welcome-panel");
+    const welcomeText = document.getElementById("welcome-text");
+    const form = document.getElementById("login-form");
+    const usernameInput = document.getElementById("username");
+    const passwordInput = document.getElementById("password");
+    const rememberInput = document.getElementById("remember");
+    const messageEl = document.getElementById("message");
+    const logoutBtn = document.getElementById("logout-btn");
+
+    function showMessage(text, type) {
+      messageEl.textContent = text;
+      messageEl.className = "message " + (type || "");
+    }
+
+    function showWelcome(username) {
+      loginPanel.style.display = "none";
+      welcomePanel.style.display = "block";
+      welcomeText.textContent = "你好，" + username + "。你已成功登录。";
+    }
+
+    function showLogin() {
+      loginPanel.style.display = "block";
+      welcomePanel.style.display = "none";
+      passwordInput.value = "";
+      showMessage("", "");
+    }
+
+    const savedUser = localStorage.getItem(STORAGE_KEY);
+    if (savedUser) {
+      showWelcome(savedUser);
+    }
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!username) {
+        showMessage("请输入用户名。", "error");
+        usernameInput.focus();
+        return;
+      }
+
+      if (!password) {
+        showMessage("请输入密码。", "error");
+        passwordInput.focus();
+        return;
+      }
+
+      if (username === DEMO_USER && password === DEMO_PASSWORD) {
+        if (rememberInput.checked) {
+          localStorage.setItem(STORAGE_KEY, username);
+        } else {
+          localStorage.removeItem(STORAGE_KEY);
+        }
+        showWelcome(username);
+        return;
+      }
+
+      showMessage("用户名或密码错误。", "error");
+    });
+
+    logoutBtn.addEventListener("click", function () {
+      localStorage.removeItem(STORAGE_KEY);
+      showLogin();
+    });
+  </script>
+</body>
+</html>
