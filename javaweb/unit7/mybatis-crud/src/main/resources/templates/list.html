@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>部门管理</title>
+    <style>
+        table, th, td { border: 1px solid #ccc; border-collapse: collapse; padding: 8px; }
+        th { background-color: #f2f2f2; }
+        .action-btn { margin-right: 5px; }
+    </style>
+</head>
+<body>
+<h1>部门列表</h1>
+<a href="/depts/add">新增部门</a>
+<table style="margin-top: 10px;">
+    <thead>
+    <tr><th>ID</th><th>名称</th><th>位置</th><th>创建时间</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="dept : ${depts}">
+        <td th:text="${dept.id}"></td>
+        <td th:text="${dept.name}"></td>
+        <td th:text="${dept.location}"></td>
+        <td th:text="${#dates.format(dept.createTime, 'yyyy-MM-dd HH:mm')}"></td>
+        <td>
+            <a th:href="@{/depts/edit/{id}(id=${dept.id})}" class="action-btn">编辑</a>
+            <form th:action="@{/depts/{id}(id=${dept.id})}" method="post" style="display:inline;">
+                <input type="hidden" name="_method" value="DELETE">
+                <button type="submit" onclick="return confirm('确定删除？')">删除</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>部门表单</title>
+</head>
+<body>
+<h1 th:if="${dept.id == null}">新增部门</h1>
+<h1 th:if="${dept.id != null}">编辑部门</h1>
+<form th:action="${dept.id != null} ? @{/depts/{id}(id=${dept.id})} : @{/depts}" th:object="${dept}" method="post">
+    <input type="hidden" name="_method" th:value="${dept.id != null ? 'PUT' : 'POST'}" />
+    <input type="hidden" th:field="*{id}" />
+    <div>
+        <label>部门名称：</label>
+        <label>
+            <input type="text" th:field="*{name}" required />
+        </label>
+    </div>
+    <div style="margin-top: 8px;">
+        <label>部门位置：</label>
+        <label>
+            <input type="text" th:field="*{location}" />
+        </label>
+    </div>
+    <div style="margin-top: 12px;">
+        <button type="submit">保存</button>
+        <a href="/depts">返回</a>
+    </div>
+</form>
+</body>
+</html>
