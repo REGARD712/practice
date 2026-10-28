@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout::head(title=~{::title/text()})}">
+    <meta charset="UTF-8">
+    <title>ITNews : 新闻管理</title>
+</head>
+
+<body>
+    <nav th:replace="layout :: navbar"></nav>
+    <main class="container mt-4">
+        <h4>新闻管理</h4>
+        <a href="/admin/articles/add" class="btn btn-primary mb-3">发布新闻</a>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>标题</th>
+                    <th>分类</th>
+                    <th>作者</th>
+                    <th>发布时间</th>
+                    <th>操作
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="a : ${articles}">
+                    <td th:text="${a.id}"></td>
+                    <td th:text="${a.title}"></td>
+                    <td th:text="${a.category.name}"></td>
+                    <td th:text="${a.user.username}"></td>
+                    <td th:text="${#dates.format(a.createTime, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td>
+                        <a th:href="@{/admin/articles/edit/{id}(id=${a.id})}" class="btn btn-sm
+        btn-warning">编辑</a>
+                        <a th:href="@{/admin/articles/delete/{id}(id=${a.id})}" class="btn btnsm
+        btn-danger" onclick="return confirm('确定删除？')">删除</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+    <footer th:replace="layout :: footer"></footer>
+</body>
+
+</html>

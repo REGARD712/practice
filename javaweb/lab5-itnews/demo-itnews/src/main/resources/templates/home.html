@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--1.引入布局页头部片段,取代原head区块-->
+
+<head th:replace="~{layout::head(title=~{::title/text()})}">
+    <meta charset="UTF-8">
+    <title>ITNews : 首页</title>
+</head>
+<!--头部片段结束-->
+
+<body>
+    <nav th:replace="layout :: navbar"></nav>
+    <main class="container mt-4">
+        <div class="mb-3">
+            <a th:href="@{/}" class="btn btn-outline-secondary btn-sm">全部</a>
+            <a th:each="cat : ${categories}" th:href="@{/(categoryId=${cat.id})}" th:text="${cat.name}"
+                class="btn btn-outline-primary btn-sm"
+                th:classappend="${selectedCategoryId == cat.id} ? 'active' : ''"></a>
+        </div>
+        <div class="list-group">
+            <div th:each="article : ${articles}" class="list-group-item">
+                <h5><a th:href="@{/article/{id}(id=${article.id})}" th:text="${article.title}">标题</a></h5>
+                <small>
+                    分类：<span th:text="${article.category.name}"></span> |
+                    作者：<span th:text="${article.user.username}"></span> |
+                    时间：<span th:text="${#dates.format(article.createTime, 'yyyy-MM-dd
+        HH:mm')}"></span>
+                </small>
+                <p th:text="${#strings.abbreviate(article.content, 100)}">摘要</p>
+            </div>
+        </div>
+    </main>
+    <footer th:replace="layout :: footer"></footer>
+</body>
+
+</html>

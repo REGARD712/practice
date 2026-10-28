@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout::head(title=~{::title/text()})}">
+    <meta charset="UTF-8">
+    <title>ITNews : 分类管理</title>
+</head>
+
+<body>
+    <nav th:replace="layout :: navbar"></nav>
+    <main class="container mt-4">
+        <h4>分类管理</h4>
+        <a href="/admin/categories/add" class="btn btn-primary mb-3">新增分类</a>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>名称</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="c : ${categories}">
+                    <td th:text="${c.id}"></td>
+                    <td th:text="${c.name}"></td>
+                    <td>
+                        <a th:href="@{/admin/categories/edit/{id}(id=${c.id})}" class="btn btnsm
+btn-warning">编辑</a>
+                        <a th:href="@{/admin/categories/delete/{id}(id=${c.id})}" class="btn
+btn-sm btn-danger" onclick="return confirm('确定删除？')">删除</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+    <footer th:replace="layout :: footer"></footer>
+</body>
+
+</html>

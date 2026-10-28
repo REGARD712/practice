@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--1.引入布局页头部片段,取代原head区块-->
+
+<head th:replace="~{layout::head(title=~{::title/text()})}">
+    <meta charset="UTF-8">
+    <title>ITNews : 关于我</title>
+</head>
+<!--头部片段结束-->
+
+<body>
+    <div th:replace="layout :: navbar"></div>
+    <main class="container mt-4">
+        <h4>关于我</h4>
+        <p>学号：2024111130</p>
+        <p>姓名：李港</p>
+        <p>班级：计算机科学与技术1班</p>
+    </main>
+    <div th:replace="layout :: footer"></div>
+</body>
+
+</html>

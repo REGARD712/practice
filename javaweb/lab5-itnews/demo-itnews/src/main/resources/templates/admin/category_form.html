@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout::head(title=~{::title/text()})}">
+    <meta charset="UTF-8">
+    <title>ITNews : 分类表单</title>
+</head>
+
+<body>
+    <nav th:replace="layout :: navbar"></nav>
+    <main class="container mt-4">
+        <h1 th:if="${category.id == null}">新增分类</h1>
+        <h1 th:if="${category.id != null}">编辑分类</h1>
+        <form th:action="@{/admin/categories/save}" method="post" th:object="${category}">
+            <input type="hidden" th:field="*{id}">
+            <div class="mb-3">
+                <label class="form-label">分类名称</label>
+                <input type="text" th:field="*{name}" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">保存</button>
+            <a href="/admin/categories" class="btn btn-secondary">返回</a>
+        </form>
+    </main>
+    <footer th:replace="layout :: footer"></footer>
+</body>
+
+</html>
