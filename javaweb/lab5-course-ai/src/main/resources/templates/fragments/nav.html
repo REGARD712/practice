@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="bar" class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="/">Course System</a>
+        <div class="navbar-nav me-auto" th:if="${session.currentUser != null}">
+            <a class="nav-link" th:if="${session.currentUser.role.name() == 'STUDENT'}" href="/student/courses">课程浏览</a>
+            <a class="nav-link" th:if="${session.currentUser.role.name() == 'STUDENT'}" href="/student/my-courses">我的课程</a>
+            <a class="nav-link" th:if="${session.currentUser.role.name() == 'TEACHER'}" href="/teacher/courses">课程管理</a>
+            <a class="nav-link" th:if="${session.currentUser.role.name() == 'ADMIN'}" href="/admin/users">用户管理</a>
+            <a class="nav-link" th:if="${session.currentUser.role.name() == 'ADMIN'}" href="/admin/courses">课程管理</a>
+        </div>
+        <div class="d-flex align-items-center gap-3 text-white" th:if="${session.currentUser != null}">
+            <span th:text="${session.currentUser.username}"></span>
+            <form method="post" action="/logout" class="m-0">
+                <button class="btn btn-sm btn-outline-light" type="submit">退出</button>
+            </form>
+        </div>
+    </div>
+</nav>
+<div th:fragment="alerts" class="container">
+    <div class="alert alert-success" role="alert" th:if="${message}" th:text="${message}"></div>
+    <div class="alert alert-danger" role="alert" th:if="${error}" th:text="${error}"></div>
+</div>
+<th:block th:fragment="scripts">
+    <script src="/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</th:block>
+</body>
+</html>

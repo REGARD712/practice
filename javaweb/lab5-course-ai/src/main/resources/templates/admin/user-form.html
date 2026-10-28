@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>用户信息</title>
+    <link href="/webjars/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: bar}"></div>
+<div th:replace="~{fragments/nav :: alerts}"></div>
+<main class="container" style="max-width: 700px">
+    <h1 class="h3 mb-4" th:text="${user.id == null ? '新增用户' : '编辑用户'}"></h1>
+    <form method="post" th:action="${formAction}" th:object="${user}">
+        <div class="mb-3">
+            <label class="form-label" for="username">用户名</label>
+            <input class="form-control" id="username" th:field="*{username}" maxlength="50" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="password">密码</label>
+            <input class="form-control" id="password" th:field="*{password}" type="password" maxlength="100"
+                   th:required="${user.id == null}">
+            <div class="form-text" th:if="${user.id != null}">留空则不修改密码。</div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="role">角色</label>
+            <select class="form-select" id="role" th:field="*{role}" required>
+                <option value="">请选择角色</option>
+                <option value="STUDENT">学生</option>
+                <option value="TEACHER">教师</option>
+                <option value="ADMIN">管理员</option>
+            </select>
+        </div>
+        <button class="btn btn-primary" type="submit">保存</button>
+        <a class="btn btn-outline-secondary" href="/admin/users">取消</a>
+    </form>
+</main>
+<th:block th:replace="~{fragments/nav :: scripts}"></th:block>
+</body>
+</html>

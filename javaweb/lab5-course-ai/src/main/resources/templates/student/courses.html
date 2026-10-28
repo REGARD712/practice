@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>浏览课程</title>
+    <link href="/webjars/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: bar}"></div>
+<div th:replace="~{fragments/nav :: alerts}"></div>
+<main class="container">
+    <h1 class="h3 mb-3">全部课程</h1>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead><tr><th>封面</th><th>课程</th><th>教师</th><th>价格</th><th>选课</th></tr></thead>
+            <tbody>
+            <tr th:each="course : ${courses}">
+                <td><img th:src="${course.coverUrl != null ? course.coverUrl : '/images/course-placeholder.svg'}"
+                         onerror="this.onerror=null;this.src='/images/course-placeholder.svg'"
+                         alt="课程封面" width="60" height="60" class="rounded object-fit-cover"></td>
+                <td>
+                    <div class="fw-semibold" th:text="${course.name}"></div>
+                    <div class="small text-muted" th:text="${course.description}"></div>
+                </td>
+                <td th:text="${course.teacher != null ? course.teacher.username : ''}"></td>
+                <td th:text="|¥${course.price}|"></td>
+                <td>
+                    <span class="badge text-bg-success" th:if="${enrolledIds.contains(course.id)}">已选</span>
+                    <form method="post" action="/student/enroll" th:unless="${enrolledIds.contains(course.id)}">
+                        <input type="hidden" name="courseId" th:value="${course.id}">
+                        <button class="btn btn-sm btn-primary" type="submit">立即选课</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(courses)}"><td colspan="5" class="text-center text-muted">暂无课程</td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+<th:block th:replace="~{fragments/nav :: scripts}"></th:block>
+</body>
+</html>

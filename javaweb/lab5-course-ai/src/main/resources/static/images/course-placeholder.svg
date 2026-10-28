@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="320" viewBox="0 0 480 320" role="img" aria-labelledby="title description">
+  <title id="title">通用课程封面</title>
+  <desc id="description">带有书本和播放图标的课程封面占位图</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="book" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset="1" stop-color="#dbeafe"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="320" rx="24" fill="url(#background)"/>
+  <circle cx="414" cy="58" r="84" fill="#fff" opacity=".08"/>
+  <circle cx="52" cy="278" r="112" fill="#0f172a" opacity=".12"/>
+  <path d="M120 92c30-13 57-10 82 5v112c-25-15-52-18-82-5z" fill="url(#book)"/>
+  <path d="M284 92c-30-13-57-10-82 5v112c25-15 52-18 82-5z" fill="#bfdbfe"/>
+  <path d="M202 97v112" fill="none" stroke="#93c5fd" stroke-width="5"/>
+  <path d="M139 119c19-6 34-4 49 2M139 143c19-6 34-4 49 2M139 167c19-6 34-4 49 2M265 119c-19-6-34-4-49 2M265 143c-19-6-34-4-49 2M265 167c-19-6-34-4-49 2"
+        fill="none" stroke="#93a9ca" stroke-linecap="round" stroke-width="5"/>
+  <circle cx="348" cy="147" r="45" fill="#fbbf24"/>
+  <path d="m338 124 35 23-35 23z" fill="#1e3a8a"/>
+  <text x="240" y="260" fill="#fff" font-family="Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="5" text-anchor="middle">COURSE</text>
+</svg>

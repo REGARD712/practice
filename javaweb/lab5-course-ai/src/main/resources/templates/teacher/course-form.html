@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>课程信息</title>
+    <link href="/webjars/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: bar}"></div>
+<div th:replace="~{fragments/nav :: alerts}"></div>
+<main class="container" style="max-width: 760px">
+    <h1 class="h3 mb-4" th:text="${course.id == null ? '发布课程' : '编辑课程'}"></h1>
+    <form method="post" enctype="multipart/form-data" th:action="${formAction}" th:object="${course}">
+        <div class="mb-3">
+            <label class="form-label" for="name">课程名称</label>
+            <input class="form-control" id="name" th:field="*{name}" maxlength="100" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="description">课程简介</label>
+            <textarea class="form-control" id="description" th:field="*{description}" rows="5"></textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="price">价格</label>
+            <input class="form-control" id="price" th:field="*{price}" type="number" min="0" step="0.01" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="cover">课程封面</label>
+            <input class="form-control" id="cover" name="cover" type="file" accept="image/png,image/jpeg,image/gif">
+            <div class="form-text">支持 PNG、JPEG、GIF，最大 2MB；编辑时不选择新文件则保留原封面。</div>
+            <img class="mt-2 rounded" th:if="${course.coverUrl != null}" th:src="${course.coverUrl}"
+                 onerror="this.onerror=null;this.src='/images/course-placeholder.svg'"
+                 alt="当前课程封面" width="90" height="90" style="object-fit: cover">
+        </div>
+        <button class="btn btn-primary" type="submit">保存</button>
+        <a class="btn btn-outline-secondary" href="/teacher/courses">取消</a>
+    </form>
+</main>
+<th:block th:replace="~{fragments/nav :: scripts}"></th:block>
+</body>
+</html>
