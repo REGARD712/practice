@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>用户登录</title>
+    <style>
+        .error {
+            color: red;
+        }
+
+        .info {
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>RBAC权限演示系统</h2>
+    <form th:action="@{/login}" method="post">
+        <div><label>用户名：</label><input type="text" name="username" required autofocus /></div>
+        <div><label>密码：</label><input type="password" name="password" required /></div>
+        <div><button type="submit">登录</button></div>
+        <div th:if="${param.error}" class="error">用户名或密码错误</div>
+        <div th:if="${param.logout}" class="info">您已成功退出</div>
+        <div th:if="${param.registered}" class="info">注册成功，请登录</div>
+    </form>
+    <p>还没有账号？<a th:href="@{/register}">立即注册</a></p>
+</body>
+
+</html>

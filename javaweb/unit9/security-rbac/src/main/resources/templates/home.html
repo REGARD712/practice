@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+</head>
+
+<body>
+    <h1>欢迎，<span th:text="${#authentication.name}">用户</span>！</h1>
+    <p>您的角色/权限：<span th:text="${#authentication.authorities}">[]</span></p>
+    <hr />
+    <h3>功能导航</h3>
+    <ul>
+        <li><a href="/user/docs">普通用户：查看文档</a>（需要 document:view 权限）</li>
+        <li><a href="/user/editDoc">普通用户：编辑文档</a>（需要 document:edit 权限，普通用户无此权限）</li>
+        <li><a href="/admin/dashboard">管理员面板</a>（需要 ADMIN 角色）</li>
+    </ul>
+    <form th:action="@{/logout}" method="post" style="margin-top:20px;">
+        <button type="submit">退出登录</button>
+    </form>
+</body>
+
+</html>
