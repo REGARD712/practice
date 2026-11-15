@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(title='用户管理', content=~{::section})}">
+
+<head></head>
+
+<body>
+    <section>
+        <div class="container py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>用户管理</h1>
+                <a href="/messages" class="btn btn-secondary">返回消息中心</a>
+            </div>
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">所有用户</div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>用户名</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="u : ${users}">
+                                <td th:text="${u.id}"></td>
+                                <td th:text="${u.username}"></td>
+                                <td><span th:if="${u.enabled}" class="badge bg-success">启用
+                                    </span>
+                                    <span th:unless="${u.enabled}" class="badge bg-danger">
+                                        禁用</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>
