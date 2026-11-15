@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<!-- 前台宠物列表页：支持关键词与品种筛选、卡片列表、空结果提示和分页导航。 -->
+<head th:replace="~{fragments/common :: head('寻找伙伴')}"></head>
+<body>
+<nav th:replace="~{fragments/common :: header}"></nav>
+<div th:replace="~{fragments/common :: flash}"></div>
+<!-- 页头包含面包屑和列表说明，帮助用户确认当前所在栏目。 -->
+<header class="page-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a th:href="@{/}">首页</a></li><li class="breadcrumb-item active" aria-current="page">寻找伙伴</li></ol></nav>
+        <h1 class="page-title">遇见你的新朋友</h1>
+        <p class="page-subtitle">慢慢了解，认真选择。适合，比一见钟情更重要。</p>
+    </div>
+</header>
+<main class="section-space pt-4">
+    <div class="container">
+        <!-- 筛选表单使用 GET，使关键词和品种条件保留在 URL 中，便于分页及分享。 -->
+        <form th:action="@{/pets}" method="get" class="filter-panel mb-4">
+            <div class="row g-3 align-items-end">
+                <!-- 关键词输入框回显 keyword，用于搜索宠物名字或描述。 -->
+                <div class="col-lg-5"><label for="keyword" class="form-label">搜索名字或描述</label><div class="input-group"><span class="input-group-text border-end-0 bg-transparent"><i class="bi bi-search text-secondary"></i></span><input class="form-control border-start-0" type="search" id="keyword" name="keyword" th:value="${keyword}" placeholder="例如：金毛、亲人、活泼"></div></div>
+                <!-- 品种下拉框遍历 breeds，并根据 breedId 回显当前选中项。 -->
+                <div class="col-sm-8 col-lg-4"><label for="breedId" class="form-label">宠物品种</label><select class="form-select" id="breedId" name="breedId"><option value="">全部品种</option><option th:each="breed : ${breeds}" th:value="${breed.id}" th:text="|${breed.name} · ${breed.species}|" th:selected="${breedId != null and breed.id == breedId}">品种</option></select></div>
+                <div class="col-sm-4 col-lg-3 d-grid"><button class="btn btn-primary" type="submit">筛选伙伴</button></div>
+            </div>
+        </form>
+        <!-- 遍历当前页 pets，每只宠物复用公共 card 片段生成响应式卡片。 -->
+        <div class="row g-4">
+            <div class="col-sm-6 col-lg-4" th:each="pet : ${pets}"><div th:replace="~{fragments/pet-card :: card(${pet})}"></div></div>
+        </div>
+        <!-- 查询结果为空时提示调整条件，并提供清除筛选、查看全部宠物的入口。 -->
+        <div class="empty-state" th:if="${#lists.isEmpty(pets)}"><i class="bi bi-search-heart"></i><h3>暂时没有符合条件的伙伴</h3><p>试试清空关键词或选择其他品种。</p><a th:href="@{/pets}" class="btn btn-outline-primary rounded-pill">查看全部宠物</a></div>
+        <!-- 仅总页数大于 1 时显示分页；所有分页链接都携带现有关键词和品种条件。 -->
+        <nav class="mt-5" aria-label="宠物列表分页" th:if="${totalPages > 1}">
+            <ul class="pagination justify-content-center">
+                <!-- 当前为第一页时禁用上一页，否则跳转到 currentPage - 1。 -->
+                <li class="page-item" th:classappend="${currentPage <= 1} ? 'disabled'"><a class="page-link" th:href="@{/pets(page=${currentPage - 1},keyword=${keyword},breedId=${breedId})}" aria-label="上一页"><i class="bi bi-chevron-left"></i></a></li>
+                <!-- 生成 1 至 totalPages 的页码，当前页通过 active 样式高亮。 -->
+                <li class="page-item" th:each="pageNumber : ${#numbers.sequence(1,totalPages)}" th:classappend="${pageNumber == currentPage} ? 'active'"><a class="page-link" th:href="@{/pets(page=${pageNumber},keyword=${keyword},breedId=${breedId})}" th:text="${pageNumber}">1</a></li>
+                <!-- 当前为最后一页时禁用下一页，否则跳转到 currentPage + 1。 -->
+                <li class="page-item" th:classappend="${currentPage >= totalPages} ? 'disabled'"><a class="page-link" th:href="@{/pets(page=${currentPage + 1},keyword=${keyword},breedId=${breedId})}" aria-label="下一页"><i class="bi bi-chevron-right"></i></a></li>
+            </ul>
+        </nav>
+    </div>
+</main>
+<footer th:replace="~{fragments/common :: footer}"></footer>
+<th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

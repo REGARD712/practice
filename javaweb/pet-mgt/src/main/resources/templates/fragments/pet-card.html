@@ -1,0 +1,24 @@
+<!-- 宠物卡片公共片段：用于首页推荐及宠物列表，接收 pet 参数（当前宠物对象）。 -->
+<div th:fragment="card(pet)" class="card pet-card h-100 border-0">
+    <!-- 图片区域整体链接到当前宠物详情；封面、替代文本均读取 pet 数据。 -->
+    <a th:href="@{/pets/{id}(id=${pet.id})}" class="pet-card-image-wrap" aria-label="查看宠物详情">
+        <!-- 动态封面图：URL 经 Thymeleaf 链接表达式处理，alt 使用宠物名字。 -->
+        <img th:src="@{${pet.coverImage}}" th:alt="${pet.name}" class="pet-card-image">
+        <!-- 根据 AVAILABLE、PENDING、ADOPTED 状态分别设置徽章样式与中文文案。 -->
+        <span class="status-badge" th:classappend="${pet.status == 'AVAILABLE' ? ' status-available' : (pet.status == 'PENDING' ? ' status-pending' : ' status-adopted')}" th:text="${pet.status == 'AVAILABLE' ? '等待领养' : (pet.status == 'PENDING' ? '申请审核中' : '已找到新家')}">等待领养</span>
+        <span class="pet-card-arrow"><i class="bi bi-arrow-up-right"></i></span>
+    </a>
+    <!-- 卡片正文：展示名字、性别、品种、年龄、健康状况及详情入口。 -->
+    <div class="card-body p-4">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+            <h3 class="pet-card-title mb-0" th:text="${pet.name}">宠物名字</h3>
+            <span class="pet-gender"><i class="bi bi-gender-ambiguous me-1"></i><span th:text="${pet.gender}">性别</span></span>
+        </div>
+        <!-- 品种为空时显示“待确认品种”，月龄统一追加“个月”单位。 -->
+        <p class="pet-card-meta mb-3"><span th:text="${pet.breed != null ? pet.breed : '待确认品种'}">品种</span><span class="meta-dot"></span><span th:text="${pet.ageMonths} + ' 个月'">年龄</span></p>
+        <div class="d-flex align-items-center justify-content-between">
+            <span class="health-label"><i class="bi bi-shield-check me-1"></i><span th:text="${pet.healthStatus}">健康状况</span></span>
+            <a class="text-link" th:href="@{/pets/{id}(id=${pet.id})}">认识我<i class="bi bi-arrow-right ms-1"></i></a>
+        </div>
+    </div>
+</div>

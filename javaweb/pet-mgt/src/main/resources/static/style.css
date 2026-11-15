@@ -1,0 +1,441 @@
+/*
+ * 全站公共样式：定义暖色自然风设计变量，并覆盖导航、首页、宠物详情、认证页、后台和页脚。
+ * 文件在公共 head 片段中引入；末尾媒体查询按屏幕宽度收紧布局，不改变各页面的业务结构。
+ */
+/* 根变量集中维护品牌色、文字色、边线和阴影，便于各组件保持一致的视觉语言。 */
+:root {
+    /* 主品牌暖橙色，用于主要按钮、链接和强调信息。 */
+    --primary: #d66b47;
+    /* 主色的深色变体，用于悬停、按下等交互状态。 */
+    --primary-dark: #ad4c30;
+    /* 主色的 RGB 分量，便于在透明阴影和聚焦光晕中复用。 */
+    --primary-rgb: 214, 107, 71;
+    /* 深森林绿，用于标题、品牌及深色面板。 */
+    --forest: #294c43;
+    /* 较浅的森林绿，用于次要图标和说明文字。 */
+    --forest-light: #527469;
+    /* 页面主背景的浅奶油色。 */
+    --cream: #fbf8f3;
+    /* 图片占位等区域使用的深一级奶油色。 */
+    --cream-deep: #f3eadf;
+    /* 正文使用的高对比度墨色。 */
+    --ink: #28322f;
+    /* 次要说明文字使用的柔和灰色。 */
+    --muted: #77807b;
+    /* 卡片、输入框等组件的浅色边线。 */
+    --line: #e9e3da;
+    /* 统一白色变量，供需要纯白的组件使用。 */
+    --white: #ffffff;
+    /* 卡片、弹层共用的低对比度柔和阴影。 */
+    --shadow-soft: 0 14px 40px rgba(52, 63, 57, .08);
+}
+
+/* 全局基础规则：统一盒模型、页面背景、字体及常用元素行为。 */
+/* 所有元素统一采用 border-box，宽高度会包含内边距和边框。 */
+* { box-sizing: border-box; }
+/* 页内锚点跳转使用平滑滚动。 */
+html { scroll-behavior: smooth; }
+/* 页面至少占满视口；顶部留白避让固定导航，并统一正文颜色、背景和中文字体。 */
+body {
+    min-height: 100vh;
+    padding-top: 82px;
+    color: var(--ink);
+    background: var(--cream);
+    font-family: "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+/* 普通链接继承当前文字颜色并取消下划线，悬停时切换为主品牌色。 */
+a { color: inherit; text-decoration: none; }
+a:hover { color: var(--primary); }
+/* 图片默认不超出其父容器宽度。 */
+img { max-width: 100%; }
+/* 统一按钮字重和点击区域内边距。 */
+.btn { font-weight: 600; padding: .72rem 1.35rem; }
+/* 覆盖 Bootstrap 主按钮变量，分别定义默认、悬停、按下和禁用状态的品牌色。 */
+.btn-primary {
+    --bs-btn-bg: var(--primary);
+    --bs-btn-border-color: var(--primary);
+    --bs-btn-hover-bg: var(--primary-dark);
+    --bs-btn-hover-border-color: var(--primary-dark);
+    --bs-btn-active-bg: var(--primary-dark);
+    --bs-btn-active-border-color: var(--primary-dark);
+    --bs-btn-disabled-bg: var(--primary);
+    --bs-btn-disabled-border-color: var(--primary);
+}
+/* 描边主按钮默认显示品牌色，悬停和按下时切换到相应的填充或深色状态。 */
+.btn-outline-primary {
+    --bs-btn-color: var(--primary);
+    --bs-btn-border-color: var(--primary);
+    --bs-btn-hover-bg: var(--primary);
+    --bs-btn-hover-border-color: var(--primary);
+    --bs-btn-active-bg: var(--primary-dark);
+    --bs-btn-active-border-color: var(--primary-dark);
+}
+/* 成功按钮改用森林绿背景与边框。 */
+.btn-success { --bs-btn-bg: var(--forest); --bs-btn-border-color: var(--forest); }
+/* 强制 Bootstrap 的主色文字和背景工具类使用本站品牌色。 */
+.text-primary { color: var(--primary) !important; }
+.bg-primary { background-color: var(--primary) !important; }
+/* 文本输入框与下拉框统一高度、白底、圆角、边框及内容间距。 */
+.form-control, .form-select {
+    min-height: 48px;
+    border-color: var(--line);
+    background-color: #fff;
+    border-radius: 12px;
+    padding: .7rem .95rem;
+}
+/* 多行文本域提供更高的默认编辑区域。 */
+textarea.form-control { min-height: 120px; }
+/* 输入控件聚焦时使用品牌色边框和透明光晕，突出当前编辑位置。 */
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 .22rem rgba(var(--primary-rgb), .12);
+}
+/* 复选框和单选框的选中、聚焦状态沿用品牌色。 */
+.form-check-input:checked { background-color: var(--primary); border-color: var(--primary); }
+.form-check-input:focus { border-color: var(--primary); box-shadow: 0 0 0 .2rem rgba(var(--primary-rgb), .12); }
+/* 表单标签使用略小字号、较高字重及固定下间距。 */
+.form-label { font-size: .92rem; font-weight: 600; margin-bottom: .48rem; }
+/* 在必填标签后自动追加红色星号，无需模板重复书写。 */
+.required::after { content: " *"; color: #c84c3e; }
+/* 可复用的柔和阴影和区块垂直留白工具类。 */
+.shadow-soft { box-shadow: var(--shadow-soft); }
+.section-space { padding: 84px 0; }
+/* 区块眉题采用弹性横向排列，配合小字号、粗体和加大字距形成引导标签。 */
+.section-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    color: var(--primary);
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    margin-bottom: .7rem;
+}
+/* 在眉题文字前绘制短横线装饰。 */
+.section-kicker::before { content: ""; width: 24px; height: 2px; background: var(--primary); }
+/* 区块标题随视口流体缩放，说明文字限制宽度以避免过长行。 */
+.section-title { font-size: clamp(1.8rem, 3vw, 2.55rem); font-weight: 700; letter-spacing: -.04em; }
+.section-description { color: var(--muted); max-width: 560px; }
+/* 品牌色文字链接及其深色悬停反馈。 */
+.text-link { color: var(--primary); font-size: .9rem; font-weight: 700; }
+.text-link:hover { color: var(--primary-dark); }
+
+/* 顶部导航、品牌标识、用户菜单及全局 Flash 浮动提示。 */
+/* 固定导航采用奶油色半透明背景、细分隔线和背景模糊，兼顾辨识度与内容可见性。 */
+.site-nav {
+    height: 82px;
+    background: rgba(251, 248, 243, .93);
+    border-bottom: 1px solid rgba(222, 214, 202, .75);
+    backdrop-filter: blur(18px);
+}
+/* 品牌链接横向排列图标和文字；悬停仍保持森林绿，避免普通链接主色覆盖。 */
+.brand { display: inline-flex; align-items: center; gap: .72rem; color: var(--forest); font-size: 1.25rem; font-weight: 800; letter-spacing: -.03em; }
+.brand:hover { color: var(--forest); }
+/* 品牌图标使用暖橙圆角方块并轻微旋转，形成友好活泼的识别标记。 */
+.brand-mark { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 14px; color: white; background: var(--primary); font-size: 1.25rem; transform: rotate(-4deg); }
+/* 品牌英文副标题使用更小、更浅的文字。 */
+.brand-sub { margin-left: .35rem; font-size: .72rem; font-weight: 500; color: var(--muted); letter-spacing: .06em; }
+/* 导航项预留底部下划线定位空间，并统一字号、字重和文字颜色。 */
+.site-nav .nav-link { position: relative; padding: .7rem 1rem !important; font-size: .94rem; font-weight: 600; color: #59635e; }
+/* 默认将装饰下划线宽度设为零并水平居中，通过过渡准备悬停动画。 */
+.site-nav .nav-link::after { content: ""; position: absolute; bottom: 3px; left: 50%; width: 0; height: 2px; background: var(--primary); transition: .2s; transform: translateX(-50%); }
+/* 鼠标悬停时展开下划线。 */
+.site-nav .nav-link:hover::after { width: 20px; }
+/* 登录用户菜单采用白底胶囊形容器，内部排列头像和用户名。 */
+.user-chip { display: flex; align-items: center; gap: .55rem; border: 1px solid var(--line); border-radius: 99px; padding: .35rem .85rem .35rem .35rem; background: white; }
+/* 调整 Bootstrap 下拉箭头和用户名之间的间距。 */
+.user-chip::after { margin-left: .25rem; }
+/* 用户头像图标居中显示在浅色圆形底上。 */
+.user-avatar { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; color: var(--primary); background: #fae8df; }
+/* 用户下拉菜单及菜单项统一圆角和点击区域间距。 */
+.dropdown-menu { border-radius: 14px; padding: .5rem; }
+.dropdown-item { border-radius: 8px; padding: .65rem .75rem; font-size: .9rem; }
+/* Flash 容器固定在导航下方并水平居中；容器不拦截点击，提示框本身仍可交互。 */
+.flash-container { position: fixed; top: 96px; left: 50%; transform: translateX(-50%); z-index: 1050; pointer-events: none; }
+.flash-container .alert { pointer-events: auto; border-radius: 14px; }
+
+/* 首页：主视觉、运营统计、推荐宠物卡片、领养指南与底部行动面板。 */
+/* Hero 主视觉建立定位上下文并裁切装饰，使用较大的上下留白突出首屏内容。 */
+.hero { position: relative; overflow: hidden; padding: 62px 0 82px; }
+/* 在首屏右上方放置低透明度圆形背景装饰。 */
+.hero::before { content: ""; position: absolute; width: 480px; height: 480px; border-radius: 50%; right: -180px; top: -200px; background: #f4e6da; opacity: .65; }
+/* 首屏引导标签采用浅色胶囊底、图标间距和粗体小字。 */
+.hero-eyebrow { display: inline-flex; align-items: center; gap: .55rem; background: #f6e8dd; color: var(--primary-dark); border-radius: 99px; padding: .45rem .9rem; font-size: .8rem; font-weight: 700; margin-bottom: 1.35rem; }
+/* 主标题限制宽度并随视口缩放；em 片段仅用主色强调，不显示斜体。 */
+.hero-title { max-width: 640px; font-size: clamp(2.55rem, 5.1vw, 4.6rem); line-height: 1.13; font-weight: 800; letter-spacing: -.065em; color: var(--forest); }
+.hero-title em { color: var(--primary); font-style: normal; }
+/* 首屏说明文字限制行长并增加行高，操作按钮允许在空间不足时换行。 */
+.hero-copy { max-width: 540px; margin: 1.4rem 0 1.8rem; color: var(--muted); line-height: 1.9; }
+.hero-actions { display: flex; gap: .75rem; flex-wrap: wrap; }
+/* 信任说明横向排列，图标使用品牌主色作为视觉提示。 */
+.hero-trust { display: flex; gap: 1.4rem; flex-wrap: wrap; margin-top: 2rem; color: var(--forest-light); font-size: .85rem; }
+.hero-trust i { color: var(--primary); margin-right: .35rem; }
+/* 主图区域靠右并建立定位上下文，供浮动说明卡定位。 */
+.hero-visual { position: relative; max-width: 520px; margin-left: auto; padding: 0 20px 24px 0; }
+/* 主图按容器裁切，顶部拱形圆角和偏移实色阴影构成照片框效果。 */
+.hero-image { width: 100%; height: 540px; object-fit: cover; border-radius: 46% 46% 24px 24px; box-shadow: 24px 26px 0 #ecdfd0; }
+/* 浮动说明卡固定在主图左下方，白底和柔和阴影保证文字可读。 */
+.hero-note { position: absolute; left: -42px; bottom: 62px; display: flex; align-items: center; gap: .85rem; padding: 1rem 1.25rem; border-radius: 18px; background: rgba(255, 255, 255, .94); box-shadow: var(--shadow-soft); }
+/* 说明卡图标、主文案和次要文案分别设置圆形底、独占行和弱化颜色。 */
+.hero-note-icon { display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; background: #edf4ef; color: var(--forest); }
+.hero-note strong { display: block; font-size: .9rem; }
+.hero-note small { color: var(--muted); }
+/* 统计条通过负上边距与首屏轻微交叠，并提高层级避免被主图遮挡。 */
+.stat-strip { position: relative; z-index: 2; margin-top: -34px; }
+/* 深绿色统计面板统一承载多项数据，圆角和阴影强化层次。 */
+.stat-panel { background: var(--forest); color: white; border-radius: 24px; padding: 1.8rem 2rem; box-shadow: 0 18px 50px rgba(41, 76, 67, .18); }
+/* 每项统计横向排列图标、数值与标签。 */
+.stat-item { display: flex; align-items: center; gap: 1rem; }
+/* 统计图标使用半透明白底圆角方块。 */
+.stat-icon { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 16px; color: #ffe2d4; background: rgba(255, 255, 255, .1); font-size: 1.3rem; }
+/* 数值突出显示，标签使用较浅颜色和小字号。 */
+.stat-value { font-size: 1.8rem; font-weight: 800; line-height: 1.1; }
+.stat-label { color: #c4d4ce; font-size: .8rem; margin-top: .25rem; }
+/* 宠物卡片统一白底、圆角和阴影，悬停时轻微上浮并加深阴影。 */
+.pet-card { overflow: hidden; border-radius: 20px; background: white; box-shadow: 0 5px 22px rgba(52, 63, 57, .055); transition: transform .25s ease, box-shadow .25s ease; }
+.pet-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-soft); }
+/* 图片链接容器固定为 4:3，裁切超出部分并为状态徽章提供定位上下文。 */
+.pet-card-image-wrap { position: relative; display: block; overflow: hidden; aspect-ratio: 4 / 3; background: var(--cream-deep); }
+/* 封面完整铺满容器，悬停卡片时缓慢放大图片。 */
+.pet-card-image { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+.pet-card:hover .pet-card-image { transform: scale(1.04); }
+/* 状态徽章悬浮在封面左上角，以胶囊白底和阴影保证可读性。 */
+.status-badge { position: absolute; top: 14px; left: 14px; display: inline-flex; align-items: center; gap: .35rem; padding: .38rem .72rem; border-radius: 99px; background: white; box-shadow: 0 3px 12px rgba(0, 0, 0, .08); font-size: .75rem; font-weight: 700; }
+/* 状态文字前的圆点继承当前状态颜色。 */
+.status-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+/* 可领养、待确认和已领养分别使用绿、橙、灰三种状态色。 */
+.status-available { color: #317258; }
+.status-pending { color: #b67b22; }
+.status-adopted { color: #7a7d7c; }
+/* 卡片右下角圆形箭头提示可以进入详情。 */
+.pet-card-arrow { position: absolute; right: 14px; bottom: 14px; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; background: rgba(255, 255, 255, .92); color: var(--forest); }
+/* 宠物名字、性别和档案元信息使用不同层级的大小与颜色。 */
+.pet-card-title { font-size: 1.25rem; font-weight: 700; }
+.pet-gender { color: var(--muted); font-size: .8rem; }
+.pet-card-meta { display: flex; align-items: center; gap: .55rem; color: var(--muted); font-size: .85rem; }
+/* 小圆点用于分隔品种、月龄等元信息。 */
+.meta-dot { width: 3px; height: 3px; border-radius: 50%; background: #b9bdb9; }
+/* 健康说明限制宽度，超长内容以省略号截断。 */
+.health-label { max-width: 64%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--forest-light); font-size: .78rem; }
+/* 领养指南区块使用暖色背景，步骤卡片等高并保持统一内边距。 */
+.guide-section { background: #f1e9df; }
+.guide-card { height: 100%; padding: 1.7rem; border-radius: 20px; background: rgba(255, 255, 255, .75); }
+/* 步骤编号置于品牌浅色圆角方块中。 */
+.guide-number { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; margin-bottom: 1.25rem; border-radius: 14px; color: var(--primary); background: #fae4d8; font-weight: 800; }
+/* 指南标题和说明文本分别控制字重、行高与弱化颜色。 */
+.guide-card h3 { font-size: 1.05rem; font-weight: 700; }
+.guide-card p { margin: 0; color: var(--muted); font-size: .88rem; line-height: 1.8; }
+/* 底部领养行动面板使用深绿底，并在右下角放置低透明度爪印装饰。 */
+.cta-panel { position: relative; overflow: hidden; border-radius: 26px; padding: 3rem; background: var(--forest); color: white; }
+.cta-panel::after { content: "\F64D"; position: absolute; right: 5%; bottom: -55px; font-family: bootstrap-icons; font-size: 13rem; color: rgba(255, 255, 255, .05); transform: rotate(-15deg); }
+.cta-panel p { color: #c4d4ce; }
+
+/* 内页通用组件：页头、面包屑、筛选面板、空状态与分页。 */
+/* 内页页头以浅色背景和紧凑上下留白承接导航。 */
+.page-hero { padding: 50px 0 34px; background: #f2e9df; }
+/* 页头主标题流体缩放，副标题采用弱色并保留上间距。 */
+.page-title { font-size: clamp(2rem, 4vw, 3.25rem); font-weight: 800; letter-spacing: -.045em; color: var(--forest); }
+.page-subtitle { color: var(--muted); margin: .65rem 0 0; }
+/* 面包屑统一小字号、分隔符颜色及当前页弱色。 */
+.breadcrumb { --bs-breadcrumb-divider-color: #a5aaa7; font-size: .82rem; }
+.breadcrumb-item.active { color: var(--muted); }
+/* 筛选表单使用白底圆角卡片，内部输入控件略低并采用奶油色底。 */
+.filter-panel { padding: 1rem; border: 1px solid var(--line); border-radius: 18px; background: white; }
+.filter-panel .form-control, .filter-panel .form-select { min-height: 44px; background: var(--cream); }
+/* 无数据状态居中展示，使用虚线边框和半透明白底弱化空白感。 */
+.empty-state { padding: 5rem 1.5rem; text-align: center; border: 1px dashed #d9d1c6; border-radius: 22px; background: rgba(255, 255, 255, .55); }
+/* 空状态图标独占一行并放大，标题和说明文字保持清晰层级。 */
+.empty-state i { display: block; margin-bottom: 1rem; color: #c8b7a7; font-size: 3rem; }
+.empty-state h3 { font-size: 1.25rem; }
+.empty-state p { color: var(--muted); }
+/* 覆盖 Bootstrap 分页变量，定义默认、悬停、当前页及键盘聚焦状态。 */
+.pagination { --bs-pagination-color: var(--forest); --bs-pagination-border-color: var(--line); --bs-pagination-hover-color: var(--primary); --bs-pagination-hover-border-color: var(--line); --bs-pagination-active-bg: var(--primary); --bs-pagination-active-border-color: var(--primary); --bs-pagination-focus-box-shadow: 0 0 0 .2rem rgba(var(--primary-rgb), .12); }
+/* 页码按钮使用独立圆角和小间距，避免连成一整块。 */
+.page-link { border-radius: 10px !important; margin: 0 .18rem; }
+
+/* 宠物详情：可放大主图、五列相册、档案卡片、描述文本和提示框。 */
+/* 主图固定 4:3 比例并裁切，放大光标提示点击可打开预览弹窗。 */
+.detail-image { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 24px; cursor: zoom-in; background: var(--cream-deep); }
+/* 缩略图相册使用五列等宽网格，图片之间保留小间距。 */
+.thumb-list { display: grid; grid-template-columns: repeat(5, 1fr); gap: .65rem; margin-top: .8rem; }
+/* 缩略图保持正方形并降低透明度，点击光标表明其可切换主图。 */
+.thumb-image { width: 100%; aspect-ratio: 1; object-fit: cover; border: 3px solid transparent; border-radius: 12px; cursor: pointer; opacity: .7; }
+/* 当前缩略图用品牌色边框和完整透明度标识。 */
+.thumb-image.active { border-color: var(--primary); opacity: 1; }
+/* 详情档案卡片采用白底圆角和随视口变化的内边距。 */
+.detail-card { padding: clamp(1.4rem, 3vw, 2.2rem); border: 1px solid var(--line); border-radius: 24px; background: white; }
+/* 宠物名称作为详情区主标题突出显示。 */
+.detail-name { font-size: 2.5rem; font-weight: 800; letter-spacing: -.04em; color: var(--forest); }
+/* 描述保留用户输入的换行，同时增加行高便于阅读。 */
+.detail-description { color: var(--muted); line-height: 1.95; white-space: pre-line; }
+/* 档案字段以两列网格排列，每项使用浅色小卡片。 */
+.detail-meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: .8rem; }
+.meta-box { padding: .85rem 1rem; border-radius: 12px; background: var(--cream); }
+/* 字段名和字段值均独占一行，分别使用弱色小字和较深粗体。 */
+.meta-box small { display: block; color: var(--muted); font-size: .75rem; }
+.meta-box strong { display: block; margin-top: .18rem; font-size: .9rem; }
+/* 领养提示框以柔和底色、圆角和紧凑字号承载补充说明。 */
+.notice-box { padding: 1rem 1.15rem; border-radius: 14px; background: #f5eee6; color: #75685d; font-size: .85rem; line-height: 1.75; }
+
+/* 登录与注册页：双栏认证卡片、品牌宣传侧栏、表单区和密码提示。 */
+/* 认证区块为卡片提供充足的上下留白。 */
+.auth-section { padding: 54px 0 80px; }
+/* 认证卡片裁切双栏内容，统一圆角白底和柔和阴影。 */
+.auth-card { overflow: hidden; border: 1px solid var(--line); border-radius: 26px; background: white; box-shadow: var(--shadow-soft); }
+/* 左侧品牌宣传栏撑满卡片高度，使用深绿底白字并建立装饰定位上下文。 */
+.auth-side { position: relative; min-height: 100%; padding: 2.8rem; color: white; background: var(--forest); }
+/* 在侧栏右下角添加淡色爪印图标作为背景装饰。 */
+.auth-side::after { content: "\F64D"; position: absolute; right: -20px; bottom: -35px; font-family: bootstrap-icons; font-size: 12rem; color: rgba(255, 255, 255, .05); }
+/* 宣传标题和说明分别限制行长，避免文字在深绿侧栏中过宽。 */
+.auth-side h2 { max-width: 320px; margin: 1.3rem 0; font-size: 2.2rem; font-weight: 700; line-height: 1.35; }
+.auth-side p { max-width: 340px; color: #c4d4ce; line-height: 1.8; }
+/* 右侧表单内边距随屏幕宽度调整，标题保持清晰醒目。 */
+.auth-form { padding: clamp(1.6rem, 4vw, 3rem); }
+.auth-form h1 { font-size: 1.8rem; font-weight: 800; }
+/* 密码规则等辅助文字使用弱色小字号。 */
+.password-hint { color: var(--muted); font-size: .78rem; }
+
+/* 表格与后台：内容卡片、状态徽章、侧边栏、统计卡、上传预览及申请摘要。 */
+/* 通用内容卡片为后台表单和表格提供白底圆角容器。 */
+.content-card { border: 1px solid var(--line); border-radius: 20px; background: white; }
+/* 表格使用透明背景并移除外层底部间距，使内容卡片边线保持完整。 */
+.table { --bs-table-bg: transparent; margin-bottom: 0; }
+/* 表头与数据单元格统一内边距、底边线颜色和垂直居中。 */
+.table > :not(caption) > * > * { padding: 1rem .85rem; border-bottom-color: #eee9e2; vertical-align: middle; }
+/* 表头使用浅底小字并禁止换行，数据单元格采用紧凑字号。 */
+.table thead th { color: var(--muted); background: #faf7f2; font-size: .76rem; font-weight: 700; white-space: nowrap; }
+.table tbody td { font-size: .88rem; }
+/* 表格中的宠物信息横向排列缩略图与文字，并保留最小宽度防止过度挤压。 */
+.table-pet { display: flex; align-items: center; gap: .75rem; min-width: 180px; }
+/* 表格宠物缩略图固定尺寸、禁止弹性压缩，并按圆角矩形裁切。 */
+.table-thumb { width: 52px; height: 52px; flex: 0 0 52px; border-radius: 12px; object-fit: cover; }
+/* 角色和业务状态共用胶囊徽章布局，文字保持单行。 */
+.role-badge, .state-label { display: inline-flex; padding: .32rem .65rem; border-radius: 99px; font-size: .74rem; font-weight: 700; white-space: nowrap; }
+/* 角色徽章使用森林绿配色。 */
+.role-badge { color: var(--forest); background: #e9f1ed; }
+/* 待审核、已通过、已拒绝、可领养和已领养分别使用可区分的浅底状态色。 */
+.state-PENDING { color: #986717; background: #fff1d8; }
+.state-APPROVED { color: #2c6c51; background: #e3f2e9; }
+.state-REJECTED { color: #a4473d; background: #fae7e3; }
+.state-AVAILABLE { color: #2c6c51; background: #e3f2e9; }
+.state-ADOPTED { color: #626865; background: #eceeed; }
+/* 编辑、删除等后台操作按钮横向紧凑排列，并缩小按钮尺寸。 */
+.action-group { display: flex; align-items: center; gap: .35rem; }
+.action-group .btn { padding: .4rem .65rem; font-size: .8rem; }
+/* 后台主体提供上下留白，侧边栏在宽屏滚动时吸附于导航下方。 */
+.admin-layout { padding: 38px 0 70px; }
+.admin-sidebar { position: sticky; top: 104px; padding: 1rem; border: 1px solid var(--line); border-radius: 18px; background: white; }
+/* 侧边栏分组标题使用弱色大写字距风格。 */
+.admin-sidebar-title { padding: .5rem .7rem .85rem; color: var(--muted); font-size: .7rem; font-weight: 700; letter-spacing: .12em; }
+/* 后台导航项横向排列图标和文字，悬停或当前模块使用品牌浅底高亮。 */
+.admin-nav-link { display: flex; align-items: center; gap: .75rem; padding: .78rem .85rem; border-radius: 11px; color: #626d67; font-size: .9rem; font-weight: 600; }
+.admin-nav-link:hover, .admin-nav-link.active { color: var(--primary-dark); background: #f9ebe3; }
+/* 固定图标宽度并居中，保证不同图标后的文字对齐。 */
+.admin-nav-link i { width: 20px; text-align: center; }
+/* 后台页标题使用森林绿粗体。 */
+.admin-heading { font-size: 1.7rem; font-weight: 800; color: var(--forest); }
+/* 仪表盘统计卡片等高显示，统一边框、圆角和内边距。 */
+.dashboard-card { height: 100%; padding: 1.35rem; border: 1px solid var(--line); border-radius: 18px; background: white; }
+/* 统计图标使用品牌浅底圆角方块，与下方数值保持间距。 */
+.dashboard-icon { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-bottom: 1rem; border-radius: 14px; color: var(--primary); background: #fae8df; font-size: 1.15rem; }
+/* 统计数值醒目，统计名称采用弱色小字。 */
+.dashboard-value { font-size: 1.9rem; font-weight: 800; color: var(--forest); line-height: 1; }
+.dashboard-label { margin-top: .5rem; color: var(--muted); font-size: .8rem; }
+/* 图片上传区域使用虚线边框和浅底，明确可选择文件的范围。 */
+.upload-drop { padding: 1.2rem; border: 1.5px dashed #d8cbbd; border-radius: 14px; background: #fcf9f5; }
+/* 本地图片预览横向排列并允许换行，多张图片之间保留间距。 */
+.upload-preview { display: flex; flex-wrap: wrap; gap: .65rem; margin-top: .8rem; }
+/* 待上传图片统一裁剪为带边框的方形缩略图。 */
+.upload-preview-image { width: 92px; height: 92px; object-fit: cover; border-radius: 12px; border: 1px solid var(--line); }
+/* 审核页申请摘要使用浅色圆角容器，字段名弱化、字段值保留换行。 */
+.application-summary { padding: 1rem 1.1rem; border-radius: 14px; background: var(--cream); }
+.application-summary dt { color: var(--muted); font-size: .75rem; font-weight: 500; }
+.application-summary dd { margin-bottom: .8rem; font-size: .9rem; white-space: pre-line; }
+
+/* 页脚：品牌信息、导航链接、说明文字与底部版权行。 */
+/* 页脚以暖色背景和顶部细边线同正文分隔。 */
+.site-footer { padding: 54px 0 22px; border-top: 1px solid #e5ded4; background: #f1e9df; }
+/* 页脚品牌标识略缩小，栏目标题保持森林绿粗体。 */
+.footer-brand { font-size: 1.15rem; }
+.footer-title { margin-bottom: 1rem; color: var(--forest); font-size: .86rem; font-weight: 700; }
+/* 说明文字和链接统一弱色、小字号及舒适行高。 */
+.footer-text, .footer-link { color: #7d817d; font-size: .82rem; line-height: 1.9; }
+/* 每个页脚链接独占一行，悬停时使用品牌主色。 */
+.footer-link { display: block; }
+.footer-link:hover { color: var(--primary); }
+/* 版权与备案信息通过顶边线独立成行，使用更浅的小字。 */
+.footer-bottom { padding-top: 1.2rem; border-top: 1px solid #ded6ca; color: #92958f; font-size: .74rem; }
+
+/* 响应式：小于 992px 的平板与小型桌面，压缩首屏并将后台侧栏改为横向滚动。 */
+@media (max-width: 991.98px) {
+    /* 首屏缩小顶部留白，主图在换行后居中并降低高度。 */
+    .hero { padding-top: 40px; }
+    .hero-visual { margin: 3rem auto 0; }
+    .hero-image { height: 470px; }
+    /* 后台侧栏取消吸附，转为可横向滚动的导航条，避免挤占内容宽度。 */
+    .admin-sidebar { position: static; display: flex; gap: .25rem; overflow-x: auto; margin-bottom: 1.4rem; }
+    /* 横向模式隐藏分组标题，菜单文字保持单行。 */
+    .admin-sidebar-title { display: none; }
+    .admin-nav-link { white-space: nowrap; }
+    /* 认证宣传栏堆叠后使用固定最小高度。 */
+    .auth-side { min-height: 280px; }
+}
+/* 响应式：小于 768px 的手机横屏与大屏手机，整体收紧导航、区块和内容排版。 */
+@media (max-width: 767.98px) {
+    /* 页面顶部留白与导航高度同步降为 74px，继续避免固定导航遮挡正文。 */
+    body { padding-top: 74px; }
+    .site-nav { height: 74px; }
+    /* 小屏隐藏品牌英文副标题，为折叠按钮和导航内容腾出空间。 */
+    .brand-sub { display: none; }
+    /* 通用区块减少垂直内边距。 */
+    .section-space { padding: 58px 0; }
+    /* 首屏标题、说明和主图改用适合窄屏的固定字号或高度。 */
+    .hero-title { font-size: 2.65rem; }
+    .hero-copy { font-size: .94rem; }
+    .hero-image { height: 390px; }
+    /* 浮动说明卡向主图内侧收回，减少横向溢出。 */
+    .hero-note { left: -8px; bottom: 45px; }
+    /* 统计面板压缩内边距、项目间距、图标和数值字号。 */
+    .stat-panel { padding: 1.4rem; }
+    .stat-item { gap: .7rem; }
+    .stat-icon { width: 38px; height: 38px; }
+    .stat-value { font-size: 1.45rem; }
+    /* 行动面板、详情名称与认证区域同步缩小排版。 */
+    .cta-panel { padding: 2rem 1.5rem; }
+    .detail-name { font-size: 2rem; }
+    .auth-form, .auth-side { padding: 1.6rem; }
+    /* 认证侧栏堆叠后不再强制撑满高度，标题适当缩小。 */
+    .auth-side { min-height: auto; }
+    .auth-side h2 { font-size: 1.6rem; }
+    /* 相册从五列改为四列，保持窄屏缩略图的可点击尺寸。 */
+    .thumb-list { grid-template-columns: repeat(4, 1fr); }
+    /* Flash 提示下移并限制为视口宽度减去两侧各 10px 的留白。 */
+    .flash-container { top: 84px; width: calc(100% - 20px); }
+}
+/* 响应式：小于 576px 的手机竖屏，按钮和档案字段改为单列并进一步精简装饰。 */
+@media (max-width: 575.98px) {
+    /* 缩小 Bootstrap 容器横向沟槽，保留窄屏所需的内容宽度。 */
+    .container { --bs-gutter-x: 1.6rem; }
+    /* 首屏保留下部留白，操作按钮铺满整行便于触屏点击。 */
+    .hero { padding-bottom: 62px; }
+    .hero-actions .btn { width: 100%; }
+    /* 信任说明改为纵向排列并缩小间距。 */
+    .hero-trust { gap: .7rem; flex-direction: column; }
+    /* 主图进一步降低高度，浮动说明卡缩小内边距。 */
+    .hero-image { height: 330px; }
+    .hero-note { padding: .75rem 1rem; }
+    /* 统计卡片收紧圆角，内容顶部对齐并隐藏图标以节省横向空间。 */
+    .stat-panel { border-radius: 18px; }
+    .stat-item { align-items: flex-start; }
+    .stat-icon { display: none; }
+    .stat-value { font-size: 1.6rem; }
+    /* 详情档案由两列改为单列，避免字段值过度换行。 */
+    .detail-meta { grid-template-columns: 1fr; }
+    /* 内页页头减少顶部留白并缩小标题。 */
+    .page-hero { padding-top: 36px; }
+    .page-title { font-size: 2rem; }
+    /* 筛选按钮占满可用宽度，方便单手操作。 */
+    .filter-panel .btn { width: 100%; }
+}

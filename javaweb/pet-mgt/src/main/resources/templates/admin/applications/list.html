@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<!-- 后台领养申请列表页：支持按审核状态筛选，并进入每条申请的审核或详情页面。 -->
+<head th:replace="~{fragments/common :: head('领养审核')}"></head>
+<body>
+<nav th:replace="~{fragments/common :: header}"></nav><div th:replace="~{fragments/common :: flash}"></div>
+<main class="admin-layout"><div class="container-fluid px-lg-5"><div class="row g-4">
+    <!-- 侧边栏传入 applications，高亮“领养审核”菜单。 -->
+    <div class="col-lg-3 col-xl-2"><div th:replace="~{admin/fragments :: sidebar('applications')}"></div></div>
+    <div class="col-lg-9 col-xl-10">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4"><div><span class="section-kicker">ADOPTION REVIEW</span><h1 class="admin-heading mb-1">领养申请审核</h1><p class="text-secondary mb-0">认真了解每一位申请人，为宠物选择合适的家庭。</p></div><!-- 状态筛选使用 GET 提交；各选项根据 status 回显当前筛选条件。 --><form th:action="@{/admin/applications}" method="get" class="d-flex gap-2"><select class="form-select" name="status" aria-label="按状态筛选"><option value="">全部状态</option><option value="PENDING" th:selected="${status == 'PENDING'}">待审核</option><option value="APPROVED" th:selected="${status == 'APPROVED'}">已通过</option><option value="REJECTED" th:selected="${status == 'REJECTED'}">已拒绝</option></select><button class="btn btn-outline-primary" type="submit">筛选</button></form></div>
+        <div class="content-card overflow-hidden"><div class="table-responsive"><table class="table"><thead><tr><th>申请编号</th><th>宠物</th><th>申请人</th><th>联系电话</th><th>申请时间</th><th>状态</th><th class="text-end">操作</th></tr></thead><tbody>
+        <!-- 遍历筛选后的 applications，展示申请编号、宠物、申请人、联系方式、时间和审核状态。 -->
+        <tr th:each="application : ${applications}"><td class="text-secondary" th:text="'#' + ${application.id}">编号</td><td><a class="table-pet" th:href="@{/pets/{id}(id=${application.petId})}" target="_blank"><img class="table-thumb" th:src="@{${application.coverImage}}" th:alt="${application.petName}"><strong th:text="${application.petName}">宠物</strong></a></td><td th:text="${application.username}">用户</td><td th:text="${application.contactPhone}">电话</td><td th:text="${#temporals.format(application.createdAt,'yyyy-MM-dd HH:mm')}">时间</td><td><span class="state-label" th:classappend="'state-' + ${application.status}" th:text="${application.status == 'PENDING' ? '待审核' : (application.status == 'APPROVED' ? '已通过' : '已拒绝')}">状态</span></td><td class="text-end"><!-- 待审核记录突出“立即审核”，已处理记录显示“查看详情”。 --><a class="btn btn-sm" th:classappend="${application.status == 'PENDING' ? 'btn-primary' : 'btn-outline-primary'}" th:href="@{/admin/applications/{id}/review(id=${application.id})}" th:text="${application.status == 'PENDING' ? '立即审核' : '查看详情'}">审核</a></td></tr>
+        </tbody></table></div><!-- 当前状态没有申请时提示切换筛选条件。 --><div class="empty-state border-0" th:if="${#lists.isEmpty(applications)}"><i class="bi bi-journal-check"></i><h3>没有符合条件的申请</h3><p class="mb-0">可以切换状态查看其他申请记录。</p></div></div>
+    </div>
+</div></div></main>
+<th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body></html>

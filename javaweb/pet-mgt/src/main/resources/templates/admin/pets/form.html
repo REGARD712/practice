@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<!-- 后台宠物新增/编辑共用表单：维护基础档案、领养状态、故事描述和宠物相册。 -->
+<head th:replace="~{fragments/common :: head(${pet.id == null ? '发布宠物' : '编辑宠物'})}"></head>
+<body>
+<nav th:replace="~{fragments/common :: header}"></nav><div th:replace="~{fragments/common :: flash}"></div>
+<main class="admin-layout"><div class="container-fluid px-lg-5"><div class="row g-4">
+    <!-- 新增与编辑均属于宠物管理模块，因此向侧边栏传入 pets。 -->
+    <div class="col-lg-3 col-xl-2"><div th:replace="~{admin/fragments :: sidebar('pets')}"></div></div>
+    <div class="col-lg-9 col-xl-10">
+        <div class="mb-4"><a th:href="@{/admin/pets}" class="text-link"><i class="bi bi-arrow-left me-1"></i>返回宠物列表</a><h1 class="admin-heading mt-3" th:text="${pet.id == null ? '发布宠物' : '编辑宠物档案'}">宠物表单</h1><p class="text-secondary">完整的照片和真实描述，能帮助它更快遇见合适的家庭。</p></div>
+        <!-- id 为空时提交新增地址，否则提交当前宠物编辑地址；multipart 支持同时上传多张图片。 -->
+        <form th:action="${pet.id == null} ? @{/admin/pets} : @{/admin/pets/{id}(id=${pet.id})}" th:object="${pet}" method="post" enctype="multipart/form-data" class="content-card p-4 p-md-5 needs-validation" novalidate>
+            <!-- 循环展示服务端全局错误，例如图片数量、大小或档案保存失败。 -->
+            <div class="alert alert-danger border-0" th:if="${#fields.hasGlobalErrors()}"><ul class="mb-0"><li th:each="message : ${#fields.globalErrors()}" th:text="${message}">业务错误</li></ul></div>
+            <!-- 隐藏字段保留宠物 id，用于编辑时绑定既有档案；新增时该值为空。 -->
+            <input type="hidden" th:field="*{id}">
+            <h2 class="h5 fw-bold mb-3"><i class="bi bi-card-list me-2 text-primary"></i>基本信息</h2>
+            <div class="row g-4 mb-5">
+                <!-- 宠物名字必填且最长 80 字，字段错误通过 is-invalid 与 th:errors 展示。 -->
+                <div class="col-md-6"><label for="name" class="form-label required">宠物名字</label><input type="text" class="form-control" th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'" id="name" th:field="*{name}" maxlength="80" placeholder="例如：豆豆" required><div class="invalid-feedback" th:errors="*{name}">请填写名字</div></div>
+                <!-- 品种下拉框遍历 breeds，th:field 自动处理当前选中值与表单绑定。 -->
+                <div class="col-md-6"><label for="breedId" class="form-label required">宠物品种</label><select class="form-select" th:classappend="${#fields.hasErrors('breedId')} ? 'is-invalid'" id="breedId" th:field="*{breedId}" required><option value="">请选择品种</option><option th:each="breed : ${breeds}" th:value="${breed.id}" th:text="|${breed.name}（${breed.species}）|">品种</option></select><div class="invalid-feedback" th:errors="*{breedId}">请选择品种</div></div>
+                <!-- 性别为必选项，可选雄性、雌性或未知。 -->
+                <div class="col-md-4"><label for="gender" class="form-label required">性别</label><select class="form-select" th:classappend="${#fields.hasErrors('gender')} ? 'is-invalid'" id="gender" th:field="*{gender}" required><option value="">请选择</option><option value="雄性">雄性</option><option value="雌性">雌性</option><option value="未知">未知</option></select><div class="invalid-feedback" th:errors="*{gender}">请选择性别</div></div>
+                <!-- 年龄以月为单位，数字范围限定为 0–600。 -->
+                <div class="col-md-4"><label for="ageMonths" class="form-label required">年龄（月）</label><input type="number" class="form-control" th:classappend="${#fields.hasErrors('ageMonths')} ? 'is-invalid'" id="ageMonths" th:field="*{ageMonths}" min="0" max="600" placeholder="例如：12" required><div class="invalid-feedback" th:errors="*{ageMonths}">请输入 0–600</div></div>
+                <!-- 领养状态直接绑定 AVAILABLE、PENDING、ADOPTED 三种业务枚举值。 -->
+                <div class="col-md-4"><label for="status" class="form-label required">领养状态</label><select class="form-select" th:classappend="${#fields.hasErrors('status')} ? 'is-invalid'" id="status" th:field="*{status}" required><option value="AVAILABLE">待领养</option><option value="PENDING">申请审核中</option><option value="ADOPTED">已领养</option></select><div class="invalid-feedback" th:errors="*{status}">请选择状态</div></div>
+                <!-- 健康状况必填且最长 100 字，用于记录免疫、驱虫、绝育等信息。 -->
+                <div class="col-12"><label for="healthStatus" class="form-label required">健康状况</label><input type="text" class="form-control" th:classappend="${#fields.hasErrors('healthStatus')} ? 'is-invalid'" id="healthStatus" th:field="*{healthStatus}" maxlength="100" placeholder="例如：已免疫、已驱虫、已绝育" required><div class="invalid-feedback" th:errors="*{healthStatus}">请填写健康状况</div></div>
+                <!-- 性格与故事为 10–2000 字必填长文本，作为前台详情页的主要介绍。 -->
+                <div class="col-12"><label for="description" class="form-label required">性格与故事</label><textarea class="form-control" th:classappend="${#fields.hasErrors('description')} ? 'is-invalid'" id="description" th:field="*{description}" minlength="10" maxlength="2000" placeholder="介绍它的性格、生活习惯、健康状况和期待的领养家庭" required></textarea><div class="invalid-feedback" th:errors="*{description}">请至少填写 10 字</div></div>
+            </div>
+            <h2 class="h5 fw-bold mb-3"><i class="bi bi-images me-2 text-primary"></i>宠物照片</h2>
+            <!-- 编辑且已有相册时遍历当前照片；已有图片保留，新图片追加而非替换。 -->
+            <div class="mb-4" th:if="${pet.id != null and not #lists.isEmpty(pet.images)}"><label class="form-label">当前照片</label><div class="upload-preview"><img th:each="image : ${pet.images}" th:src="@{${image.imagePath}}" class="upload-preview-image" alt="当前宠物照片"></div><p class="text-secondary small mt-2 mb-0">编辑时保留现有照片，新上传的照片会追加到相册。</p></div>
+            <!-- 上传区：新增至少选 1 张，编辑可不选；脚本负责最多 5 张、单张 2MB 校验与本地预览。 -->
+            <div class="upload-drop"><label for="imageFiles" class="form-label" th:classappend="${pet.id == null} ? 'required'" th:text="${pet.id == null ? '上传照片（至少 1 张）' : '追加照片（可不选）'}">上传照片</label><input class="form-control" th:classappend="${error != null} ? 'is-invalid'" type="file" id="imageFiles" name="imageFiles" accept="image/jpeg,image/png,image/webp,image/gif" multiple data-image-input th:required="${pet.id == null}"><div class="form-text">支持 JPG、PNG、WEBP、GIF，每张不超过 2MB，一次最多选择 5 张。第一张作为封面。</div><div class="upload-preview" data-image-preview></div></div>
+            <!-- 保存按钮提交完整档案及图片；取消按钮不保存修改并返回宠物列表。 -->
+            <div class="d-flex gap-2 mt-5"><button class="btn btn-primary px-4" type="submit"><i class="bi bi-check-lg me-1"></i>保存宠物档案</button><a th:href="@{/admin/pets}" class="btn btn-outline-secondary px-4">取消</a></div>
+        </form>
+    </div>
+</div></div></main>
+<th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body></html>

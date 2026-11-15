@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<!-- 公共页面片段：统一提供页面头部、顶部导航、操作提示、页脚和脚本引用，供各业务模板复用。 -->
+<!-- head 片段接收 title 参数，用于拼接当前页面标题；各页面通过 th:replace 引入。 -->
+<head th:fragment="head(title)">
+    <!-- 统一字符编码与移动端视口，保证中文正常显示及响应式布局生效。 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="暖窝宠物领养平台，用责任与耐心为流浪动物寻找一个家。">
+    <!-- 将调用方传入的 title 与站点名称组合为浏览器标题。 -->
+    <title th:text="${title} + ' · 暖窝宠物领养'">暖窝宠物领养</title>
+    <!-- 依次加载 Bootstrap、Bootstrap Icons 和项目自定义样式。 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<!-- header 片段无需参数：生成固定在页面顶部的响应式主导航。 -->
+<nav class="navbar navbar-expand-lg fixed-top site-nav" th:fragment="header">
+    <div class="container">
+        <!-- 品牌标识链接返回首页。 -->
+        <a class="navbar-brand brand" th:href="@{/}">
+            <span class="brand-mark"><i class="bi bi-house-heart-fill"></i></span>
+            <span>暖窝<span class="brand-sub">宠物领养</span></span>
+        </a>
+        <!-- 小屏幕下通过 Bootstrap 折叠组件展开或收起导航菜单。 -->
+        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="展开导航">
+            <i class="bi bi-list fs-2"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <!-- 主导航：所有用户均可访问首页、宠物列表和领养指南。 -->
+            <ul class="navbar-nav mx-auto gap-lg-2">
+                <li class="nav-item"><a class="nav-link" th:href="@{/}">首页</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/pets}">寻找伙伴</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/#guide}">领养指南</a></li>
+                <!-- 仅管理员显示管理后台入口，避免普通用户看到无权限页面链接。 -->
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a class="nav-link" th:href="@{/admin}">管理后台</a></li>
+            </ul>
+            <!-- 账户区域：游客显示登录与注册按钮，登录用户显示账户菜单。 -->
+            <div class="d-flex align-items-center gap-2 py-3 py-lg-0">
+                <a sec:authorize="isAnonymous()" class="btn btn-outline-primary rounded-pill px-4" th:href="@{/login}">登录</a>
+                <a sec:authorize="isAnonymous()" class="btn btn-primary rounded-pill px-4" th:href="@{/register}">加入暖窝</a>
+                <!-- 登录后的用户下拉菜单，按钮文字由 Spring Security 当前用户名填充。 -->
+                <div class="dropdown" sec:authorize="isAuthenticated()">
+                    <button class="btn user-chip dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="user-avatar"><i class="bi bi-person-fill"></i></span>
+                        <span sec:authentication="name">用户</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-soft">
+                        <li><a class="dropdown-item" th:href="@{/applications/mine}"><i class="bi bi-journal-heart me-2"></i>我的领养申请</a></li>
+                        <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" th:href="@{/admin}"><i class="bi bi-grid me-2"></i>管理后台</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <!-- 退出登录必须使用 POST 表单提交，而不是普通跳转链接。 -->
+                            <form th:action="@{/logout}" method="post" class="px-2">
+                                <button class="dropdown-item rounded-2 text-danger" type="submit"><i class="bi bi-box-arrow-right me-2"></i>退出登录</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- flash 片段无需参数：根据模型中的 success、error 变量条件显示可关闭的操作反馈。 -->
+<div class="container flash-container" th:fragment="flash">
+    <!-- success 存在时显示成功提示，按钮用于手动关闭。 -->
+    <div class="alert alert-success alert-dismissible fade show shadow-soft border-0" role="alert" th:if="${success}">
+        <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}">操作成功</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="关闭"></button>
+    </div>
+    <!-- error 存在时显示失败提示，与成功提示互不混用。 -->
+    <div class="alert alert-danger alert-dismissible fade show shadow-soft border-0" role="alert" th:if="${error}">
+        <i class="bi bi-exclamation-circle-fill me-2"></i><span th:text="${error}">操作失败</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="关闭"></button>
+    </div>
+</div>
+
+<!-- footer 片段无需参数：展示品牌理念、快捷入口和固定联系信息。 -->
+<footer class="site-footer" th:fragment="footer">
+    <div class="container">
+        <!-- 页脚采用响应式三栏布局，小屏幕自动调整列宽。 -->
+        <div class="row g-4 pb-4">
+            <div class="col-lg-5">
+                <a class="brand footer-brand" th:href="@{/}"><span class="brand-mark"><i class="bi bi-house-heart-fill"></i></span><span>暖窝宠物领养</span></a>
+                <p class="footer-text mt-3 mb-0">领养不是一时心动，而是一生的承诺。<br>我们认真审核每一份申请，也陪伴每一个新家庭。</p>
+            </div>
+            <div class="col-6 col-lg-2 offset-lg-1">
+                <h6 class="footer-title">快速入口</h6>
+                <a th:href="@{/pets}" class="footer-link">待领养宠物</a>
+                <a th:href="@{/applications/mine}" class="footer-link">我的申请</a>
+                <a th:href="@{/register}" class="footer-link">注册账号</a>
+            </div>
+            <div class="col-6 col-lg-4">
+                <h6 class="footer-title">联系我们</h6>
+                <p class="footer-text">服务时间：每日 09:00–18:00<br>邮箱：care@warmhome.example<br>地址：杭州市爱宠公益服务中心</p>
+            </div>
+        </div>
+        <div class="footer-bottom d-flex flex-column flex-md-row justify-content-between gap-2">
+            <span>© 2026 暖窝宠物领养平台</span>
+            <span>以领养代替购买，让善意有处安放</span>
+        </div>
+    </div>
+</footer>
+
+<!-- scripts 片段无需参数：集中加载 Bootstrap 交互组件和站点公共脚本。 -->
+<th:block th:fragment="scripts">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/script.js}"></script>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<!-- 用户注册页：提交账号、联系方式与密码信息，并展示服务端及浏览器校验结果。 -->
+<head th:replace="~{fragments/common :: head('注册')}"></head>
+<body>
+<nav th:replace="~{fragments/common :: header}"></nav>
+<!-- 注册页沿用双栏认证布局，左侧说明信息用途，右侧放置表单。 -->
+<main class="auth-section">
+    <div class="container">
+        <div class="auth-card mx-auto" style="max-width: 980px">
+            <div class="row g-0">
+                <div class="col-lg-5">
+                    <div class="auth-side">
+                        <a class="brand text-white" th:href="@{/}"><span class="brand-mark"><i class="bi bi-house-heart-fill"></i></span>暖窝</a>
+                        <h2>从一份认真开始，<br>成为它的家人。</h2>
+                        <p>注册仅用于领养申请与进度查询。请使用真实、可联系到你的信息。</p>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="auth-form">
+                        <span class="section-kicker">JOIN WARM HOME</span>
+                        <h1>创建账号</h1>
+                        <p class="text-secondary mb-4">加入暖窝，开启负责任的领养之旅</p>
+                        <div th:replace="~{fragments/common :: flash}"></div>
+                        <!-- 表单绑定 registrationForm；公共脚本负责必填、格式和两次密码一致性校验。 -->
+                        <form th:action="@{/register}" th:object="${registrationForm}" method="post" class="needs-validation" novalidate>
+                            <!-- 循环输出服务端全局业务错误，例如用户名或邮箱已存在。 -->
+                            <div class="alert alert-danger border-0" th:if="${#fields.hasGlobalErrors()}"><ul class="mb-0"><li th:each="message : ${#fields.globalErrors()}" th:text="${message}">业务错误</li></ul></div>
+                            <!-- 用户名绑定 username，限制 3–20 位字母、数字或下划线，并显示字段级错误。 -->
+                            <div class="mb-3">
+                                <label for="username" class="form-label required">用户名</label>
+                                <input type="text" class="form-control" th:classappend="${#fields.hasErrors('username')} ? 'is-invalid'" id="username" th:field="*{username}" placeholder="3–20 位字母、数字或下划线" minlength="3" maxlength="20" pattern="[A-Za-z0-9_]+" required autofocus>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">请输入有效用户名</div>
+                            </div>
+                            <!-- 密码与确认密码均至少 6 位；data-confirm-password 指定需要比对的原密码框。 -->
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6"><label for="password" class="form-label required">密码</label><input type="password" class="form-control" th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'" id="password" th:field="*{password}" placeholder="至少 6 位" minlength="6" required autocomplete="new-password"><div class="invalid-feedback" th:errors="*{password}">至少 6 位</div></div>
+                                <div class="col-md-6"><label for="confirmPassword" class="form-label required">确认密码</label><input type="password" class="form-control" th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid'" id="confirmPassword" th:field="*{confirmPassword}" data-confirm-password="#password" placeholder="再次输入密码" minlength="6" required autocomplete="new-password"><div class="invalid-feedback" th:errors="*{confirmPassword}">两次密码需一致</div></div>
+                            </div>
+                            <!-- 邮箱使用 email 类型进行格式校验，服务端错误通过 th:errors 回显。 -->
+                            <div class="mb-3">
+                                <label for="email" class="form-label required">邮箱</label>
+                                <input type="email" class="form-control" th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'" id="email" th:field="*{email}" placeholder="name@example.com" required><div class="invalid-feedback" th:errors="*{email}">请输入有效邮箱</div>
+                            </div>
+                            <!-- 联系电话使用手机号正则，必填校验失败时显示 invalid-feedback。 -->
+                            <div class="mb-4">
+                                <label for="phone" class="form-label required">联系电话</label>
+                                <input type="tel" class="form-control" th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid'" id="phone" th:field="*{phone}" placeholder="11 位手机号码" pattern="1[3-9][0-9]{9}" required><div class="invalid-feedback" th:errors="*{phone}">请输入有效联系电话</div>
+                            </div>
+                            <!-- 所有前端及服务端约束满足后创建账号；已有账号可直接前往登录。 -->
+                            <button class="btn btn-primary w-100 rounded-3 mb-3" type="submit">注册并加入暖窝<i class="bi bi-arrow-right ms-2"></i></button>
+                        </form>
+                        <p class="text-center text-secondary small mb-0">已有账号？<a th:href="@{/login}" class="text-link">直接登录</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/common :: footer}"></footer>
+<th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

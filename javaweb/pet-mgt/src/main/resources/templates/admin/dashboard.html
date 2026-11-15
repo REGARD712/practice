@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<!-- 后台数据概览页：汇总宠物、申请和用户数量，并列出需要优先处理的最新领养申请。 -->
+<head th:replace="~{fragments/common :: head('管理概览')}"></head>
+<body>
+<nav th:replace="~{fragments/common :: header}"></nav>
+<div th:replace="~{fragments/common :: flash}"></div>
+<main class="admin-layout">
+    <div class="container-fluid px-lg-5">
+        <div class="row g-4">
+            <!-- 引入后台侧边栏并传入 dashboard，使“数据概览”菜单保持选中状态。 -->
+            <div class="col-lg-3 col-xl-2"><div th:replace="~{admin/fragments :: sidebar('dashboard')}"></div></div>
+            <div class="col-lg-9 col-xl-10">
+                <!-- 页头显示管理问候语，右侧按钮进入新增宠物表单。 -->
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4"><div><span class="section-kicker">DASHBOARD</span><h1 class="admin-heading mb-1">早上好，管理员</h1><p class="text-secondary mb-0">今天也在为每一个小生命认真工作。</p></div><a th:href="@{/admin/pets/new}" class="btn btn-primary rounded-pill"><i class="bi bi-plus-lg me-1"></i>发布宠物</a></div>
+                <!-- 五张统计卡依次读取宠物总数、待领养数、待审核申请数、成功领养数和注册用户数。 -->
+                <div class="row g-3 mb-4">
+                    <div class="col-6 col-md-4 col-xl"><div class="dashboard-card"><span class="dashboard-icon"><i class="bi bi-house-heart"></i></span><div class="dashboard-value" th:text="${petCount}">0</div><div class="dashboard-label">宠物总数</div></div></div>
+                    <div class="col-6 col-md-4 col-xl"><div class="dashboard-card"><span class="dashboard-icon"><i class="bi bi-search-heart"></i></span><div class="dashboard-value" th:text="${availableCount}">0</div><div class="dashboard-label">等待领养</div></div></div>
+                    <div class="col-6 col-md-4 col-xl"><div class="dashboard-card"><span class="dashboard-icon"><i class="bi bi-hourglass-split"></i></span><div class="dashboard-value" th:text="${pendingCount}">0</div><div class="dashboard-label">待审核申请</div></div></div>
+                    <div class="col-6 col-md-4 col-xl"><div class="dashboard-card"><span class="dashboard-icon"><i class="bi bi-heart"></i></span><div class="dashboard-value" th:text="${adoptedCount}">0</div><div class="dashboard-label">成功领养</div></div></div>
+                    <div class="col-6 col-md-4 col-xl"><div class="dashboard-card"><span class="dashboard-icon"><i class="bi bi-people"></i></span><div class="dashboard-value" th:text="${userCount}">0</div><div class="dashboard-label">注册用户</div></div></div>
+                </div>
+                <!-- 最新申请区域提供全部申请入口，并优先展示待审核记录。 -->
+                <section class="content-card overflow-hidden">
+                    <div class="d-flex justify-content-between align-items-center p-4 border-bottom"><div><h2 class="h5 fw-bold mb-1">最新领养申请</h2><p class="text-secondary small mb-0">优先处理等待中的申请</p></div><a th:href="@{/admin/applications}" class="text-link">全部申请<i class="bi bi-arrow-right ms-1"></i></a></div>
+                    <!-- recentApplications 非空时遍历生成表格；每行可进入对应申请的审核详情页。 -->
+                    <div class="table-responsive" th:if="${not #lists.isEmpty(recentApplications)}"><table class="table"><thead><tr><th>宠物</th><th>申请人</th><th>提交时间</th><th>状态</th><th class="text-end">操作</th></tr></thead><tbody><tr th:each="application : ${recentApplications}"><td><div class="table-pet"><img class="table-thumb" th:src="@{${application.coverImage}}" th:alt="${application.petName}"><strong th:text="${application.petName}">宠物</strong></div></td><td th:text="${application.username}">用户</td><td th:text="${#temporals.format(application.createdAt,'yyyy-MM-dd HH:mm')}">时间</td><td><span class="state-label" th:classappend="'state-' + ${application.status}" th:text="${application.status == 'PENDING' ? '待审核' : (application.status == 'APPROVED' ? '已通过' : '未通过')}">待审核</span></td><td class="text-end"><a class="btn btn-sm btn-outline-primary" th:href="@{/admin/applications/{id}/review(id=${application.id})}">查看审核</a></td></tr></tbody></table></div>
+                    <!-- 暂无最新申请时显示空状态说明，而不是渲染空表格。 -->
+                    <div class="empty-state border-0 m-3" th:if="${#lists.isEmpty(recentApplications)}"><i class="bi bi-journal-check"></i><h3>暂无申请</h3><p class="mb-0">新申请提交后会显示在这里。</p></div>
+                </section>
+            </div>
+        </div>
+    </div>
+</main>
+<th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

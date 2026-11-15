@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<!-- 通用错误页：展示操作失败原因及可选错误码，支持返回上一页或首页。 -->
+<head th:replace="~{fragments/common :: head('页面出现了一点问题')}"></head>
+<body><nav th:replace="~{fragments/common :: header}"></nav><!-- error 为空时使用默认提示，status 非空时追加错误码；底部提供后退与首页两个操作。 --><main class="section-space"><div class="container"><div class="empty-state mx-auto" style="max-width:700px"><i class="bi bi-cloud-drizzle"></i><span class="section-kicker">SOMETHING WENT WRONG</span><h1 class="section-title mb-3">暂时无法完成这个操作</h1><p th:text="${error != null ? error : '请返回上一页重试。若上传图片，请确认单张图片不超过 2MB。'}">请稍后重试。</p><p class="text-secondary small" th:if="${status != null}" th:text="'错误码：' + ${status}">错误码</p><div class="d-flex justify-content-center gap-2"><a href="javascript:history.back()" class="btn btn-outline-primary rounded-pill">返回上一页</a><a th:href="@{/}" class="btn btn-primary rounded-pill">回到首页</a></div></div></div></main><footer th:replace="~{fragments/common :: footer}"></footer><th:block th:replace="~{fragments/common :: scripts}"></th:block></body>
+</html>

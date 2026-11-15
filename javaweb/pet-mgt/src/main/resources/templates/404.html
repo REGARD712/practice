@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<!-- 404 页面：处理地址不存在或宠物档案不存在的情况，并提供返回与继续浏览入口。 -->
+<head th:replace="~{fragments/common :: head('没有找到这个页面')}"></head>
+<body><nav th:replace="~{fragments/common :: header}"></nav><!-- 错误说明优先输出模型中的 error；为空时显示默认提示，操作区可返回首页或宠物列表。 --><main class="section-space"><div class="container"><div class="empty-state mx-auto" style="max-width:700px"><i class="bi bi-compass"></i><span class="section-kicker">404 NOT FOUND</span><h1 class="section-title mb-3">没有找到这个页面</h1><p th:text="${error != null ? error : '页面可能已被移动，或者对应的宠物档案不存在。'}">页面不存在</p><div class="d-flex justify-content-center gap-2"><a th:href="@{/}" class="btn btn-primary rounded-pill">返回首页</a><a th:href="@{/pets}" class="btn btn-outline-primary rounded-pill">看看宠物</a></div></div></div></main><footer th:replace="~{fragments/common :: footer}"></footer><th:block th:replace="~{fragments/common :: scripts}"></th:block></body>
+</html>

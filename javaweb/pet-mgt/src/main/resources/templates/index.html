@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<!-- 网站首页：展示平台理念、领养统计、推荐宠物、领养流程和领养行动入口。 -->
+<head th:replace="~{fragments/common :: head('首页')}"></head>
+<body>
+<!-- 引入公共顶部导航及成功/失败消息片段，保持全站交互一致。 -->
+<nav th:replace="~{fragments/common :: header}"></nav>
+<div th:replace="~{fragments/common :: flash}"></div>
+
+<!-- 首屏宣传区：左侧介绍与操作按钮，右侧展示宠物图片和理念卡片。 -->
+<header class="hero">
+    <div class="container position-relative">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="hero-eyebrow"><i class="bi bi-stars"></i>每一次相遇，都值得认真对待</span>
+                <h1 class="hero-title">给一个生命<br>一个<em>温暖的家</em></h1>
+                <p class="hero-copy">这里没有被标价的宠物，只有等待被爱的生命。了解它们的性格与故事，提交一份认真的领养申请，让陪伴从今天开始。</p>
+                <!-- 两个首要操作：进入宠物列表，或在当前页滚动到领养指南。 -->
+                <div class="hero-actions">
+                    <a th:href="@{/pets}" class="btn btn-primary btn-lg rounded-pill px-4"><i class="bi bi-search-heart me-2"></i>寻找我的伙伴</a>
+                    <a href="#guide" class="btn btn-outline-primary btn-lg rounded-pill px-4">了解领养流程</a>
+                </div>
+                <!-- 三项平台承诺用于补充说明健康、审核与责任领养原则。 -->
+                <div class="hero-trust">
+                    <span><i class="bi bi-shield-check"></i>健康信息透明</span>
+                    <span><i class="bi bi-person-check"></i>申请人工审核</span>
+                    <span><i class="bi bi-house-heart"></i>倡导终身负责</span>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <!-- 首屏主图使用项目静态资源；浮动说明卡片强调领养而非购买。 -->
+                <div class="hero-visual">
+                    <img th:src="@{/images/products/golden-retriever.jpg}" class="hero-image" alt="等待被领养的金毛犬">
+                    <div class="hero-note">
+                        <span class="hero-note-icon"><i class="bi bi-heart-fill"></i></span>
+                        <div><strong>不是购买，是彼此选择</strong><small>给它时间，也给爱一个机会</small></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- 统计区：availableCount、adoptedCount、breedCount 分别来自后端模型。 -->
+<div class="container stat-strip">
+    <div class="stat-panel">
+        <div class="row g-4">
+            <div class="col-4"><div class="stat-item justify-content-lg-center"><span class="stat-icon"><i class="bi bi-house-heart"></i></span><div><div class="stat-value" th:text="${availableCount}">0</div><div class="stat-label">正在等待新家</div></div></div></div>
+            <div class="col-4"><div class="stat-item justify-content-lg-center"><span class="stat-icon"><i class="bi bi-heart"></i></span><div><div class="stat-value" th:text="${adoptedCount}">0</div><div class="stat-label">已收获幸福家庭</div></div></div></div>
+            <div class="col-4"><div class="stat-item justify-content-lg-center"><span class="stat-icon"><i class="bi bi-flower1"></i></span><div><div class="stat-value" th:text="${breedCount}">0</div><div class="stat-label">收录宠物品种</div></div></div></div>
+        </div>
+    </div>
+</div>
+
+<main>
+    <!-- 推荐宠物区：提供全部宠物入口，并以卡片网格展示 featuredPets。 -->
+    <section class="section-space">
+        <div class="container">
+            <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-between gap-3 mb-4">
+                <div><span class="section-kicker">MEET YOUR FRIEND</span><h2 class="section-title mb-2">它们，正在等你</h2><p class="section-description mb-0">每一张照片背后，都是一个期待被看见的小生命。</p></div>
+                <a th:href="@{/pets}" class="btn btn-outline-primary rounded-pill">查看全部<i class="bi bi-arrow-right ms-2"></i></a>
+            </div>
+            <!-- 遍历 featuredPets，每次将当前 pet 作为参数传给公共 card 片段。 -->
+            <div class="row g-4 mt-1">
+                <div class="col-sm-6 col-lg-4" th:each="pet : ${featuredPets}">
+                    <div th:replace="~{fragments/pet-card :: card(${pet})}"></div>
+                </div>
+            </div>
+            <!-- 推荐列表为空时显示空状态，避免页面出现没有说明的空白区域。 -->
+            <div class="empty-state mt-4" th:if="${#lists.isEmpty(featuredPets)}"><i class="bi bi-house-heart"></i><h3>新的伙伴正在路上</h3><p class="mb-0">管理员发布宠物信息后，它们就会出现在这里。</p></div>
+        </div>
+    </section>
+
+    <!-- 领养指南区：id="guide" 供导航和首屏按钮进行页内定位。 -->
+    <section class="section-space guide-section" id="guide">
+        <div class="container">
+            <div class="text-center mx-auto mb-5" style="max-width: 650px">
+                <span class="section-kicker">ADOPTION GUIDE</span>
+                <h2 class="section-title">领养，是一场双向奔赴</h2>
+                <p class="section-description mx-auto mt-3">请确保全家意见一致，并已了解宠物未来十余年的生活、医疗与陪伴成本。</p>
+            </div>
+            <!-- 三张步骤卡依次说明选择宠物、提交申请和等待审核的完整流程。 -->
+            <div class="row g-4">
+                <div class="col-md-4"><div class="guide-card"><span class="guide-number">01</span><h3>遇见合适的伙伴</h3><p>查看宠物品种、年龄、健康状况和性格介绍。根据居住环境与生活方式，选择真正适合你的伙伴。</p></div></div>
+                <div class="col-md-4"><div class="guide-card"><span class="guide-number">02</span><h3>提交真实申请</h3><p>登录后填写联系方式、居住条件、养宠经验与领养理由。真实完整的信息有助于我们了解你。</p></div></div>
+                <div class="col-md-4"><div class="guide-card"><span class="guide-number">03</span><h3>等待审核与沟通</h3><p>管理员将认真审核申请，结果会同步到“我的申请”。通过后进一步沟通接宠与后续回访事宜。</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 底部行动区：再次提示长期责任，并提供进入宠物列表的醒目按钮。 -->
+    <section class="section-space">
+        <div class="container">
+            <div class="cta-panel">
+                <div class="position-relative" style="z-index: 1">
+                    <span class="section-kicker text-white-50">READY FOR LOVE</span>
+                    <h2 class="section-title">你准备好的，不只是空间<br>还有一份长久的责任</h2>
+                    <p class="mt-3 mb-4">如果你已经认真考虑，就来认识正在等待的它们。</p>
+                    <a th:href="@{/pets}" class="btn btn-light rounded-pill px-4 text-primary">开始寻找<i class="bi bi-arrow-right ms-2"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/common :: footer}"></footer>
+<th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

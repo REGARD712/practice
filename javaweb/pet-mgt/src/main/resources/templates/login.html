@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<!-- 登录页：处理账号登录，并根据注册、退出或登录失败参数展示对应反馈。 -->
+<head th:replace="~{fragments/common :: head('登录')}"></head>
+<body>
+<nav th:replace="~{fragments/common :: header}"></nav>
+<!-- 双栏认证卡片：左侧为品牌说明，右侧为登录表单，小屏幕自动堆叠。 -->
+<main class="auth-section">
+    <div class="container">
+        <div class="auth-card mx-auto" style="max-width: 980px">
+            <div class="row g-0">
+                <div class="col-lg-5">
+                    <div class="auth-side">
+                        <a class="brand text-white" th:href="@{/}"><span class="brand-mark"><i class="bi bi-house-heart-fill"></i></span>暖窝</a>
+                        <h2>欢迎回来，<br>新的故事在等待。</h2>
+                        <p>登录后可以提交领养申请、查看审核进度，也可以继续了解那些等待家的伙伴。</p>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="auth-form">
+                        <span class="section-kicker">WELCOME BACK</span>
+                        <h1>登录暖窝</h1>
+                        <p class="text-secondary mb-4">使用你的账号继续这段温暖旅程</p>
+                        <!-- URL 含 registered 参数时，提示刚注册的用户改用新账号登录。 -->
+                        <div class="alert alert-success border-0" th:if="${param.registered}"><i class="bi bi-check-circle me-2"></i>注册成功，请使用新账号登录。</div>
+                        <!-- URL 含 logout 参数时，确认当前会话已安全退出。 -->
+                        <div class="alert alert-info border-0" th:if="${param.logout}"><i class="bi bi-info-circle me-2"></i>你已安全退出登录。</div>
+                        <!-- URL 含 error 参数时，显示统一登录失败原因，避免泄露具体账号状态。 -->
+                        <div class="alert alert-danger border-0" th:if="${param.error}"><i class="bi bi-exclamation-circle me-2"></i>用户名或密码错误，或账号已被停用。</div>
+                        <!-- 登录表单以 POST 提交；needs-validation 与 novalidate 交由公共脚本执行前端校验。 -->
+                        <form th:action="@{/login}" method="post" class="needs-validation" novalidate>
+                            <!-- 用户名必填，autocomplete 帮助浏览器匹配已保存账号。 -->
+                            <div class="mb-3">
+                                <label for="username" class="form-label required">用户名</label>
+                                <div class="input-group"><span class="input-group-text bg-white border-end-0 rounded-start-3"><i class="bi bi-person text-secondary"></i></span><input type="text" class="form-control border-start-0" id="username" name="username" placeholder="请输入用户名" autocomplete="username" required autofocus></div>
+                            </div>
+                            <!-- 密码输入框必填，并使用 current-password 提示浏览器填充当前账号密码。 -->
+                            <div class="mb-4">
+                                <label for="password" class="form-label required">密码</label>
+                                <div class="input-group"><span class="input-group-text bg-white border-end-0 rounded-start-3"><i class="bi bi-lock text-secondary"></i></span><input type="password" class="form-control border-start-0" id="password" name="password" placeholder="请输入密码" autocomplete="current-password" required></div>
+                            </div>
+                            <!-- 校验通过后提交登录请求；下方为未注册用户提供的注册入口。 -->
+                            <button class="btn btn-primary w-100 rounded-3 mb-3" type="submit">登录<i class="bi bi-arrow-right ms-2"></i></button>
+                        </form>
+                        <p class="text-center text-secondary small mb-0">还没有账号？<a th:href="@{/register}" class="text-link">注册一个账号</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/common :: footer}"></footer>
+<th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

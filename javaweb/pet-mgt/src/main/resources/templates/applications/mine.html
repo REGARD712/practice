@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<!-- 我的领养申请页：以表格展示当前用户的申请记录、审核状态、审核意见及宠物入口。 -->
+<head th:replace="~{fragments/common :: head('我的领养申请')}"></head>
+<body>
+<nav th:replace="~{fragments/common :: header}"></nav>
+<div th:replace="~{fragments/common :: flash}"></div>
+<header class="page-hero"><div class="container"><nav aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a th:href="@{/}">首页</a></li><li class="breadcrumb-item active">我的申请</li></ol></nav><h1 class="page-title">我的领养申请</h1><p class="page-subtitle">每一份认真填写的申请，都会得到认真对待。</p></div></header>
+<main class="section-space pt-4">
+    <div class="container">
+        <!-- 仅在申请列表非空时渲染表格；table-responsive 保证小屏幕可横向滚动。 -->
+        <div class="content-card overflow-hidden" th:if="${not #lists.isEmpty(applications)}">
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead><tr><th>申请宠物</th><th>申请时间</th><th>联系电话</th><th>审核状态</th><th>审核意见</th><th class="text-end">操作</th></tr></thead>
+                    <tbody>
+                    <!-- 遍历 applications，每一行对应当前用户的一份领养申请。 -->
+                    <tr th:each="application : ${applications}">
+                        <!-- 宠物封面和名字组成详情链接，申请及审核时间使用统一格式输出。 -->
+                        <td><a class="table-pet" th:href="@{/pets/{id}(id=${application.petId})}"><img class="table-thumb" th:src="@{${application.coverImage}}" th:alt="${application.petName}"><strong th:text="${application.petName}">宠物</strong></a></td>
+                        <td th:text="${#temporals.format(application.createdAt,'yyyy-MM-dd HH:mm')}">时间</td>
+                        <td th:text="${application.contactPhone}">电话</td>
+                        <!-- 根据申请状态显示待审核、已通过或未通过；存在审核时间时补充审核日期。 -->
+                        <td><span class="state-label" th:classappend="'state-' + ${application.status}" th:text="${application.status == 'PENDING' ? '待审核' : (application.status == 'APPROVED' ? '已通过' : '未通过')}">待审核</span><div class="text-secondary small mt-1" th:if="${application.reviewedAt != null}" th:text="${#temporals.format(application.reviewedAt,'yyyy-MM-dd')}">审核日期</div></td>
+                        <!-- 审核意见非空时显示具体内容，否则使用“暂未填写”占位。 -->
+                        <td><span th:if="${application.reviewComment != null and not #strings.isEmpty(application.reviewComment)}" th:text="${application.reviewComment}">审核意见</span><span class="text-secondary" th:if="${application.reviewComment == null or #strings.isEmpty(application.reviewComment)}">暂未填写</span></td>
+                        <td class="text-end"><a class="btn btn-sm btn-outline-primary rounded-pill" th:href="@{/pets/{id}(id=${application.petId})}">查看宠物</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- 没有申请记录时显示空状态，并引导用户前往宠物列表。 -->
+        <div class="empty-state" th:if="${#lists.isEmpty(applications)}"><i class="bi bi-journal-heart"></i><h3>还没有领养申请</h3><p>先去认识一位等待家的伙伴，再认真提交你的第一份申请。</p><a th:href="@{/pets}" class="btn btn-primary rounded-pill">寻找伙伴</a></div>
+        <!-- 固定状态说明帮助申请人正确理解三种审核结果及后续沟通方式。 -->
+        <div class="notice-box mt-4"><strong>状态说明：</strong>“待审核”表示管理员正在了解你的申请；“已通过”后可按审核意见进一步沟通；“未通过”不代表你不优秀，可能只是当前宠物与居住条件不完全匹配。</div>
+    </div>
+</main>
+<footer th:replace="~{fragments/common :: footer}"></footer>
+<th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<!-- 后台用户管理页：展示账号、联系方式、角色和启用状态，并支持新增、编辑及删除用户。 -->
+<head th:replace="~{fragments/common :: head('用户管理')}"></head>
+<body>
+<nav th:replace="~{fragments/common :: header}"></nav><div th:replace="~{fragments/common :: flash}"></div>
+<main class="admin-layout"><div class="container-fluid px-lg-5"><div class="row g-4">
+    <!-- 侧边栏传入 users，高亮“用户管理”菜单。 -->
+    <div class="col-lg-3 col-xl-2"><div th:replace="~{admin/fragments :: sidebar('users')}"></div></div>
+    <div class="col-lg-9 col-xl-10">
+        <div class="d-flex justify-content-between align-items-center gap-3 mb-4"><div><span class="section-kicker">USER MANAGEMENT</span><h1 class="admin-heading mb-1">用户与角色</h1><p class="text-secondary mb-0">维护账号状态，并为管理员分配权限。</p></div><a th:href="@{/admin/users/new}" class="btn btn-primary rounded-pill"><i class="bi bi-person-plus me-1"></i>新增用户</a></div>
+        <div class="content-card overflow-hidden"><div class="table-responsive"><table class="table"><thead><tr><th>ID</th><th>用户信息</th><th>联系电话</th><th>角色</th><th>状态</th><th>注册时间</th><th class="text-end">操作</th></tr></thead><tbody>
+        <!-- 遍历 users；内层遍历 user.roles，将角色标识映射为管理员或普通用户徽章。 -->
+        <tr th:each="user : ${users}"><td class="text-secondary" th:text="${user.id}">1</td><td><div class="d-flex align-items-center gap-2"><span class="user-avatar"><i class="bi bi-person"></i></span><div><strong class="d-block" th:text="${user.username}">用户名</strong><small class="text-secondary" th:text="${user.email}">邮箱</small></div></div></td><td th:text="${user.phone ?: '未填写'}">电话</td><td><span class="role-badge me-1" th:each="role : ${user.roles}" th:text="${role.roleName == 'ROLE_ADMIN' ? '管理员' : '普通用户'}">角色</span></td><td><span class="state-label" th:classappend="${user.enabled} ? 'state-APPROVED' : 'state-REJECTED'" th:text="${user.enabled} ? '正常' : '已停用'">正常</span></td><td th:text="${#temporals.format(user.createdAt,'yyyy-MM-dd')}">时间</td><td><!-- 编辑进入用户表单；删除通过 POST 提交并在执行前显示不可撤销确认提示。 --><div class="action-group justify-content-end"><a class="btn btn-outline-primary" th:href="@{/admin/users/{id}/edit(id=${user.id})}" title="编辑"><i class="bi bi-pencil"></i></a><form th:action="@{/admin/users/{id}/delete(id=${user.id})}" method="post" data-confirm="确定删除该用户吗？此操作不可撤销。"><button class="btn btn-outline-danger" type="submit" title="删除"><i class="bi bi-trash"></i></button></form></div></td></tr>
+        </tbody></table></div><!-- 用户列表为空时显示简洁空状态。 --><div class="empty-state border-0" th:if="${#lists.isEmpty(users)}"><i class="bi bi-people"></i><h3>暂无用户</h3></div></div>
+    </div>
+</div></div></main>
+<th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body></html>

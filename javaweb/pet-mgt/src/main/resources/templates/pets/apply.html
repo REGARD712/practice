@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<!-- 领养申请页：左侧核对宠物摘要，右侧填写联系、居住、经验和照顾计划并提交审核。 -->
+<head th:replace="~{fragments/common :: head('申请领养 ' + ${pet.name})}"></head>
+<body>
+<nav th:replace="~{fragments/common :: header}"></nav>
+<div th:replace="~{fragments/common :: flash}"></div>
+<!-- 页头面包屑可返回宠物列表或当前宠物详情，并说明申请信息的审核用途。 -->
+<header class="page-hero"><div class="container"><nav aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a th:href="@{/pets}">寻找伙伴</a></li><li class="breadcrumb-item"><a th:href="@{/pets/{id}(id=${pet.id})}" th:text="${pet.name}">宠物</a></li><li class="breadcrumb-item active">领养申请</li></ol></nav><h1 class="page-title">为相遇，认真作答</h1><p class="page-subtitle">这些信息将帮助管理员判断你是否适合成为它的新家人。</p></div></header>
+<main class="section-space pt-4">
+    <div class="container">
+        <div class="row g-4">
+            <!-- 宠物摘要卡片在宽屏下吸附定位，便于填写长表单时随时核对申请对象。 -->
+            <div class="col-lg-4">
+                <div class="content-card overflow-hidden position-sticky" style="top: 105px">
+                    <img th:src="@{${pet.coverImage}}" class="w-100" style="height: 240px; object-fit: cover" th:alt="${pet.name}">
+                    <div class="p-4"><h2 class="h4 fw-bold" th:text="${pet.name}">宠物</h2><p class="text-secondary" th:text="|${pet.breed != null ? pet.breed : '待确认'} · ${pet.gender} · ${pet.ageMonths} 个月|">宠物信息</p><div class="notice-box mb-0">领养需要长期投入时间、精力和医疗费用。若未来生活发生变化，也请提前为它做好妥善安排。</div></div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <!-- 申请表单绑定 application 并提交至当前宠物的申请地址，启用公共前端校验。 -->
+                <form th:action="@{/pets/{id}/apply(id=${pet.id})}" th:object="${application}" method="post" class="content-card p-4 p-md-5 needs-validation" novalidate>
+                    <h2 class="h4 fw-bold mb-1">领养申请</h2><p class="text-secondary mb-4">带 <span class="text-danger">*</span> 的项目为必填项</p>
+                    <!-- 循环展示服务端返回的全局业务错误，例如重复申请或宠物状态已变化。 -->
+                    <div class="alert alert-danger border-0" th:if="${#fields.hasGlobalErrors()}"><ul class="mb-0"><li th:each="message : ${#fields.globalErrors()}" th:text="${message}">业务错误</li></ul></div>
+                    <div class="row g-3">
+                        <!-- 联系电话绑定 contactPhone，通过手机号正则和必填约束校验，错误显示在字段下方。 -->
+                        <div class="col-md-6"><label for="contactPhone" class="form-label required">联系电话</label><input type="tel" class="form-control" th:classappend="${#fields.hasErrors('contactPhone')} ? 'is-invalid'" id="contactPhone" th:field="*{contactPhone}" pattern="1[3-9][0-9]{9}" placeholder="11 位手机号码" required><div class="invalid-feedback" th:errors="*{contactPhone}">请输入有效联系电话</div></div>
+                        <!-- 居住条件为必选下拉项，选项覆盖自有、整租及与家人同住等场景。 -->
+                        <div class="col-md-6"><label for="housingCondition" class="form-label required">居住条件</label><select class="form-select" th:classappend="${#fields.hasErrors('housingCondition')} ? 'is-invalid'" id="housingCondition" th:field="*{housingCondition}" required><option value="">请选择</option><option value="自有住房，空间充足">自有住房，空间充足</option><option value="自有住房，一般空间">自有住房，一般空间</option><option value="整租住房，房东同意养宠">整租住房，房东同意养宠</option><option value="与家人同住，家人均同意">与家人同住，家人均同意</option></select><div class="invalid-feedback" th:errors="*{housingCondition}">请选择居住条件</div></div>
+                        <!-- 常住地址最长 200 字，仅要求到街道层级，无需填写具体门牌号。 -->
+                        <div class="col-12"><label for="address" class="form-label required">常住地址</label><input type="text" class="form-control" th:classappend="${#fields.hasErrors('address')} ? 'is-invalid'" id="address" th:field="*{address}" maxlength="200" placeholder="省 / 市 / 区 / 街道（无需填写具体门牌号）" required><div class="invalid-feedback" th:errors="*{address}">请填写常住地址</div></div>
+                        <!-- 养宠经验为选填长文本，最多 1000 字，可说明既往及当前养宠情况。 -->
+                        <div class="col-12"><label for="experience" class="form-label">养宠经验</label><textarea class="form-control" th:classappend="${#fields.hasErrors('experience')} ? 'is-invalid'" id="experience" th:field="*{experience}" maxlength="1000" placeholder="是否养过宠物？目前家中是否有其他宠物？没有经验也可以如实说明。"></textarea><div class="invalid-feedback" th:errors="*{experience}">内容过长</div></div>
+                        <!-- 领养理由与照顾计划必填，长度限制为 20–1000 字，并显示对应校验提示。 -->
+                        <div class="col-12"><label for="reason" class="form-label required">领养理由与照顾计划</label><textarea class="form-control" th:classappend="${#fields.hasErrors('reason')} ? 'is-invalid'" id="reason" th:field="*{reason}" minlength="20" maxlength="1000" placeholder="请说明为什么选择它、日常陪伴安排，以及医疗和突发情况的应对计划（至少 20 字）" required></textarea><div class="invalid-feedback" th:errors="*{reason}">请至少填写 20 字</div></div>
+                        <!-- 领养承诺复选框必须勾选，未确认时由浏览器校验样式显示提示。 -->
+                        <div class="col-12"><div class="form-check mt-2"><input class="form-check-input" type="checkbox" id="agreement" required><label class="form-check-label small text-secondary" for="agreement">我承诺所填信息真实，并愿意科学养宠、定期免疫、不随意遗弃。</label><div class="invalid-feedback">请确认领养承诺</div></div></div>
+                        <!-- 表单操作区：提交申请或放弃填写并返回当前宠物详情。 -->
+                        <div class="col-12 d-flex flex-column flex-sm-row gap-2 mt-4"><button class="btn btn-primary px-4" type="submit"><i class="bi bi-send me-2"></i>提交领养申请</button><a th:href="@{/pets/{id}(id=${pet.id})}" class="btn btn-outline-secondary px-4">返回详情</a></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/common :: footer}"></footer>
+<th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

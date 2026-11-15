@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<!-- 403 权限不足页：说明当前账号无权访问，并提供返回首页及浏览宠物的安全出口。 -->
+<head th:replace="~{fragments/common :: head('无权访问')}"></head>
+<body><nav th:replace="~{fragments/common :: header}"></nav><!-- 居中错误卡片解释管理员权限要求，底部按钮避免用户停留在无权限页面。 --><main class="section-space"><div class="container"><div class="empty-state mx-auto" style="max-width:700px"><i class="bi bi-shield-lock"></i><span class="section-kicker">403 FORBIDDEN</span><h1 class="section-title mb-3">这里需要管理员权限</h1><p>当前账号无法访问该页面。你可以返回首页，或退出后使用管理员账号登录。</p><div class="d-flex justify-content-center gap-2"><a th:href="@{/}" class="btn btn-primary rounded-pill">返回首页</a><a th:href="@{/pets}" class="btn btn-outline-primary rounded-pill">看看宠物</a></div></div></div></main><footer th:replace="~{fragments/common :: footer}"></footer><th:block th:replace="~{fragments/common :: scripts}"></th:block></body>
+</html>

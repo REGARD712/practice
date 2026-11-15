@@ -1,0 +1,11 @@
+<!-- 后台侧边栏公共片段：active 参数接收当前模块标识，用于高亮对应菜单。 -->
+<aside class="admin-sidebar" th:fragment="sidebar(active)">
+    <div class="admin-sidebar-title">MANAGEMENT</div>
+    <!-- 四个功能入口分别比较 active 与 dashboard、pets、applications、users；查看网站不设选中态。 -->
+    <a class="admin-nav-link" th:classappend="${active == 'dashboard'} ? 'active'" th:href="@{/admin}"><i class="bi bi-grid-1x2"></i>数据概览</a>
+    <a class="admin-nav-link" th:classappend="${active == 'pets'} ? 'active'" th:href="@{/admin/pets}"><i class="bi bi-house-heart"></i>宠物管理</a>
+    <a class="admin-nav-link" th:classappend="${active == 'applications'} ? 'active'" th:href="@{/admin/applications}"><i class="bi bi-journal-check"></i>领养审核</a>
+    <a class="admin-nav-link" th:classappend="${active == 'users'} ? 'active'" th:href="@{/admin/users}"><i class="bi bi-people"></i>用户管理</a>
+    <!-- 在新标签页打开前台首页，保留当前后台页面。 -->
+    <a class="admin-nav-link" th:href="@{/}" target="_blank"><i class="bi bi-box-arrow-up-right"></i>查看网站</a>
+</aside>

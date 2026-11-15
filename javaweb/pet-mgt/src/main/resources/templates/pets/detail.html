@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<!-- 宠物详情页：展示图片相册、档案信息、领养状态，并提供申请入口和图片放大弹窗。 -->
+<head th:replace="~{fragments/common :: head(${pet.name})}"></head>
+<body>
+<nav th:replace="~{fragments/common :: header}"></nav>
+<div th:replace="~{fragments/common :: flash}"></div>
+<main class="section-space pt-4">
+    <div class="container">
+        <!-- 面包屑动态显示当前宠物名字，并提供返回首页及宠物列表的路径。 -->
+        <nav aria-label="breadcrumb" class="mb-4"><ol class="breadcrumb"><li class="breadcrumb-item"><a th:href="@{/}">首页</a></li><li class="breadcrumb-item"><a th:href="@{/pets}">寻找伙伴</a></li><li class="breadcrumb-item active" th:text="${pet.name}">宠物详情</li></ol></nav>
+        <div class="row g-4 g-lg-5">
+            <!-- 左侧图片相册：主图带有脚本识别标记，点击后可打开放大预览。 -->
+            <div class="col-lg-7">
+                <img th:src="@{${pet.coverImage}}" th:alt="${pet.name}" class="detail-image" data-main-pet-image>
+                <!-- 仅相册非空时显示缩略图；遍历图片并记录序号 iter 用于 alt 文本。 -->
+                <div class="thumb-list" th:if="${not #lists.isEmpty(pet.images)}">
+                    <!-- 第一张缩略图默认高亮；data-image-thumb 保存供脚本切换主图的图片路径。 -->
+                    <img th:each="image,iter : ${pet.images}" th:src="@{${image.imagePath}}" th:alt="|${pet.name}照片 ${iter.count}|" class="thumb-image" th:classappend="${iter.first} ? 'active'" th:attr="data-image-thumb=${image.imagePath}">
+                </div>
+                <!-- 相册操作提示，对应公共脚本中的主图放大和缩略图切换事件。 -->
+                <p class="text-secondary small mt-3"><i class="bi bi-arrows-fullscreen me-1"></i>点击大图可放大，点击下方缩略图可切换照片</p>
+            </div>
+            <div class="col-lg-5">
+                <!-- 右侧档案卡片：展示宠物名称、状态、故事和基本健康信息。 -->
+                <div class="detail-card">
+                    <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+                        <div><span class="section-kicker">SAY HELLO</span><h1 class="detail-name" th:text="${pet.name}">宠物名字</h1></div>
+                        <!-- 状态值同时用于拼接 CSS 类名和映射中文状态文案。 -->
+                        <span class="state-label" th:classappend="'state-' + ${pet.status}" th:text="${pet.status == 'AVAILABLE' ? '等待领养' : (pet.status == 'PENDING' ? '审核中' : '已领养')}">等待领养</span>
+                    </div>
+                    <!-- th:text 安全输出宠物故事，CSS 保留描述中的换行。 -->
+                    <p class="detail-description" th:text="${pet.description}">宠物故事</p>
+                    <!-- 四项基础档案；品种为空时显示待确认，年龄统一换算为月龄展示。 -->
+                    <div class="detail-meta my-4">
+                        <div class="meta-box"><small>品种</small><strong th:text="${pet.breed != null ? pet.breed : '待确认'}">品种</strong></div>
+                        <div class="meta-box"><small>年龄</small><strong th:text="${pet.ageMonths} + ' 个月'">年龄</strong></div>
+                        <div class="meta-box"><small>性别</small><strong th:text="${pet.gender}">性别</strong></div>
+                        <div class="meta-box"><small>健康状况</small><strong th:text="${pet.healthStatus}">健康</strong></div>
+                    </div>
+                    <!-- 审核提示：明确提交申请并不等于已经完成领养。 -->
+                    <div class="notice-box mb-4"><i class="bi bi-info-circle me-2"></i>提交申请不代表领养成功。请确保信息真实，管理员审核后会给出明确结果。</div>
+                    <!-- 仅待领养状态显示申请入口；游客会看到需要先登录的补充提示。 -->
+                    <a th:if="${pet.status == 'AVAILABLE'}" th:href="@{/pets/{id}/apply(id=${pet.id})}" class="btn btn-primary btn-lg w-100 rounded-3"><i class="bi bi-heart me-2"></i>申请领养<span sec:authorize="isAnonymous()">（请先登录）</span></a>
+                    <!-- 非待领养状态禁用申请按钮，并区分审核中与已领养两种原因。 -->
+                    <button th:if="${pet.status != 'AVAILABLE'}" class="btn btn-secondary btn-lg w-100 rounded-3" disabled th:text="${pet.status == 'PENDING' ? '已有申请正在审核' : '它已经找到幸福新家'}">暂不可申请</button>
+                    <a th:href="@{/pets}" class="btn btn-link w-100 mt-2 text-secondary"><i class="bi bi-arrow-left me-1"></i>继续看看其他伙伴</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- 图片放大弹窗：脚本点击主图时同步图片地址，关闭按钮由 Bootstrap 控制。 -->
+<div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-xl modal-dialog-centered"><div class="modal-content border-0 bg-transparent"><button type="button" class="btn-close btn-close-white ms-auto me-2 mb-2" data-bs-dismiss="modal" aria-label="关闭"></button><img th:src="@{${pet.coverImage}}" class="w-100 rounded-4" th:alt="${pet.name}"></div></div></div>
+<footer th:replace="~{fragments/common :: footer}"></footer>
+<th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>
