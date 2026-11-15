@@ -15,16 +15,16 @@
                     <thead><tr><th>申请宠物</th><th>申请时间</th><th>联系电话</th><th>审核状态</th><th>审核意见</th><th class="text-end">操作</th></tr></thead>
                     <tbody>
                     <!-- 遍历 applications，每一行对应当前用户的一份领养申请。 -->
-                    <tr th:each="application : ${applications}">
+                    <tr th:each="adoptionApplication : ${applications}">
                         <!-- 宠物封面和名字组成详情链接，申请及审核时间使用统一格式输出。 -->
-                        <td><a class="table-pet" th:href="@{/pets/{id}(id=${application.petId})}"><img class="table-thumb" th:src="@{${application.coverImage}}" th:alt="${application.petName}"><strong th:text="${application.petName}">宠物</strong></a></td>
-                        <td th:text="${#temporals.format(application.createdAt,'yyyy-MM-dd HH:mm')}">时间</td>
-                        <td th:text="${application.contactPhone}">电话</td>
+                        <td><a class="table-pet" th:href="@{/pets/{id}(id=${adoptionApplication.petId})}"><img class="table-thumb" th:src="@{${adoptionApplication.coverImage}}" th:alt="${adoptionApplication.petName}"><strong th:text="${adoptionApplication.petName}">宠物</strong></a></td>
+                        <td th:text="${#temporals.format(adoptionApplication.createdAt,'yyyy-MM-dd HH:mm')}">时间</td>
+                        <td th:text="${adoptionApplication.contactPhone}">电话</td>
                         <!-- 根据申请状态显示待审核、已通过或未通过；存在审核时间时补充审核日期。 -->
-                        <td><span class="state-label" th:classappend="'state-' + ${application.status}" th:text="${application.status == 'PENDING' ? '待审核' : (application.status == 'APPROVED' ? '已通过' : '未通过')}">待审核</span><div class="text-secondary small mt-1" th:if="${application.reviewedAt != null}" th:text="${#temporals.format(application.reviewedAt,'yyyy-MM-dd')}">审核日期</div></td>
+                        <td><span class="state-label" th:classappend="'state-' + ${adoptionApplication.status}" th:text="${adoptionApplication.status == 'PENDING' ? '待审核' : (adoptionApplication.status == 'APPROVED' ? '已通过' : '未通过')}">待审核</span><div class="text-secondary small mt-1" th:if="${adoptionApplication.reviewedAt != null}" th:text="${#temporals.format(adoptionApplication.reviewedAt,'yyyy-MM-dd')}">审核日期</div></td>
                         <!-- 审核意见非空时显示具体内容，否则使用“暂未填写”占位。 -->
-                        <td><span th:if="${application.reviewComment != null and not #strings.isEmpty(application.reviewComment)}" th:text="${application.reviewComment}">审核意见</span><span class="text-secondary" th:if="${application.reviewComment == null or #strings.isEmpty(application.reviewComment)}">暂未填写</span></td>
-                        <td class="text-end"><a class="btn btn-sm btn-outline-primary rounded-pill" th:href="@{/pets/{id}(id=${application.petId})}">查看宠物</a></td>
+                        <td><span th:if="${adoptionApplication.reviewComment != null and not #strings.isEmpty(adoptionApplication.reviewComment)}" th:text="${adoptionApplication.reviewComment}">审核意见</span><span class="text-secondary" th:if="${adoptionApplication.reviewComment == null or #strings.isEmpty(adoptionApplication.reviewComment)}">暂未填写</span></td>
+                        <td class="text-end"><a class="btn btn-sm btn-outline-primary rounded-pill" th:href="@{/pets/{id}(id=${adoptionApplication.petId})}">查看宠物</a></td>
                     </tr>
                     </tbody>
                 </table>
