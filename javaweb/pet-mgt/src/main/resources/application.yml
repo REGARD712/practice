@@ -1,0 +1,42 @@
+# Spring Boot 框架相关配置，包含应用信息、数据库、文件上传、模板引擎及静态资源缓存。
+spring:
+  application:
+    name: pet-mgt
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:pet_adoption}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:}
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 10MB
+  thymeleaf:
+    cache: false
+  web:
+    resources:
+      cache:
+        cachecontrol:
+          max-age: 7d
+
+# 内嵌 Web 服务器及错误处理相关配置。
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    whitelabel:
+      enabled: false
+
+# MyBatis 持久层框架配置。
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
+# 应用自定义配置，与 Spring Boot 内置配置区分。
+app:
+  upload-dir: ${UPLOAD_DIR:uploads/pets}
+
+# 应用日志级别配置。
+logging:
+  level:
+    com.petadoption.mapper: info
