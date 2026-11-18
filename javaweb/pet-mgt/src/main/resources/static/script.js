@@ -41,6 +41,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const preview = document.querySelector('[data-image-preview]');
     // 只有两个元素同时存在时才初始化上传预览，避免在普通页面绑定无意义的事件。
     if (imageInput && preview) {
+        // 与后端 multipart 上限保持一致：单张 2MB、最多 5 张、文件内容合计 10MB。
+        const MAX_IMAGE_COUNT = 5;
+        const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
+        const MAX_TOTAL_SIZE = MAX_IMAGE_COUNT * MAX_IMAGE_SIZE;
         // 用户重新选择本地图片后，重新检查文件并生成预览。
         imageInput.addEventListener('change', () => {
             // 清空上一次选择留下的缩略图，确保预览只反映当前文件集合。
@@ -48,15 +52,23 @@ document.addEventListener('DOMContentLoaded', () => {
             // 将 FileList 转为数组；没有选中文件时使用空数组，便于统一遍历。
             const files = Array.from(imageInput.files || []);
             // 一次最多允许五张图片；超限时提示、清空选择并终止整个 change 处理。
-            if (files.length > 5) {
+            if (files.length > MAX_IMAGE_COUNT) {
                 window.alert('一次最多上传 5 张图片');
                 imageInput.value = '';
+                return;
+            }
+            // 在前端先校验总大小，避免整个请求超过服务端上限后已填写内容随重定向丢失。
+            const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+            if (totalSize > MAX_TOTAL_SIZE) {
+                window.alert('所选图片合计超过 10MB，请减少数量或压缩后重新选择');
+                imageInput.value = '';
+                preview.innerHTML = '';
                 return;
             }
             // 逐张检查文件大小，并通过 FileReader 生成本地预览。
             files.forEach(file => {
                 // 单张图片不得超过 2MB；超限时清空选择和已有预览，并跳过当前文件的读取。
-                if (file.size > 2 * 1024 * 1024) {
+                if (file.size > MAX_IMAGE_SIZE) {
                     window.alert(`${file.name} 超过 2MB，请重新选择`);
                     imageInput.value = '';
                     preview.innerHTML = '';

@@ -162,18 +162,76 @@ public class FileStorageService {
         if (file.getSize() > MAX_FILE_SIZE) {
             throw new BusinessException("单张图片不能超过2MB");
         }
-        // 读取客户端声明的 Content-Type，下一步移除 charset 等参数并统一大小写。
-        String contentType = file.getContentType();
-        // 仅保留分号前的 MIME 主值，例如 image/jpeg; charset=... 归为 image/jpeg。
-        contentType = contentType == null ? "" : contentType.split(";", 2)[0].toLowerCase(Locale.ROOT).trim();
-        // 查找该 MIME 类型允许的扩展名集合；不支持时结果为 null。
-        Set<String> extensions = ALLOWED_TYPES.get(contentType);
+        // 读取文件头判断真实图片类型，不能只信客户端声明的 Content-Type。
+        String detectedType = detectImageType(file);
+        if (detectedType == null) {
+            throw new BusinessException("文件内容不是有效的图片，请上传真实的 JPEG、PNG、WEBP 或 GIF 文件");
+        }
+        // 读取客户端声明的 Content-Type，仅保留分号前的 MIME 主值并统一大小写。
+        String declaredType = file.getContentType();
+        declaredType = declaredType == null ? "" : declaredType.split(";", 2)[0].toLowerCase(Locale.ROOT).trim();
+        // 部分客户端会把正常图片标成 application/octet-stream 或干脆不带类型；
+        // 这类请求以文件头识别出的真实类型为准，扩展名仍需与真实类型匹配。
+        boolean genericType = declaredType.isEmpty() || "application/octet-stream".equals(declaredType);
+        String effectiveType = genericType ? detectedType : declaredType;
+        // 查找生效类型允许的扩展名集合；不支持时结果为 null。
+        Set<String> extensions = ALLOWED_TYPES.get(effectiveType);
         // 从原始文件名提取并规范化扩展名。
         String extension = extensionOf(file.getOriginalFilename());
-        // MIME 类型必须在白名单内，且扩展名必须属于该类型，不能任意混用。
+        // 扩展名必须属于生效类型，不能任意混用。
         if (extensions == null || !extensions.contains(extension)) {
             throw new BusinessException("仅支持 JPEG、PNG、WEBP、GIF 图片，且文件类型与扩展名必须一致");
         }
+        // 有明确声明类型时，真实格式必须与声明一致，防止仅改 MIME 的伪装文件。
+        if (!genericType && !detectedType.equals(declaredType)) {
+            throw new BusinessException("图片真实格式与文件类型不一致，请确认文件未被改扩展名");
+        }
+    }
+
+    /**
+     * 读取文件头字节并识别真实图片格式。
+     *
+     * @param file 待校验的上传文件
+     * @return 识别到的 MIME 类型；不是受支持的图片时返回 null
+     */
+    private String detectImageType(MultipartFile file) {
+        // 12 字节足以覆盖 JPEG、PNG、GIF、WEBP 的签名。
+        byte[] header = new byte[12];
+        int read = 0;
+        try (InputStream inputStream = file.getInputStream()) {
+            // 循环读取，避免单次 read 未填满缓冲区时误判。
+            while (read < header.length) {
+                int count = inputStream.read(header, read, header.length - read);
+                if (count < 0) {
+                    break;
+                }
+                read += count;
+            }
+        } catch (IOException ex) {
+            // 读取失败按上传失败处理，避免后续保存损坏文件。
+            throw new BusinessException("图片读取失败，请重新上传", ex);
+        }
+        // JPEG：FF D8 FF
+        if (read >= 3 && (header[0] & 0xFF) == 0xFF && (header[1] & 0xFF) == 0xD8 && (header[2] & 0xFF) == 0xFF) {
+            return "image/jpeg";
+        }
+        // PNG：89 50 4E 47 0D 0A 1A 0A
+        if (read >= 8 && (header[0] & 0xFF) == 0x89 && header[1] == 'P' && header[2] == 'N' && header[3] == 'G'
+                && (header[4] & 0xFF) == 0x0D && (header[5] & 0xFF) == 0x0A
+                && (header[6] & 0xFF) == 0x1A && (header[7] & 0xFF) == 0x0A) {
+            return "image/png";
+        }
+        // GIF：GIF87a / GIF89a
+        if (read >= 6 && header[0] == 'G' && header[1] == 'I' && header[2] == 'F' && header[3] == '8'
+                && (header[4] == '7' || header[4] == '9') && header[5] == 'a') {
+            return "image/gif";
+        }
+        // WEBP：RIFF....WEBP
+        if (read >= 12 && header[0] == 'R' && header[1] == 'I' && header[2] == 'F' && header[3] == 'F'
+                && header[8] == 'W' && header[9] == 'E' && header[10] == 'B' && header[11] == 'P') {
+            return "image/webp";
+        }
+        return null;
     }
 
     /**

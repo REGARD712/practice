@@ -34,6 +34,7 @@ public interface PetMapper {
             INNER JOIN breed b ON b.id = p.breed_id
             """;
 
+    // 按宠物 ID 查询详情，包含 String 品种名称、封面路径和全部图片；未找到时返回 null
     /** 定义 petResultMap，显式映射宠物字段、品种名称、封面路径和一对多图片集合。 */
     @Results(id = "petResultMap", value = {
             // 将 id 标识为宠物实体的主键。
@@ -62,31 +63,31 @@ public interface PetMapper {
             @Result(property = "images", column = "id",
                     many = @Many(select = "com.petadoption.mapper.PetImageMapper.findByPetId"))
     })
-    /** 按宠物 ID 查询详情，包含 String 品种名称、封面路径和全部图片；未找到时返回 null。 */
     @Select(SELECT_COLUMNS + " WHERE p.id = #{id}")
     Pet findById(Long id);
 
     // 复用宠物结果映射，列表中的每只宠物也会按配置加载图片集合。
     @ResultMap("petResultMap")
-    /** 查询全部宠物，按创建时间倒序、ID 倒序排列，保证新档案优先且顺序稳定。 */
+    // 查询全部宠物，按创建时间倒序、ID 倒序排列，保证新档案优先且顺序稳定。
     @Select(SELECT_COLUMNS + " ORDER BY p.created_at DESC, p.id DESC")
     List<Pet> findAll();
 
     // 推荐列表复用同一映射，因此同样包含品种、封面与图片数据。
     @ResultMap("petResultMap")
-    /** 查询最多 6 只 AVAILABLE 状态宠物作为推荐内容，最新创建的档案优先。 */
+    // 查询最多 6 只 AVAILABLE 状态宠物作为推荐内容，最新创建的档案优先。
     @Select(SELECT_COLUMNS + " WHERE p.status = 'AVAILABLE' ORDER BY p.created_at DESC, p.id DESC LIMIT 6")
     List<Pet> findFeatured();
 
-    // 动态分页查询继续使用 petResultMap 处理字段与图片关联。
-    @ResultMap("petResultMap")
     /**
      * 按条件搜索并分页查询宠物。
      * keyword 非 null 且 trim 后非空时，使用 CONCAT 在两侧添加 %，对宠物名称、品种名称、介绍做 OR 模糊匹配；
      * breedId 非 null 时追加品种 ID 精确条件，两个条件同时存在时通过 AND 组合。
+     * 注解中的动态 SQL 必须包裹在 {@code <script>} 内，否则 {@code <where>} 等标签会被当作普通 SQL 文本发给数据库。
      * {@code <where>} 自动处理 WHERE 和首个 AND；LIMIT #{offset}, #{limit} 分别控制跳过条数与本页最大条数。
      * 品种联表和 pet_image 封面子查询与 SELECT_COLUMNS 一致，结果仍按创建时间、ID 倒序。
      */
+    // 动态分页查询继续使用 petResultMap 处理字段与图片关联。
+    @ResultMap("petResultMap")
     @Select("""
             <script>
             SELECT p.*, b.name AS breed,
@@ -96,9 +97,9 @@ public interface PetMapper {
             INNER JOIN breed b ON b.id = p.breed_id
             <where>
                 <if test="keyword != null and keyword.trim() != ''">
-                    AND (p.name LIKE CONCAT('%', #{keyword}, '%')
-                         OR b.name LIKE CONCAT('%', #{keyword}, '%')
-                         OR p.description LIKE CONCAT('%', #{keyword}, '%'))
+                    AND (p.name LIKE CONCAT('%', #{keyword}, '%') ESCAPE '\\\\'
+                         OR b.name LIKE CONCAT('%', #{keyword}, '%') ESCAPE '\\\\'
+                         OR p.description LIKE CONCAT('%', #{keyword}, '%') ESCAPE '\\\\')
                 </if>
                 <if test="breedId != null">
                     AND p.breed_id = #{breedId}
@@ -117,6 +118,7 @@ public interface PetMapper {
     /**
      * 统计符合搜索条件的宠物总数，供分页计算使用。
      * 关键词非空白时匹配名称、品种或介绍，breedId 非 null 时精确筛选品种；
+     * 与 findPage 一样必须用 {@code <script>} 包裹动态标签；
      * 动态条件与 findPage 保持一致，但不使用排序、LIMIT，也不查询封面或图片集合。
      */
     @Select("""
@@ -126,9 +128,9 @@ public interface PetMapper {
             INNER JOIN breed b ON b.id = p.breed_id
             <where>
                 <if test="keyword != null and keyword.trim() != ''">
-                    AND (p.name LIKE CONCAT('%', #{keyword}, '%')
-                         OR b.name LIKE CONCAT('%', #{keyword}, '%')
-                         OR p.description LIKE CONCAT('%', #{keyword}, '%'))
+                    AND (p.name LIKE CONCAT('%', #{keyword}, '%') ESCAPE '\\\\'
+                         OR b.name LIKE CONCAT('%', #{keyword}, '%') ESCAPE '\\\\'
+                         OR p.description LIKE CONCAT('%', #{keyword}, '%') ESCAPE '\\\\')
                 </if>
                 <if test="breedId != null">
                     AND p.breed_id = #{breedId}
@@ -151,19 +153,28 @@ public interface PetMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(Pet pet);
 
-    /** 按 id 更新宠物名称、品种、性别、月龄、健康状况、介绍和状态，返回受影响行数。 */
+    /**
+     * 按 id 更新宠物名称、品种、性别、月龄、健康状况和介绍，返回受影响行数。
+     * 领养状态不在此更新：它只能由领养申请审核流程通过带原状态条件的 updateStatus 修改，
+     * 避免编辑表单把审核中或已领养的状态覆盖回可领养。
+     */
     @Update("""
             UPDATE pet
             SET name = #{name}, breed_id = #{breedId}, gender = #{gender},
                 age_months = #{ageMonths}, health_status = #{healthStatus},
-                description = #{description}, status = #{status}
+                description = #{description}
             WHERE id = #{id}
             """)
     int update(Pet pet);
 
-    /** 按 id 直接将宠物状态改为指定值，不带原状态限制；两个 @Param 对应 SQL 参数。 */
-    @Update("UPDATE pet SET status = #{status} WHERE id = #{id}")
-    int updateStatus(@Param("id") Long id, @Param("status") String status);
+    /**
+     * 仅当宠物当前状态等于 expectedStatus 时才更新为 targetStatus，返回受影响行数。
+     * 返回 0 表示状态已被其他流程改变，调用方必须显式处理，不能静默覆盖。
+     */
+    @Update("UPDATE pet SET status = #{targetStatus} WHERE id = #{id} AND status = #{expectedStatus}")
+    int updateStatus(@Param("id") Long id,
+                     @Param("expectedStatus") String expectedStatus,
+                     @Param("targetStatus") String targetStatus);
 
     /**
      * 仅当宠物当前为 AVAILABLE 时才将其原子更新为 PENDING，返回受影响行数。

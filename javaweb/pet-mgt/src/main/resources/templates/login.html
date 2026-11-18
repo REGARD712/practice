@@ -25,6 +25,8 @@
                         <div class="alert alert-success border-0" th:if="${param.registered}"><i class="bi bi-check-circle me-2"></i>注册成功，请使用新账号登录。</div>
                         <!-- URL 含 logout 参数时，确认当前会话已安全退出。 -->
                         <div class="alert alert-info border-0" th:if="${param.logout}"><i class="bi bi-info-circle me-2"></i>你已安全退出登录。</div>
+                        <!-- URL 含 expired 参数时，说明旧会话因账号改名、停用或删除已失效。 -->
+                        <div class="alert alert-warning border-0" th:if="${param.expired}"><i class="bi bi-shield-exclamation me-2"></i>登录状态已失效：账号信息已被修改、停用或删除，请重新登录。</div>
                         <!-- URL 含 error 参数时，显示统一登录失败原因，避免泄露具体账号状态。 -->
                         <div class="alert alert-danger border-0" th:if="${param.error}"><i class="bi bi-exclamation-circle me-2"></i>用户名或密码错误，或账号已被停用。</div>
                         <!-- 登录表单以 POST 提交；needs-validation 与 novalidate 交由公共脚本执行前端校验。 -->

@@ -71,6 +71,19 @@ public interface UserMapper {
     long count();
 
     /**
+     * 统计除指定用户外、仍处于启用状态且拥有管理员角色的账号数量。
+     * 用于在停用、降级或删除管理员前确认系统不会失去全部可用的后台管理者。
+     */
+    @Select("""
+            SELECT COUNT(*)
+            FROM `user` u
+            JOIN user_role ur ON ur.user_id = u.id
+            JOIN role r ON r.id = ur.role_id
+            WHERE r.role_name = 'ROLE_ADMIN' AND u.enabled = 1 AND u.id != #{userId}
+            """)
+    long countEnabledAdminsExcluding(Long userId);
+
+    /**
      * 插入用户基础资料，所有 VALUES 参数均从传入的 User 对象读取。
      * created_at 未出现在字段列表中，由数据库默认值负责生成。
      */

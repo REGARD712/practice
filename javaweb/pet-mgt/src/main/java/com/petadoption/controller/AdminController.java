@@ -1,5 +1,6 @@
 package com.petadoption.controller;
 
+import com.petadoption.config.AuthenticatedUser;
 import com.petadoption.dto.UserForm;
 import com.petadoption.exception.BusinessException;
 import com.petadoption.service.ApplicationService;
@@ -7,6 +8,7 @@ import com.petadoption.service.PetService;
 import com.petadoption.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -138,6 +140,7 @@ public class AdminController {
      * @param id 路径中指定的用户编号，是本次更新的权威标识
      * @param userForm 页面绑定并校验后的用户资料
      * @param bindingResult 保存字段及业务校验错误
+     * @param principal 当前登录管理员，服务层据此识别“编辑自己”并施加自保护
      * @param model 失败时重新渲染表单所需模型
      * @param redirectAttributes 成功后传递一次性提示
      * @return 失败返回表单，成功重定向到用户列表
@@ -146,6 +149,7 @@ public class AdminController {
     public String updateUser(@PathVariable Long id,
                              @Valid @ModelAttribute("userForm") UserForm userForm,
                              BindingResult bindingResult,
+                             @AuthenticationPrincipal AuthenticatedUser principal,
                              Model model,
                              RedirectAttributes redirectAttributes) {
         // 以路径编号覆盖表单编号，防止篡改隐藏字段后更新其他用户。
@@ -155,8 +159,8 @@ public class AdminController {
             return "admin/users/form";
         }
         try {
-            // 服务层在事务内更新账号资料并重建用户角色关联。
-            userService.update(userForm);
+            // 服务层在事务内执行自保护、“至少保留一名管理员”校验，并更新资料与角色关联。
+            userService.update(userForm, principal == null ? null : principal.getId());
         } catch (BusinessException ex) {
             bindingResult.reject("user.save.failed", ex.getMessage());
             model.addAttribute("roles", userService.findAllRoles());

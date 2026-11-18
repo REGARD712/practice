@@ -13,33 +13,33 @@
             <div class="col-xl-7">
                 <!-- 左侧申请摘要：页头显示宠物、申请编号、申请人与当前状态。 -->
                 <section class="content-card p-4 h-100">
-                    <div class="d-flex align-items-center gap-3 pb-3 mb-3 border-bottom"><img class="table-thumb" th:src="@{${application.coverImage}}" th:alt="${application.petName}" style="width:70px;height:70px"><div><h2 class="h5 fw-bold mb-1"><span th:text="${application.petName}">宠物</span> 的领养申请</h2><span class="text-secondary small">申请编号 <span th:text="'#' + ${application.id}">#1</span> · 申请人 <span th:text="${application.username}">用户</span></span></div><span class="state-label ms-auto" th:classappend="'state-' + ${application.status}" th:text="${application.status == 'PENDING' ? '待审核' : (application.status == 'APPROVED' ? '已通过' : '已拒绝')}">状态</span></div>
+                    <div class="d-flex align-items-center gap-3 pb-3 mb-3 border-bottom"><img class="table-thumb" th:src="@{${applicationDetail.coverImage}}" th:alt="${applicationDetail.petName}" style="width:70px;height:70px"><div><h2 class="h5 fw-bold mb-1"><span th:text="${applicationDetail.petName}">宠物</span> 的领养申请</h2><span class="text-secondary small">申请编号 <span th:text="'#' + ${applicationDetail.id}">#1</span> · 申请人 <span th:text="${applicationDetail.username}">用户</span></span></div><span class="state-label ms-auto" th:classappend="'state-' + ${applicationDetail.status}" th:text="${applicationDetail.status == 'PENDING' ? '待审核' : (applicationDetail.status == 'APPROVED' ? '已通过' : '已拒绝')}">状态</span></div>
                     <!-- 定义列表逐项输出联系电话、申请时间、地址、居住条件、经验和照顾计划。 -->
                     <dl class="application-summary mb-0">
-                        <div class="row"><div class="col-md-6"><dt>联系电话</dt><dd th:text="${application.contactPhone}">电话</dd></div><div class="col-md-6"><dt>申请时间</dt><dd th:text="${#temporals.format(application.createdAt,'yyyy-MM-dd HH:mm')}">时间</dd></div></div>
-                        <dt>常住地址</dt><dd th:text="${application.address}">地址</dd>
-                        <dt>居住条件</dt><dd th:text="${application.housingCondition}">居住条件</dd>
+                        <div class="row"><div class="col-md-6"><dt>联系电话</dt><dd th:text="${applicationDetail.contactPhone}">电话</dd></div><div class="col-md-6"><dt>申请时间</dt><dd th:text="${#temporals.format(application.createdAt,'yyyy-MM-dd HH:mm')}">时间</dd></div></div>
+                        <dt>常住地址</dt><dd th:text="${applicationDetail.address}">地址</dd>
+                        <dt>居住条件</dt><dd th:text="${applicationDetail.housingCondition}">居住条件</dd>
                         <!-- 养宠经验为空时使用明确占位文本，避免审核人员误以为内容加载失败。 -->
-                        <dt>养宠经验</dt><dd th:text="${application.experience ?: '申请人未填写'}">经验</dd>
-                        <dt>领养理由与照顾计划</dt><dd class="mb-0" th:text="${application.reason}">理由</dd>
+                        <dt>养宠经验</dt><dd th:text="${applicationDetail.experience ?: '申请人未填写'}">经验</dd>
+                        <dt>领养理由与照顾计划</dt><dd class="mb-0" th:text="${applicationDetail.reason}">理由</dd>
                     </dl>
                 </section>
             </div>
             <div class="col-xl-5">
                 <!-- 右侧审核表单以 POST 提交当前申请结论，并使用公共浏览器校验。 -->
-                <form th:action="@{/admin/applications/{id}/review(id=${application.id})}" method="post" class="content-card p-4 needs-validation" novalidate>
+                <form th:action="@{/admin/applications/{id}/review(id=${applicationDetail.id})}" method="post" class="content-card p-4 needs-validation" novalidate data-confirm="请确认审核结果，提交后宠物状态将同步更新。">
                     <h2 class="h5 fw-bold mb-3">审核结论</h2>
                     <!-- 已审核申请显示完成提示；若存在 reviewedAt，则追加格式化审核时间。 -->
-                    <div th:if="${application.status != 'PENDING'}" class="notice-box mb-3">该申请已完成审核。<span th:if="${application.reviewedAt != null}" th:text="'审核时间：' + ${#temporals.format(application.reviewedAt,'yyyy-MM-dd HH:mm')}">审核时间</span></div>
+                    <div th:if="${applicationDetail.status != 'PENDING'}" class="notice-box mb-3">该申请已完成审核。<span th:if="${applicationDetail.reviewedAt != null}" th:text="'审核时间：' + ${#temporals.format(application.reviewedAt,'yyyy-MM-dd HH:mm')}">审核时间</span></div>
                     <!-- 非待审核状态禁用整个字段组，只允许查看历史结论，防止重复提交审核。 -->
-                    <fieldset th:disabled="${application.status != 'PENDING'}">
+                    <fieldset th:disabled="${applicationDetail.status != 'PENDING'}">
                         <!-- 审核结果通过互斥单选按钮选择 APPROVED 或 REJECTED，并回显已有结果。 -->
                         <label class="form-label required">审核结果</label>
-                        <div class="d-flex gap-3 mb-3"><div class="form-check"><input class="form-check-input" type="radio" name="status" id="approved" value="APPROVED" th:checked="${application.status == 'APPROVED'}" required><label class="form-check-label text-success fw-semibold" for="approved"><i class="bi bi-check-circle me-1"></i>通过申请</label></div><div class="form-check"><input class="form-check-input" type="radio" name="status" id="rejected" value="REJECTED" th:checked="${application.status == 'REJECTED'}" required><label class="form-check-label text-danger fw-semibold" for="rejected"><i class="bi bi-x-circle me-1"></i>拒绝申请</label></div></div>
+                        <div class="d-flex gap-3 mb-3"><div class="form-check"><input class="form-check-input" type="radio" name="status" id="approved" value="APPROVED" th:checked="${applicationDetail.status == 'APPROVED'}" required><label class="form-check-label text-success fw-semibold" for="approved"><i class="bi bi-check-circle me-1"></i>通过申请</label></div><div class="form-check"><input class="form-check-input" type="radio" name="status" id="rejected" value="REJECTED" th:checked="${applicationDetail.status == 'REJECTED'}" required><label class="form-check-label text-danger fw-semibold" for="rejected"><i class="bi bi-x-circle me-1"></i>拒绝申请</label></div></div>
                         <!-- 审核意见必填，长度 2–500 字；已有意见通过 th:text 回填到文本域。 -->
-                        <label for="reviewComment" class="form-label required">审核意见</label><textarea class="form-control" id="reviewComment" name="reviewComment" minlength="2" maxlength="500" placeholder="说明后续沟通安排，或拒绝申请的具体原因" th:text="${application.reviewComment}" required></textarea><div class="invalid-feedback">请填写审核意见</div>
+                        <label for="reviewComment" class="form-label required">审核意见</label><textarea class="form-control" id="reviewComment" name="reviewComment" minlength="2" maxlength="500" placeholder="说明后续沟通安排，或拒绝申请的具体原因" th:text="${applicationDetail.reviewComment}" required></textarea><div class="invalid-feedback">请填写审核意见</div>
                         <!-- 仅待审核状态显示提交按钮；data-confirm 提醒管理员宠物状态会同步更新。 -->
-                        <button class="btn btn-primary w-100 mt-4" type="submit" th:if="${application.status == 'PENDING'}" data-confirm="请确认审核结果，提交后宠物状态将同步更新。"><i class="bi bi-check2-circle me-1"></i>提交审核结果</button>
+                        <button class="btn btn-primary w-100 mt-4" type="submit" th:if="${applicationDetail.status == 'PENDING'}"><i class="bi bi-check2-circle me-1"></i>提交审核结果</button>
                     </fieldset>
                     <a th:href="@{/admin/applications}" class="btn btn-outline-secondary w-100 mt-2">返回列表</a>
                 </form>

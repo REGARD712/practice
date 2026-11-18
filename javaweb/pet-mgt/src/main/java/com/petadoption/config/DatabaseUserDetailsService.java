@@ -42,15 +42,13 @@ public class DatabaseUserDetailsService implements UserDetailsService {
                 .map(role -> new SimpleGrantedAuthority(role.getRoleName()))
                 .map(GrantedAuthority.class::cast)
                 .toList();
-        // 使用数据库中的 BCrypt 密码摘要，并将启用标记映射为账号可用状态。
-        // 后三个布尔参数依次表示账号未过期、凭证未过期、账号未锁定，本项目均固定开启。
-        return new org.springframework.security.core.userdetails.User(
+        // 使用自定义用户对象把不可变主键一并放入会话，业务层不再依赖用户名定位账号。
+        // 启用标记同时交给 Spring Security，登录阶段会拒绝已停用账号。
+        return new AuthenticatedUser(
+                user.getId(),
                 user.getUsername(),
                 user.getPassword(),
                 Boolean.TRUE.equals(user.getEnabled()),
-                true,
-                true,
-                true,
                 authorities
         );
     }

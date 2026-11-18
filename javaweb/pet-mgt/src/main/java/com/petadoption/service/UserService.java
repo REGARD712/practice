@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -212,9 +213,10 @@ public class UserService {
      * 唯一性预检查排除当前用户，数据库唯一异常用于捕获并发写入冲突。
      *
      * @param form 后台编辑表单，编号已由路径参数确定
+     * @param currentUserId 当前登录管理员的主键，用于识别“编辑自己”并施加自保护
      */
     @Transactional
-    public void update(UserForm form) {
+    public void update(UserForm form, Long currentUserId) {
         // 加载原用户并确认其存在，后续在同一对象上组装更新字段。
         User existing = getById(form.getId());
         // 编辑时密码可以留空；只有填写了新密码才校验长度。
@@ -228,14 +230,34 @@ public class UserService {
         // 去重并验证更新后的角色集合。
         List<Long> roleIds = validateRoles(form.getRoleIds());
 
+        // 计算本次提交是否真的改变了启用状态或角色，未改变的自我编辑（如改邮箱）不受限制。
+        boolean newEnabled = form.getEnabled() != null && form.getEnabled();
+        boolean enabledChanged = Boolean.TRUE.equals(existing.getEnabled()) != newEnabled;
+        List<Long> currentRoleIds = existing.getRoles().stream().map(Role::getId).toList();
+        boolean rolesChanged = !new HashSet<>(currentRoleIds).equals(new HashSet<>(roleIds));
+
+        // 自保护：管理员不能停用自己，否则下次登录起将永久失去后台入口。
+        if (existing.getId().equals(currentUserId) && enabledChanged) {
+            throw new BusinessException("不能修改自己的账号启用状态，避免把自己锁在后台之外，请让其他管理员操作");
+        }
+        // 自保护：管理员不能调整自己的角色，避免误撤销自己的管理员权限。
+        if (existing.getId().equals(currentUserId) && rolesChanged) {
+            throw new BusinessException("不能修改自己的角色，避免误撤销自己的管理员权限，请让其他管理员调整");
+        }
+        // 兜底保护：本次修改若会让一名启用中的管理员失效，必须确认系统还有另一名启用管理员。
+        if (isEnabledAdmin(existing) && (!newEnabled || !hasAdminRole(roleIds))
+                && userMapper.countEnabledAdminsExcluding(existing.getId()) == 0) {
+            throw new BusinessException("系统至少需要保留一名启用的管理员，请先为其他用户授予管理员角色并启用");
+        }
+
         // 更新用户名。
         existing.setUsername(username);
         // 更新邮箱。
         existing.setEmail(email);
         // 更新可选电话，空白转为 null。
         existing.setPhone(trimToNull(form.getPhone()));
-        // 编辑表单未提交启用值时按未启用处理，否则采用表单布尔值。
-        existing.setEnabled(form.getEnabled() != null && form.getEnabled());
+        // 采用上面规范化后的启用状态，未提交启用值时按停用处理。
+        existing.setEnabled(newEnabled);
         if (StringUtils.hasText(form.getPassword())) {
             // 填写新密码时重新生成 BCrypt 摘要。
             existing.setPassword(passwordEncoder.encode(form.getPassword()));
@@ -271,10 +293,37 @@ public class UserService {
         if (applicationMapper.countByUserId(id) > 0) {
             throw new BusinessException("该用户已提交领养申请，不能删除");
         }
+        // 兜底保护：删除最后一名启用中的管理员会使后台无人可管理，直接拒绝。
+        if (isEnabledAdmin(user) && userMapper.countEnabledAdminsExcluding(id) == 0) {
+            throw new BusinessException("系统至少需要保留一名启用的管理员，不能删除最后一名启用的管理员");
+        }
         // 先删除用户角色关联，避免遗留无用户的多对多记录。
         userRoleMapper.deleteByUserId(id);
         // 再删除用户主记录，两步在同一事务中完成。
         userMapper.deleteById(user.getId());
+    }
+
+    /**
+     * 判断用户当前是否处于启用状态并拥有管理员角色。
+     *
+     * @param user 已加载角色集合的用户
+     * @return 启用中的管理员返回 true
+     */
+    private boolean isEnabledAdmin(User user) {
+        return Boolean.TRUE.equals(user.getEnabled())
+                && user.getRoles() != null
+                && user.getRoles().stream().anyMatch(role -> "ROLE_ADMIN".equals(role.getRoleName()));
+    }
+
+    /**
+     * 判断待保存的角色集合中是否仍包含管理员角色。
+     *
+     * @param roleIds 去重并校验后的角色编号
+     * @return 包含 ROLE_ADMIN 时返回 true
+     */
+    private boolean hasAdminRole(List<Long> roleIds) {
+        Role adminRole = roleMapper.findByRoleName("ROLE_ADMIN");
+        return adminRole != null && roleIds.contains(adminRole.getId());
     }
 
     /**

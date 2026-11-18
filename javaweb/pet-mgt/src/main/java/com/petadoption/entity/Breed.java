@@ -19,4 +19,7 @@ public class Breed {
 
     /** 品种特点与补充说明，对应 description 列。 */
     private String description;
+
+    /** 关联宠物数量，只在品种管理列表中通过 pet_count 统计列映射，不写入数据库。 */
+    private Long petCount;
 }

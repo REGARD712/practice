@@ -18,8 +18,8 @@
                 </div>
             </div>
             <div class="col-lg-8">
-                <!-- 申请表单绑定 application 并提交至当前宠物的申请地址，启用公共前端校验。 -->
-                <form th:action="@{/pets/{id}/apply(id=${pet.id})}" th:object="${application}" method="post" class="content-card p-4 p-md-5 needs-validation" novalidate>
+                <!-- 申请表单绑定 applicationDetail 并提交至当前宠物的申请地址，启用公共前端校验。 -->
+                <form th:action="@{/pets/{id}/apply(id=${pet.id})}" th:object="${applicationDetail}" method="post" class="content-card p-4 p-md-5 needs-validation" novalidate>
                     <h2 class="h4 fw-bold mb-1">领养申请</h2><p class="text-secondary mb-4">带 <span class="text-danger">*</span> 的项目为必填项</p>
                     <!-- 循环展示服务端返回的全局业务错误，例如重复申请或宠物状态已变化。 -->
                     <div class="alert alert-danger border-0" th:if="${#fields.hasGlobalErrors()}"><ul class="mb-0"><li th:each="message : ${#fields.globalErrors()}" th:text="${message}">业务错误</li></ul></div>

@@ -126,6 +126,8 @@ public class AdminPetController {
         // 使用路径编号覆盖请求体编号，防止通过篡改表单修改其他宠物。
         pet.setId(id);
         if (bindingResult.hasErrors()) {
+            // 领养状态不再随表单提交，回显时补回数据库中的真实状态，避免编辑页误显示为默认的待领养。
+            pet.setStatus(petService.getById(id).getStatus());
             model.addAttribute("breeds", petService.findAllBreeds());
             return "admin/pets/form";
         }
@@ -134,11 +136,57 @@ public class AdminPetController {
             petService.update(pet, imageFiles);
         } catch (BusinessException ex) {
             bindingResult.reject("pet.save.failed", ex.getMessage());
+            // 同样补回真实状态，保证失败回显页面展示的领养状态与数据库一致。
+            pet.setStatus(petService.getById(id).getStatus());
             model.addAttribute("breeds", petService.findAllBreeds());
             return "admin/pets/form";
         }
         redirectAttributes.addFlashAttribute("success", "宠物信息已更新");
         return "redirect:/admin/pets";
+    }
+
+    /**
+     * 将宠物相册中的指定图片设为封面。
+     *
+     * @param id 宠物编号
+     * @param imageId 图片编号
+     * @param redirectAttributes 向编辑页传递操作结果
+     * @return 始终重定向回该宠物的编辑页
+     */
+    @PostMapping("/{id}/images/{imageId}/cover")
+    public String setCoverImage(@PathVariable Long id,
+                                @PathVariable Long imageId,
+                                RedirectAttributes redirectAttributes) {
+        try {
+            // 服务层校验图片归属并在同一事务内切换唯一封面。
+            petService.setCoverImage(id, imageId);
+            redirectAttributes.addFlashAttribute("success", "封面已更新");
+        } catch (BusinessException ex) {
+            redirectAttributes.addFlashAttribute("error", ex.getMessage());
+        }
+        return "redirect:/admin/pets/" + id + "/edit";
+    }
+
+    /**
+     * 删除宠物相册中的指定图片。
+     *
+     * @param id 宠物编号
+     * @param imageId 图片编号
+     * @param redirectAttributes 向编辑页传递操作结果
+     * @return 始终重定向回该宠物的编辑页
+     */
+    @PostMapping("/{id}/images/{imageId}/delete")
+    public String deleteImage(@PathVariable Long id,
+                              @PathVariable Long imageId,
+                              RedirectAttributes redirectAttributes) {
+        try {
+            // 服务层保留最后一张照片，删除封面时自动指定接替图片并在提交后清理文件。
+            petService.deleteImage(id, imageId);
+            redirectAttributes.addFlashAttribute("success", "照片已删除");
+        } catch (BusinessException ex) {
+            redirectAttributes.addFlashAttribute("error", ex.getMessage());
+        }
+        return "redirect:/admin/pets/" + id + "/edit";
     }
 
     /**
@@ -155,6 +203,27 @@ public class AdminPetController {
             petService.delete(id);
             redirectAttributes.addFlashAttribute("success", "宠物已删除");
         } catch (BusinessException ex) {
+            redirectAttributes.addFlashAttribute("error", ex.getMessage());
+        }
+        return "redirect:/admin/pets";
+    }
+
+    /**
+     * 将已领养宠物重新开放为待领养。
+     * 这是审核流程之外唯一的手动状态操作，服务层负责状态条件与待审核申请校验。
+     *
+     * @param id 待重新开放的宠物编号
+     * @param redirectAttributes 向列表页传递一次性结果提示
+     * @return 始终重定向到宠物列表
+     */
+    @PostMapping("/{id}/reopen")
+    public String reopenPet(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            // 服务层仅允许 ADOPTED → AVAILABLE，并确认没有待审核申请。
+            String petName = petService.reopen(id);
+            redirectAttributes.addFlashAttribute("success", "已将「" + petName + "」重新开放为待领养");
+        } catch (BusinessException ex) {
+            // 状态不符或仍有待审核申请时，把明确原因回显到列表页。
             redirectAttributes.addFlashAttribute("error", ex.getMessage());
         }
         return "redirect:/admin/pets";

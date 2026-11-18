@@ -53,8 +53,9 @@ public class AdminApplicationController {
      */
     @GetMapping("/{id}/review")
     public String reviewForm(@PathVariable Long id, Model model) {
-        // 服务层在申请不存在时抛出资源不存在异常。
-        model.addAttribute("application", applicationService.getById(id));
+        // 模型属性不能命名为 application：Thymeleaf 3.1 的 WebEngineContext 用该名字暴露
+        // ServletContext 属性表，会覆盖同名模型属性，导致模板读到空值。
+        model.addAttribute("applicationDetail", applicationService.getById(id));
         return "admin/applications/review";
     }
 

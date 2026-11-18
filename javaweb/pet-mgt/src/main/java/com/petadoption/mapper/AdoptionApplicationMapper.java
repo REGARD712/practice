@@ -154,4 +154,8 @@ public interface AdoptionApplicationMapper {
     /** 统计指定用户提交的领养申请总数。 */
     @Select("SELECT COUNT(*) FROM adoption_application WHERE user_id = #{userId}")
     long countByUserId(Long userId);
+
+    /** 统计指定宠物处于某状态的申请数量，用于拦截仍有待审核申请的宠物重新开放领养。 */
+    @Select("SELECT COUNT(*) FROM adoption_application WHERE pet_id = #{petId} AND status = #{status}")
+    long countByPetIdAndStatus(@Param("petId") Long petId, @Param("status") String status);
 }

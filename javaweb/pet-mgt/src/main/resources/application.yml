@@ -9,8 +9,11 @@ spring:
     password: ${MYSQL_PASSWORD:}
   servlet:
     multipart:
+      # 单张图片上限，与页面提示和 FileStorageService 的校验保持一致。
       max-file-size: 2MB
-      max-request-size: 10MB
+      # 一次最多 5 张，文件内容合计 10MB；额外预留 multipart 边界与表单字段开销，
+      # 避免刚好选择 5 张 2MB 图片时因整体请求略超 10MB 而被拒绝。
+      max-request-size: 12MB
   thymeleaf:
     cache: false
   web:

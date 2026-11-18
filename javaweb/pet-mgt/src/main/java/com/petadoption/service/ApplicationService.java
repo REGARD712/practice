@@ -48,12 +48,12 @@ public class ApplicationService {
     /**
      * 查询指定登录用户本人的申请。
      *
-     * @param username 当前认证用户名
+     * @param userId 会话中保存的用户主键
      * @return 该用户按时间倒序排列的申请列表
      */
-    public List<AdoptionApplication> findMine(String username) {
-        // 根据会话用户名解析用户主键，不信任客户端提交的用户编号。
-        User user = requireUser(username);
+    public List<AdoptionApplication> findMine(Long userId) {
+        // 用不可变主键解析账号，既不信任客户端参数，也不依赖可能被修改的用户名。
+        User user = requireUser(userId);
         // 以用户主键限定查询范围，确保只能看到本人数据。
         return applicationMapper.findByUserId(user.getId());
     }
@@ -83,13 +83,13 @@ public class ApplicationService {
      * 方法处于同一数据库事务中：任一校验或状态更新失败，已插入的申请也会回滚。
      *
      * @param petId 路径指定的宠物编号
-     * @param username 当前认证用户名
+     * @param userId 会话中保存的用户主键
      * @param form 用户填写的申请资料，身份和审核字段由服务端重新设置
      */
     @Transactional
-    public void submit(Long petId, String username, AdoptionApplication form) {
-        // 确认当前会话仍对应有效系统用户，并取得申请人主键。
-        User user = requireUser(username);
+    public void submit(Long petId, Long userId, AdoptionApplication form) {
+        // 确认当前会话对应的账号仍存在且启用，并取得申请人信息。
+        User user = requireUser(userId);
         // 在提交时重新读取宠物，不能仅依赖打开表单时的状态。
         Pet pet = petMapper.findById(petId);
         if (pet == null) {
@@ -134,7 +134,8 @@ public class ApplicationService {
 
     /**
      * 审核待处理申请，并同步更新对应宠物状态。
-     * 通过申请：PENDING → APPROVED，宠物 → ADOPTED；拒绝申请：PENDING → REJECTED，宠物 → AVAILABLE。
+     * 通过申请：PENDING → APPROVED，宠物 PENDING → ADOPTED；拒绝申请：PENDING → REJECTED，宠物 PENDING → AVAILABLE。
+     * 宠物状态以 PENDING 为原状态做条件更新；若状态已被其他流程改变，整个事务回滚并提示，不会静默覆盖。
      * 行锁与 PENDING 条件更新共同防止并发重复审核，事务保证两张表同时成功或回滚。
      *
      * @param id 待审核申请编号
@@ -168,22 +169,32 @@ public class ApplicationService {
         if (applicationMapper.review(id, status, normalizedComment) != 1) {
             throw new BusinessException("申请状态已变化，请刷新后重试");
         }
-        // 审核通过后宠物变为已领养；拒绝后恢复可申请，和申请结果在同一事务提交。
-        petMapper.updateStatus(application.getPetId(), "APPROVED".equals(status) ? "ADOPTED" : "AVAILABLE");
+        // 宠物状态同样以“申请审核中”为原状态做条件更新：通过变为已领养，拒绝恢复待领养。
+        // 影响行数为 0 说明宠物状态已被其他流程改变，此时回滚整个事务并明确告知管理员，而不是静默覆盖。
+        String targetPetStatus = "APPROVED".equals(status) ? "ADOPTED" : "AVAILABLE";
+        if (petMapper.updateStatus(application.getPetId(), "PENDING", targetPetStatus) != 1) {
+            throw new BusinessException("宠物状态已被其他流程修改，本次审核未保存，请刷新确认宠物状态后重试");
+        }
     }
 
     /**
-     * 解析并校验当前登录用户。
+     * 按不可变主键解析并校验当前登录用户。
+     * 不使用用户名查询，因此账号改名不会影响已建立会话的业务操作；
+     * 账号被删除或停用时返回明确的重新登录提示。
      *
-     * @param username 当前认证用户名
-     * @return 数据库中的有效用户
+     * @param userId 会话中的用户主键
+     * @return 数据库中仍然存在且启用的用户
      */
-    private User requireUser(String username) {
-        // 用户名为空时不访问数据库，其余情况按用户名精确查询。
-        User user = username == null ? null : userMapper.findByUsername(username);
+    private User requireUser(Long userId) {
+        // 主键为空时不访问数据库，其余情况按主键精确查询。
+        User user = userId == null ? null : userMapper.findById(userId);
         if (user == null) {
-            // 会话中的账号已被删除或无效时，要求重新认证。
+            // 会话中的账号已被删除时，要求重新认证。
             throw new BusinessException("登录用户不存在，请重新登录");
+        }
+        if (!Boolean.TRUE.equals(user.getEnabled())) {
+            // 账号被停用后，即使旧会话尚未清理也不能继续提交业务操作。
+            throw new BusinessException("账号已被停用，请重新登录");
         }
         return user;
     }
